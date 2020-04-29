@@ -1,0 +1,34 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.3.71'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlinVersion
+    }
+}
+
+apply plugin: 'kotlin'
+
+group 'me.mrpingu'
+version '1.0-SNAPSHOT'
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        languageVersion = "1.4"
+        suppressWarnings = true
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlinVersion
+}
