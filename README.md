@@ -1,20 +1,19 @@
 [![Build Status](https://travis-ci.com/MrPNG/KotlinNBT.svg?branch=master)](https://travis-ci.com/MrPNG/KotlinNBT)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.3.72-orange)](https://kotlinlang.org/)
-[![JitPack](https://img.shields.io/badge/jitpack-KotlinNBT-yellow)](https://jitpack.io/#MrPNG/KotlinNBT)
+[![JitPack](https://jitpack.io/v/MrPNG/KotlinNBT.svg)](https://jitpack.io/#MrPNG/KotlinNBT)
 [![License: MIT](https://img.shields.io/github/license/MrPNG/KotlinNBT)](https://opensource.org/licenses/MIT)
 [![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/mrpng)
 
 
 # KotlinNBT
 
-Named Binary Tags (NBT) implementation in Kotlin for reading and writing files/streams and creating your own with a
-simple and concise builder API. The whole project was built with type safety in mind and provides clean accessors for
-getting typed variables from tags.
+Type-safe Named Binary Tags (NBT) implementation in Kotlin for reading and writing files/streams with a simple and
+concise builder API.
 
-This project is based on the original specification by Notch ([Wayback Machine][WebArchive]) with the most recent
+This project is based on the original NBT specification by Notch ([Wayback Machine][WebArchive]) with the most recent
 additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg][WikiVG]).
 
-## Install
+## Installation
 
 Maven:
 
@@ -98,7 +97,7 @@ val nbt = nbt("root") {
             string["firstString"] = "I'm the first String :)"
             string["secondString"] = "I'm the second String, but order is not guaranteed :/"
             int["justAnInteger"] = 1
-            }
+        }
     )
     long["timestamp"] = System.currentTimeMillis()
 }
