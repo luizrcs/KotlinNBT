@@ -4,15 +4,15 @@ import io.github.mrpng.nbt.*
 import io.github.mrpng.nbt.TagType.*
 import java.nio.*
 
-class TagDouble private constructor(name: String?): Tag<Double>(TAG_DOUBLE, name) {
+class TagDouble private constructor(name: String? = null): Tag<Double>(TAG_DOUBLE, name) {
 	
 	override val sizeInBytes = Long.SIZE_BYTES
 	
-	constructor(value: Double, name: String?): this(name) {
+	constructor(value: Double, name: String? = null): this(name) {
 		_value = value
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String?): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
 		read(byteBuffer)
 	}
 	

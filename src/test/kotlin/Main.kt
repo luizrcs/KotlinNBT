@@ -1,3 +1,4 @@
+import io.github.mrpng.nbt.*
 import io.github.mrpng.nbt.api.*
 import io.github.mrpng.nbt.io.*
 import io.github.mrpng.nbt.io.NbtIO.Compression.*
@@ -18,6 +19,14 @@ fun main() {
 		long["timestamp"] = System.currentTimeMillis()
 	}
 	
-	NbtIO.write(File("test.nbt"), nbt, GZIP)
+	val fibonacci: IntArray = nbt["testCompound"].asTagCompound["fibonacciWithoutZero"].asIntArray
+	val message: String = nbt["testList"].asTagList[0].asTagCompound["firstString"].asString
+	val timestamp: Long = nbt["timestamp"].asLong
+	
+	println(fibonacci.toList())
+	println(message)
+	println(timestamp)
+	
+	NbtIO.write(nbt, File("test.nbt"), GZIP)
 	println(NbtIO.read(File("test.nbt"), GZIP))
 }

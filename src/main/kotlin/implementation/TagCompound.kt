@@ -7,18 +7,18 @@ import java.nio.*
 
 typealias CompoundMap = Map<String, TagAny>
 
-open class TagCompound protected constructor(name: String?): Tag<CompoundMap>(TAG_COMPOUND, name) {
+open class TagCompound protected constructor(name: String? = null): Tag<CompoundMap>(TAG_COMPOUND, name) {
 	
 	override val sizeInBytes
 		get() = _value.entries.sumBy { (name, tag) ->
 			Byte.SIZE_BYTES + (Short.SIZE_BYTES + name.toByteArray().size) + tag.sizeInBytes
 		} + Byte.SIZE_BYTES
 	
-	constructor(value: CompoundMap, name: String?): this(name) {
+	constructor(value: CompoundMap, name: String? = null): this(name) {
 		_value = value.map { (name, tag) -> name to tag.ensureName(name) }.toMap()
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String?): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
 		read(byteBuffer)
 	}
 	
@@ -60,7 +60,7 @@ open class TagCompound protected constructor(name: String?): Tag<CompoundMap>(TA
 		byteBuffer.put(TAG_END.id.toByte())
 	}
 	
-	override fun clone(name: String?) = TagCompound(value, name)
+	override fun clone(name: String?) = TagCompound(value.map { (name, tag) -> name to tag.clone(name) }.toMap(), name)
 	
 	override fun toString() = buildString {
 		append("${prefix()}{")

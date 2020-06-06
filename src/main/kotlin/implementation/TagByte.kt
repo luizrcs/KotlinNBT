@@ -5,7 +5,7 @@ import io.github.mrpng.nbt.TagType.*
 import io.github.mrpng.nbt.extension.*
 import java.nio.*
 
-class TagByte private constructor(name: String?): Tag<Byte>(TAG_BYTE, name) {
+class TagByte private constructor(name: String? = null): Tag<Byte>(TAG_BYTE, name) {
 	
 	override val sizeInBytes = Byte.SIZE_BYTES
 	

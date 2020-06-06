@@ -4,15 +4,15 @@ import io.github.mrpng.nbt.*
 import io.github.mrpng.nbt.TagType.*
 import java.nio.*
 
-class TagIntArray private constructor(name: String?): Tag<IntArray>(TAG_INT_ARRAY, name) {
+class TagIntArray private constructor(name: String? = null): Tag<IntArray>(TAG_INT_ARRAY, name) {
 	
 	override val sizeInBytes get() = Int.SIZE_BYTES + _value.size * Int.SIZE_BYTES
 	
-	constructor(value: IntArray, name: String?): this(name) {
+	constructor(value: IntArray, name: String? = null): this(name) {
 		_value = value
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String?): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
 		read(byteBuffer)
 	}
 	

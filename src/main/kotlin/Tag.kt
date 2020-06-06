@@ -6,6 +6,47 @@ import java.nio.*
 
 typealias TagAny = Tag<out Any>
 
+val TagAny?.isTagEnd get() = this != null && type == TAG_END
+val TagAny?.isTagByte get() = this != null && type == TAG_BYTE
+val TagAny?.isTagShort get() = this != null && type == TAG_SHORT
+val TagAny?.isTagInt get() = this != null && type == TAG_INT
+val TagAny?.isTagLong get() = this != null && type == TAG_LONG
+val TagAny?.isTagFloat get() = this != null && type == TAG_FLOAT
+val TagAny?.isTagDouble get() = this != null && type == TAG_DOUBLE
+val TagAny?.isTagByteArray get() = this != null && type == TAG_BYTE_ARRAY
+val TagAny?.isTagString get() = this != null && type == TAG_STRING
+val TagAny?.isTagList get() = this != null && type == TAG_LIST
+val TagAny?.isTagCompound get() = this != null && type == TAG_COMPOUND
+val TagAny?.isTagIntArray get() = this != null && type == TAG_INT_ARRAY
+val TagAny?.isTagLongArray get() = this != null && type == TAG_LONG_ARRAY
+
+val TagAny?.asTagEnd get() = this!!.getAs<TagEnd>()
+val TagAny?.asTagByte get() = this!!.getAs<TagByte>()
+val TagAny?.asTagShort get() = this!!.getAs<TagShort>()
+val TagAny?.asTagInt get() = this!!.getAs<TagInt>()
+val TagAny?.asTagLong get() = this!!.getAs<TagLong>()
+val TagAny?.asTagFloat get() = this!!.getAs<TagFloat>()
+val TagAny?.asTagDouble get() = this!!.getAs<TagDouble>()
+val TagAny?.asTagByteArray get() = this!!.getAs<TagByteArray>()
+val TagAny?.asTagString get() = this!!.getAs<TagString>()
+val TagAny?.asTagList get() = this!!.getAs<TagList>()
+val TagAny?.asTagCompound get() = this!!.getAs<TagCompound>()
+val TagAny?.asTagIntArray get() = this!!.getAs<TagIntArray>()
+val TagAny?.asTagLongArray get() = this!!.getAs<TagLongArray>()
+
+val TagAny?.asByte get() = asTagByte._value
+val TagAny?.asShort get() = asTagShort._value
+val TagAny?.asInt get() = asTagInt._value
+val TagAny?.asLong get() = asTagLong._value
+val TagAny?.asFloat get() = asTagFloat._value
+val TagAny?.asDouble get() = asTagDouble._value
+val TagAny?.asByteArray get() = asTagByteArray._value
+val TagAny?.asString get() = asTagString._value
+val TagAny?.asList get() = asTagList._value
+val TagAny?.asCompound get() = asTagCompound._value
+val TagAny?.asIntArray get() = asTagIntArray._value
+val TagAny?.asLongArray get() = asTagLongArray._value
+
 /**
  * Creates a [Tag] with the specified type [T] and, if appropriate in regards to the NBT specs,
  * a name (only really used inside a [TagCompound]). Should never be called directly, only by subclasses.
@@ -25,47 +66,6 @@ abstract class Tag<T: Any> protected constructor(val type: TagType, val name: St
 	 * Accessible tag value, already correctly typed and "immutable".
 	 */
 	val value: T get() = _value
-	
-	val isTagEnd get() = type == TAG_END
-	val isTagByte get() = type == TAG_BYTE
-	val isTagShort get() = type == TAG_SHORT
-	val isTagInt get() = type == TAG_INT
-	val isTagLong get() = type == TAG_LONG
-	val isTagFloat get() = type == TAG_FLOAT
-	val isTagDouble get() = type == TAG_DOUBLE
-	val isTagByteArray get() = type == TAG_BYTE_ARRAY
-	val isTagString get() = type == TAG_STRING
-	val isTagList get() = type == TAG_LIST
-	val isTagCompound get() = type == TAG_COMPOUND
-	val isTagIntArray get() = type == TAG_INT_ARRAY
-	val isTagLongArray get() = type == TAG_LONG_ARRAY
-	
-	val asTagEnd get() = getAs<TagEnd>()
-	val asTagByte get() = getAs<TagByte>()
-	val asTagShort get() = getAs<TagShort>()
-	val asTagInt get() = getAs<TagInt>()
-	val asTagLong get() = getAs<TagLong>()
-	val asTagFloat get() = getAs<TagFloat>()
-	val asTagDouble get() = getAs<TagDouble>()
-	val asTagByteArray get() = getAs<TagByteArray>()
-	val asTagString get() = getAs<TagString>()
-	val asTagList get() = getAs<TagList>()
-	val asTagCompound get() = getAs<TagCompound>()
-	val asTagIntArray get() = getAs<TagIntArray>()
-	val asTagLongArray get() = getAs<TagLongArray>()
-	
-	val asByte get() = asTagByte._value
-	val asShort get() = asTagShort._value
-	val asInt get() = asTagInt._value
-	val asLong get() = asTagLong._value
-	val asFloat get() = asTagFloat._value
-	val asDouble get() = asTagDouble._value
-	val asByteArray get() = asTagByteArray._value
-	val asString get() = asTagString._value
-	val asList get() = asTagList._value
-	val asCompound get() = asTagCompound._value
-	val asIntArray get() = asTagIntArray._value
-	val asLongArray get() = asTagLongArray._value
 	
 	/**
 	 * Used to calculate this tag (and its children, if applicable) size in bytes, not considering
@@ -102,10 +102,10 @@ abstract class Tag<T: Any> protected constructor(val type: TagType, val name: St
 	/**
 	 * Clones this tag. Some properties can be changed during the copy.
 	 *
-	 * @param name the name to apply to the copied tag.
+	 * @param name the name to apply to the cloned tag.
 	 * @return a clone of this tag; some properties may have been changed with the params.
 	 */
-	internal abstract fun clone(name: String?): Tag<T>
+	internal abstract fun clone(name: String? = this.name): Tag<T>
 	
 	/**
 	 * Forces the specified name on this tag using a clone if needed.

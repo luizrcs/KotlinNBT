@@ -5,7 +5,7 @@ import io.github.mrpng.nbt.TagType.*
 import io.github.mrpng.nbt.extension.*
 import java.nio.*
 
-class TagList private constructor(name: String?): Tag<List<TagAny>>(TAG_LIST, name) {
+class TagList private constructor(name: String? = null): Tag<List<TagAny>>(TAG_LIST, name) {
 	
 	override val sizeInBytes get() = Byte.SIZE_BYTES + Int.SIZE_BYTES + _value.sumBy { it.sizeInBytes }
 	
@@ -14,14 +14,14 @@ class TagList private constructor(name: String?): Tag<List<TagAny>>(TAG_LIST, na
 	
 	operator fun get(index: Int) = _value[index]
 	
-	constructor(elementsType: TagType, value: List<TagAny>, check: Boolean = true, name: String?): this(name) {
+	constructor(elementsType: TagType, value: List<TagAny>, check: Boolean = true, name: String? = null): this(name) {
 		require(!check || check(elementsType, value)) { "TagList elements must be of a single type" }
 		
 		_elementsType = elementsType
 		_value = value.map { tag -> tag.ensureName(null) }.toList()
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String?): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
 		read(byteBuffer)
 	}
 	
@@ -42,7 +42,7 @@ class TagList private constructor(name: String?): Tag<List<TagAny>>(TAG_LIST, na
 		_value.forEach { it.write(byteBuffer) }
 	}
 	
-	override fun clone(name: String?) = TagList(elementsType, value, false, name)
+	override fun clone(name: String?) = TagList(elementsType, value.map(TagAny::clone), false, name)
 	
 	override fun prefix() = "${if (name.isNullOrEmpty()) "" else "$name: "}$type<$_elementsType> = "
 	

@@ -4,15 +4,15 @@ import io.github.mrpng.nbt.*
 import io.github.mrpng.nbt.TagType.*
 import java.nio.*
 
-class TagFloat private constructor(name: String?): Tag<Float>(TAG_FLOAT, name) {
+class TagFloat private constructor(name: String? = null): Tag<Float>(TAG_FLOAT, name) {
 	
 	override val sizeInBytes = Int.SIZE_BYTES
 	
-	constructor(value: Float, name: String?): this(name) {
+	constructor(value: Float, name: String? = null): this(name) {
 		_value = value
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String?): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
 		read(byteBuffer)
 	}
 	

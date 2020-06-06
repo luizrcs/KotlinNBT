@@ -4,15 +4,15 @@ import io.github.mrpng.nbt.*
 import io.github.mrpng.nbt.TagType.*
 import java.nio.*
 
-class TagShort private constructor(name: String?): Tag<Short>(TAG_SHORT, name) {
+class TagShort private constructor(name: String? = null): Tag<Short>(TAG_SHORT, name) {
 	
 	override val sizeInBytes = Short.SIZE_BYTES
 	
-	constructor(value: Short, name: String?): this(name) {
+	constructor(value: Short, name: String? = null): this(name) {
 		_value = value
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String?): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
 		read(byteBuffer)
 	}
 	

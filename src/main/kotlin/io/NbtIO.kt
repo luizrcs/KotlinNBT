@@ -24,7 +24,7 @@ object NbtIO {
 	fun read(file: File, compression: Compression = NONE) =
 		read(file.inputStream().buffered(), compression).asTagCompound
 	
-	fun write(outputStream: BufferedOutputStream, tagCompound: TagCompound, compression: Compression = NONE) {
+	fun write(tagCompound: TagCompound, outputStream: BufferedOutputStream, compression: Compression = NONE) {
 		val tagCompoundSize = (tagCompound.name?.toByteArray()?.size ?: 0) + tagCompound.sizeInBytes
 		val byteBuffer = ByteBuffer.allocate(Byte.SIZE_BYTES + Short.SIZE_BYTES + tagCompoundSize)
 		val byteArray = byteBuffer.also { tagCompound.writeRoot(it) }.array()
@@ -37,10 +37,8 @@ object NbtIO {
 		_outputStream.use { it.write(byteArray) }
 	}
 	
-	fun write(file: File, tagCompound: TagCompound, compression: Compression = NONE) = write(
-		file.outputStream().buffered(),
-		tagCompound,
-		compression)
+	fun write(tagCompound: TagCompound, file: File, compression: Compression = NONE) =
+		write(tagCompound, file.outputStream().buffered(), compression)
 	
 	private fun read(byteBuffer: ByteBuffer): TagAny {
 		val id = byteBuffer.byte.toInt()
