@@ -42,7 +42,7 @@ class TagList private constructor(name: String? = null): Tag<List<TagAny>>(TAG_L
 		_value.forEach { it.write(byteBuffer) }
 	}
 	
-	override fun clone(name: String?) = TagList(elementsType, value.map(TagAny::clone), false, name)
+	override fun clone(name: String?) = TagList(elementsType, value.map { it.clone(null) }, false, name)
 	
 	override fun prefix() = "${if (name.isNullOrEmpty()) "" else "$name: "}$type<$_elementsType> = "
 	
