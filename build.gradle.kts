@@ -4,8 +4,8 @@ plugins {
 	`kotlin-jvm`
 }
 
-group = "me.mrpingu"
-version = "1.0-SNAPSHOT"
+group = "io.github.mrpng"
+version = "1.0.0"
 
 repositories {
 	mavenCentral()
