@@ -1,4 +1,4 @@
-package me.mrpingu.nbt.extension
+package io.github.mrpng.nbt.extension
 
 import java.nio.*
 

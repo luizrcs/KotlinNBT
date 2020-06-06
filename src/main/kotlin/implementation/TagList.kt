@@ -1,8 +1,8 @@
-package me.mrpingu.nbt.implementation
+package io.github.mrpng.nbt.implementation
 
-import me.mrpingu.nbt.*
-import me.mrpingu.nbt.TagType.*
-import me.mrpingu.nbt.extension.*
+import io.github.mrpng.nbt.*
+import io.github.mrpng.nbt.TagType.*
+import io.github.mrpng.nbt.extension.*
 import java.nio.*
 
 class TagList private constructor(name: String?): Tag<List<TagAny>>(TAG_LIST, name) {
@@ -11,9 +11,6 @@ class TagList private constructor(name: String?): Tag<List<TagAny>>(TAG_LIST, na
 	
 	private lateinit var _elementsType: TagType
 	val elementsType get() = _elementsType
-	
-	inline fun <reified T: TagAny?> getAs(index: Int) =
-		_value[index] as? T ?: throw IllegalArgumentException("TagList element is not of type ${T::class.java.simpleName}")
 	
 	operator fun get(index: Int) = _value[index]
 	
@@ -55,11 +52,10 @@ class TagList private constructor(name: String?): Tag<List<TagAny>>(TAG_LIST, na
 		if (_value.isNotEmpty()) {
 			when (_elementsType) {
 				TAG_COMPOUND, TAG_LIST -> {
-					newLine().tab()
-					append(_value.joinToString(",\n\t") { it.toString().replace("\n", "\n\t") })
-					newLine()
+					appendln().tab()
+					appendln(_value.joinToString(",\n\t") { it.toString().replace("\n", "\n\t") })
 				}
-				else                   -> append(_value.joinToString(", ") { it.valueToString() })
+				else -> append(_value.joinToString(", ") { it.valueToString() })
 			}
 		}
 		

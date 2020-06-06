@@ -1,7 +1,7 @@
-package me.mrpingu.nbt
+package io.github.mrpng.nbt
 
-import me.mrpingu.nbt.TagType.*
-import me.mrpingu.nbt.implementation.*
+import io.github.mrpng.nbt.TagType.*
+import io.github.mrpng.nbt.implementation.*
 import java.nio.*
 
 typealias TagAny = Tag<out Any>
@@ -150,18 +150,18 @@ abstract class Tag<T: Any> protected constructor(val type: TagType, val name: St
 		 * @param name the name of the tag to be read; defaults to null.
 		 */
 		fun read(tagType: TagType, byteBuffer: ByteBuffer, name: String? = null) = when (tagType) {
-			TAG_END        -> TagEnd
-			TAG_BYTE       -> TagByte(byteBuffer, name)
-			TAG_SHORT      -> TagShort(byteBuffer, name)
-			TAG_INT        -> TagInt(byteBuffer, name)
-			TAG_LONG       -> TagLong(byteBuffer, name)
-			TAG_FLOAT      -> TagFloat(byteBuffer, name)
-			TAG_DOUBLE     -> TagDouble(byteBuffer, name)
+			TAG_END -> TagEnd
+			TAG_BYTE -> TagByte(byteBuffer, name)
+			TAG_SHORT -> TagShort(byteBuffer, name)
+			TAG_INT -> TagInt(byteBuffer, name)
+			TAG_LONG -> TagLong(byteBuffer, name)
+			TAG_FLOAT -> TagFloat(byteBuffer, name)
+			TAG_DOUBLE -> TagDouble(byteBuffer, name)
 			TAG_BYTE_ARRAY -> TagByteArray(byteBuffer, name)
-			TAG_STRING     -> TagString(byteBuffer, name)
-			TAG_LIST       -> TagList(byteBuffer, name)
-			TAG_COMPOUND   -> TagCompound(byteBuffer, name)
-			TAG_INT_ARRAY  -> TagIntArray(byteBuffer, name)
+			TAG_STRING -> TagString(byteBuffer, name)
+			TAG_LIST -> TagList(byteBuffer, name)
+			TAG_COMPOUND -> TagCompound(byteBuffer, name)
+			TAG_INT_ARRAY -> TagIntArray(byteBuffer, name)
 			TAG_LONG_ARRAY -> TagLongArray(byteBuffer, name)
 		}
 		

@@ -1,7 +1,7 @@
-package me.mrpingu.nbt.implementation
+package io.github.mrpng.nbt.implementation
 
-import me.mrpingu.nbt.*
-import me.mrpingu.nbt.TagType.*
+import io.github.mrpng.nbt.*
+import io.github.mrpng.nbt.TagType.*
 import java.nio.*
 
 class TagDouble private constructor(name: String?): Tag<Double>(TAG_DOUBLE, name) {

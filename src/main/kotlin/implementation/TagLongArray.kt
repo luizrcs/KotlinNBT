@@ -1,7 +1,7 @@
-package me.mrpingu.nbt.implementation
+package io.github.mrpng.nbt.implementation
 
-import me.mrpingu.nbt.*
-import me.mrpingu.nbt.TagType.*
+import io.github.mrpng.nbt.*
+import io.github.mrpng.nbt.TagType.*
 import java.nio.*
 
 class TagLongArray private constructor(name: String?): Tag<LongArray>(TAG_LONG_ARRAY, name) {

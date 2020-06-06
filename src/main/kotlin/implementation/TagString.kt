@@ -1,8 +1,8 @@
-package me.mrpingu.nbt.implementation
+package io.github.mrpng.nbt.implementation
 
-import me.mrpingu.nbt.*
-import me.mrpingu.nbt.TagType.*
-import me.mrpingu.nbt.extension.*
+import io.github.mrpng.nbt.*
+import io.github.mrpng.nbt.TagType.*
+import io.github.mrpng.nbt.extension.*
 import java.nio.*
 
 class TagString private constructor(name: String?): Tag<String>(TAG_STRING, name) {
