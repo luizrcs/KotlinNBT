@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-	implementation(kotlin("stdlib-jdk8", kotlinVersion))
+	implementation(kotlin("stdlib", kotlinVersion))
 }
 
 val compileKotlinOptions: KotlinJvmOptions.() -> Unit = {
