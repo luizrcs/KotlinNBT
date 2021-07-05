@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.com/luizrcs/KotlinNBT.svg?branch=mter)](https://travis-ci.com/luizrcs/KotlinNBT)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.72-orange)](https://kotlinlang.org/)
+[![Build Status](https://travis-ci.com/luizrcs/KotlinNBT.svg?branch=master)](https://travis-ci.com/luizrcs/KotlinNBT)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.5.20-green)](https://kotlinlang.org/)
 [![JitPack](https://jitpack.io/v/luizrcs/KotlinNBT.svg)](https://jitpack.io/#luizrcs/KotlinNBT)
 [![License: MIT](https://img.shields.io/github/license/luizrcs/KotlinNBT)](https://opensource.org/licenses/MIT)
-[![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/mrpng)
+[![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/luizrcs)
 
 
 # KotlinNBT
