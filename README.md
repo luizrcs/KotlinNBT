@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.com/MrPNG/KotlinNBT.svg?branch=master)](https://travis-ci.com/MrPNG/KotlinNBT)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.72-orange)](https://kotlinlang.org/)
-[![JitPack](https://jitpack.io/v/MrPNG/KotlinNBT.svg)](https://jitpack.io/#MrPNG/KotlinNBT)
-[![License: MIT](https://img.shields.io/github/license/MrPNG/KotlinNBT)](https://opensource.org/licenses/MIT)
-[![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/mrpng)
+[![Build Status](https://travis-ci.com/luizrcs/KotlinNBT.svg?branch=master)](https://travis-ci.com/luizrcs/KotlinNBT)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.3.72-red)](https://kotlinlang.org/)
+[![JitPack](https://jitpack.io/v/luizrcs/KotlinNBT.svg)](https://jitpack.io/#luizrcs/KotlinNBT)
+[![License: MIT](https://img.shields.io/github/license/luizrcs/KotlinNBT)](https://opensource.org/licenses/MIT)
+[![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/luizrcs)
 
 
 # KotlinNBT
@@ -187,4 +187,4 @@ Everyone loves open-source <3
 [Gamepedia]: https://minecraft.gamepedia.com/NBT_format
 [WikiVG]: https://wiki.vg/NBT
 [NBTExplorer]: https://github.com/jaquadro/NBTExplorer
-[Donation]: https://donorbox.org/mrpng
+[Donation]: https://donorbox.org/luizrcs
