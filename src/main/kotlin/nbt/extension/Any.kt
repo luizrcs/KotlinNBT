@@ -1,3 +1,3 @@
-package io.github.mrpng.nbt.extension
+package br.com.luizrcs.nbt.extension
 
 inline val <T> T.exhaustive: T get() = this

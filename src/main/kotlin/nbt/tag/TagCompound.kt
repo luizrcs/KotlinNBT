@@ -1,8 +1,7 @@
-package io.github.mrpng.nbt.implementation
+package br.com.luizrcs.nbt.tag
 
-import io.github.mrpng.nbt.*
-import io.github.mrpng.nbt.TagType.*
-import io.github.mrpng.nbt.extension.*
+import br.com.luizrcs.nbt.extension.*
+import br.com.luizrcs.nbt.tag.TagType.*
 import java.nio.*
 
 typealias CompoundMap = Map<String, TagAny>
@@ -10,7 +9,7 @@ typealias CompoundMap = Map<String, TagAny>
 open class TagCompound protected constructor(name: String? = null): Tag<CompoundMap>(TAG_COMPOUND, name) {
 	
 	override val sizeInBytes
-		get() = _value.entries.sumBy { (name, tag) ->
+		get() = _value.entries.sumOf { (name, tag) ->
 			Byte.SIZE_BYTES + (Short.SIZE_BYTES + name.toByteArray().size) + tag.sizeInBytes
 		} + Byte.SIZE_BYTES
 	
@@ -22,21 +21,14 @@ open class TagCompound protected constructor(name: String? = null): Tag<Compound
 		read(byteBuffer)
 	}
 	
-	internal fun writeRoot(byteBuffer: ByteBuffer) {
-		byteBuffer.put(TAG_COMPOUND.id.toByte())
-		byteBuffer.putString(name ?: "")
-		
-		write(byteBuffer)
-	}
-	
 	operator fun get(name: String) = _value[name]
 	
 	final override fun read(byteBuffer: ByteBuffer) {
 		val value = mutableMapOf<String, TagAny>()
 		
-		var nextId: Int
+		var nextId: Byte
 		do {
-			nextId = byteBuffer.byte.toInt()
+			nextId = byteBuffer.byte
 			
 			if (nextId == TAG_END.id) break
 			
@@ -60,18 +52,28 @@ open class TagCompound protected constructor(name: String? = null): Tag<Compound
 		byteBuffer.put(TAG_END.id.toByte())
 	}
 	
-	override fun clone(name: String?) = TagCompound(value.map { (name, tag) -> name to tag.clone(name) }.toMap(), name)
+	internal fun writeRoot(byteBuffer: ByteBuffer) {
+		byteBuffer.put(TAG_COMPOUND.id.toByte())
+		byteBuffer.putString(name ?: "")
+		
+		write(byteBuffer)
+	}
+	
+	override fun clone(name: String?): Tag<CompoundMap> = clone(name, true)
+	
+	override fun clone(name: String?, deep: Boolean): Tag<CompoundMap> =
+		TagCompound(value.entries.associate { (name, tag) -> name to if (deep) tag.clone(name, deep) else tag }, name)
 	
 	override fun toString() = buildString {
 		append("${prefix()}{")
 		
 		if (value.isNotEmpty()) {
-			appendln().tab()
-			appendln(
-				value.entries.sortedWith(NBTComparator).joinToString(",\n\t") { (_, nextTag) ->
+			appendLine().tab()
+			appendLine(
+				value.entries.sortedWith(nbtComparator).joinToString(",\n\t") { (_, nextTag) ->
 					when (nextTag.type) {
 						TAG_COMPOUND, TAG_LIST -> nextTag.toString().replace("\n", "\n\t")
-						else -> nextTag.toString()
+						else                   -> nextTag.toString()
 					}
 				}
 			)
@@ -83,7 +85,7 @@ open class TagCompound protected constructor(name: String? = null): Tag<Compound
 	companion object {
 		
 		/** Custom [Comparator] for NBT entries in a [TagCompound], inspired by NBTExplorer. */
-		val NBTComparator = Comparator<Map.Entry<String, TagAny>> { (name1, tag1), (name2, tag2) ->
+		val nbtComparator = Comparator<Map.Entry<String, TagAny>> { (name1, tag1), (name2, tag2) ->
 			val type1 = tag1.type
 			val type2 = tag2.type
 			
@@ -92,9 +94,9 @@ open class TagCompound protected constructor(name: String? = null): Tag<Compound
 			when {
 				type1 == TAG_COMPOUND -> if (type2 == TAG_COMPOUND) compareNames() else -1
 				type2 == TAG_COMPOUND -> 1
-				type1 == TAG_LIST -> if (type2 == TAG_LIST) compareNames() else -1
-				type2 == TAG_LIST -> 1
-				else -> compareNames()
+				type1 == TAG_LIST     -> if (type2 == TAG_LIST) compareNames() else -1
+				type2 == TAG_LIST     -> 1
+				else                  -> compareNames()
 			}
 		}
 	}

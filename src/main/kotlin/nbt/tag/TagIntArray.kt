@@ -1,7 +1,6 @@
-package io.github.mrpng.nbt.implementation
+package br.com.luizrcs.nbt.tag
 
-import io.github.mrpng.nbt.*
-import io.github.mrpng.nbt.TagType.*
+import br.com.luizrcs.nbt.tag.TagType.*
 import java.nio.*
 
 class TagIntArray private constructor(name: String? = null): Tag<IntArray>(TAG_INT_ARRAY, name) {

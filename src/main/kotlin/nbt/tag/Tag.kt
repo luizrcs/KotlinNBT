@@ -1,7 +1,6 @@
-package io.github.mrpng.nbt
+package br.com.luizrcs.nbt.tag
 
-import io.github.mrpng.nbt.TagType.*
-import io.github.mrpng.nbt.implementation.*
+import br.com.luizrcs.nbt.tag.TagType.*
 import java.nio.*
 
 typealias TagAny = Tag<out Any>
@@ -20,32 +19,32 @@ val TagAny?.isTagCompound get() = this != null && type == TAG_COMPOUND
 val TagAny?.isTagIntArray get() = this != null && type == TAG_INT_ARRAY
 val TagAny?.isTagLongArray get() = this != null && type == TAG_LONG_ARRAY
 
-val TagAny?.asTagEnd get() = this!!.getAs<TagEnd>()
-val TagAny?.asTagByte get() = this!!.getAs<TagByte>()
-val TagAny?.asTagShort get() = this!!.getAs<TagShort>()
-val TagAny?.asTagInt get() = this!!.getAs<TagInt>()
-val TagAny?.asTagLong get() = this!!.getAs<TagLong>()
-val TagAny?.asTagFloat get() = this!!.getAs<TagFloat>()
-val TagAny?.asTagDouble get() = this!!.getAs<TagDouble>()
-val TagAny?.asTagByteArray get() = this!!.getAs<TagByteArray>()
-val TagAny?.asTagString get() = this!!.getAs<TagString>()
-val TagAny?.asTagList get() = this!!.getAs<TagList>()
-val TagAny?.asTagCompound get() = this!!.getAs<TagCompound>()
-val TagAny?.asTagIntArray get() = this!!.getAs<TagIntArray>()
-val TagAny?.asTagLongArray get() = this!!.getAs<TagLongArray>()
+val TagAny?.tagEnd get() = this!!.getAs<TagEnd>()
+val TagAny?.tagByte get() = this!!.getAs<TagByte>()
+val TagAny?.tagShort get() = this!!.getAs<TagShort>()
+val TagAny?.tagInt get() = this!!.getAs<TagInt>()
+val TagAny?.tagLong get() = this!!.getAs<TagLong>()
+val TagAny?.tagFloat get() = this!!.getAs<TagFloat>()
+val TagAny?.tagDouble get() = this!!.getAs<TagDouble>()
+val TagAny?.tagByteArray get() = this!!.getAs<TagByteArray>()
+val TagAny?.tagString get() = this!!.getAs<TagString>()
+val TagAny?.tagList get() = this!!.getAs<TagList>()
+val TagAny?.tagCompound get() = this!!.getAs<TagCompound>()
+val TagAny?.tagIntArray get() = this!!.getAs<TagIntArray>()
+val TagAny?.tagLongArray get() = this!!.getAs<TagLongArray>()
 
-val TagAny?.asByte get() = asTagByte._value
-val TagAny?.asShort get() = asTagShort._value
-val TagAny?.asInt get() = asTagInt._value
-val TagAny?.asLong get() = asTagLong._value
-val TagAny?.asFloat get() = asTagFloat._value
-val TagAny?.asDouble get() = asTagDouble._value
-val TagAny?.asByteArray get() = asTagByteArray._value
-val TagAny?.asString get() = asTagString._value
-val TagAny?.asList get() = asTagList._value
-val TagAny?.asCompound get() = asTagCompound._value
-val TagAny?.asIntArray get() = asTagIntArray._value
-val TagAny?.asLongArray get() = asTagLongArray._value
+val TagAny?.byte get() = tagByte._value
+val TagAny?.short get() = tagShort._value
+val TagAny?.int get() = tagInt._value
+val TagAny?.long get() = tagLong._value
+val TagAny?.float get() = tagFloat._value
+val TagAny?.double get() = tagDouble._value
+val TagAny?.byteArray get() = tagByteArray._value
+val TagAny?.string get() = tagString._value
+val TagAny?.list get() = tagList._value
+val TagAny?.compound get() = tagCompound._value
+val TagAny?.intArray get() = tagIntArray._value
+val TagAny?.longArray get() = tagLongArray._value
 
 /**
  * Creates a [Tag] with the specified type [T] and, if appropriate in regards to the NBT specs,
@@ -55,7 +54,7 @@ val TagAny?.asLongArray get() = asTagLongArray._value
  * @param type the type of this tag.
  * @param name this tag's name, if inside a [TagCompound].
  */
-abstract class Tag<T: Any> protected constructor(val type: TagType, val name: String?) {
+sealed class Tag<T: Any>(val type: TagType, val name: String?) {
 	
 	/**
 	 * Backing mutable property for this tag's [value].
@@ -83,7 +82,7 @@ abstract class Tag<T: Any> protected constructor(val type: TagType, val name: St
 	 * before calling this function.
 	 * @throws IllegalStateException thrown if trying to cast to an incorrect type.
 	 */
-	inline fun <reified T: TagAny?> getAs() = this as? T ?: throw IllegalStateException("Tag is not a ${T::class.java.simpleName}")
+	inline fun <reified T: TagAny?> getAs() = this as? T ?: throw IllegalStateException("Tag is not a ${T::class.simpleName}")
 	
 	/**
 	 * Reads this tag from a [ByteBuffer] to [_value] with appropriate type.
@@ -100,12 +99,21 @@ abstract class Tag<T: Any> protected constructor(val type: TagType, val name: St
 	internal abstract fun write(byteBuffer: ByteBuffer)
 	
 	/**
-	 * Clones this tag. Some properties can be changed during the copy.
+	 * Deep-clones this tag. Some properties can be changed during the copy.
 	 *
 	 * @param name the name to apply to the cloned tag.
 	 * @return a clone of this tag; some properties may have been changed with the params.
 	 */
 	internal abstract fun clone(name: String? = this.name): Tag<T>
+	
+	/**
+	 * Clones this tag. Some properties can be changed during the copy.
+	 *
+	 * @param name the name to apply to the cloned tag.
+	 * @param deep perform deep clone.
+	 * @return a clone of this tag; some properties may have been changed with the params.
+	 */
+	internal open fun clone(name: String? = this.name, deep: Boolean): Tag<T> = clone(name)
 	
 	/**
 	 * Forces the specified name on this tag using a clone if needed.
@@ -131,6 +139,9 @@ abstract class Tag<T: Any> protected constructor(val type: TagType, val name: St
 	 */
 	open fun valueToString() = "$_value"
 	
+	operator fun component1() = type
+	operator fun component2() = name
+	
 	/**
 	 * Formatted version of this tag's contents ready for pretty-printing.
 	 *
@@ -150,18 +161,18 @@ abstract class Tag<T: Any> protected constructor(val type: TagType, val name: St
 		 * @param name the name of the tag to be read; defaults to null.
 		 */
 		fun read(tagType: TagType, byteBuffer: ByteBuffer, name: String? = null) = when (tagType) {
-			TAG_END -> TagEnd
-			TAG_BYTE -> TagByte(byteBuffer, name)
-			TAG_SHORT -> TagShort(byteBuffer, name)
-			TAG_INT -> TagInt(byteBuffer, name)
-			TAG_LONG -> TagLong(byteBuffer, name)
-			TAG_FLOAT -> TagFloat(byteBuffer, name)
-			TAG_DOUBLE -> TagDouble(byteBuffer, name)
+			TAG_END        -> TagEnd
+			TAG_BYTE       -> TagByte(byteBuffer, name)
+			TAG_SHORT      -> TagShort(byteBuffer, name)
+			TAG_INT        -> TagInt(byteBuffer, name)
+			TAG_LONG       -> TagLong(byteBuffer, name)
+			TAG_FLOAT      -> TagFloat(byteBuffer, name)
+			TAG_DOUBLE     -> TagDouble(byteBuffer, name)
 			TAG_BYTE_ARRAY -> TagByteArray(byteBuffer, name)
-			TAG_STRING -> TagString(byteBuffer, name)
-			TAG_LIST -> TagList(byteBuffer, name)
-			TAG_COMPOUND -> TagCompound(byteBuffer, name)
-			TAG_INT_ARRAY -> TagIntArray(byteBuffer, name)
+			TAG_STRING     -> TagString(byteBuffer, name)
+			TAG_LIST       -> TagList(byteBuffer, name)
+			TAG_COMPOUND   -> TagCompound(byteBuffer, name)
+			TAG_INT_ARRAY  -> TagIntArray(byteBuffer, name)
 			TAG_LONG_ARRAY -> TagLongArray(byteBuffer, name)
 		}
 		
@@ -174,11 +185,11 @@ abstract class Tag<T: Any> protected constructor(val type: TagType, val name: St
 		 * @param byteBuffer the [ByteBuffer] to read from.
 		 * @param name the name of the tag to be read; defaults to null.
 		 */
-		fun read(id: Int, byteBuffer: ByteBuffer, name: String? = null) = read(TagType[id], byteBuffer, name)
+		fun read(id: Byte, byteBuffer: ByteBuffer, name: String? = null) = read(TagType[id], byteBuffer, name)
 	}
 }
 
-enum class TagType(val id: Int, private val string: String) {
+enum class TagType(val id: Byte, private val string: String) {
 	
 	TAG_END(0, "End"),
 	TAG_BYTE(1, "Byte"),
@@ -194,12 +205,17 @@ enum class TagType(val id: Int, private val string: String) {
 	TAG_INT_ARRAY(11, "IntArray"),
 	TAG_LONG_ARRAY(12, "LongArray");
 	
+	operator fun component1() = id
+	operator fun component2() = string
+	
 	override fun toString() = string
 	
-	companion object {
+	companion object: LinkedHashMap<Byte, TagType>() {
 		
-		private val tagByIndex = values().map { it.id to it }.toMap()
+		init {
+			putAll(values().associateBy { (id) -> id })
+		}
 		
-		operator fun get(id: Int) = tagByIndex[id] ?: throw IllegalArgumentException("Invalid tag id $id")
+		override fun get(id: Byte) = super.get(id) ?: throw IllegalArgumentException("Invalid tag id $id")
 	}
 }

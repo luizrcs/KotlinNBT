@@ -1,7 +1,6 @@
-package io.github.mrpng.nbt.implementation
+package br.com.luizrcs.nbt.tag
 
-import io.github.mrpng.nbt.*
-import io.github.mrpng.nbt.TagType.*
+import br.com.luizrcs.nbt.tag.TagType.*
 import java.nio.*
 
 class TagDouble private constructor(name: String? = null): Tag<Double>(TAG_DOUBLE, name) {

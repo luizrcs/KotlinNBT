@@ -1,13 +1,13 @@
-[![Build Status](https://travis-ci.com/MrPNG/KotlinNBT.svg?branch=master)](https://travis-ci.com/MrPNG/KotlinNBT)
+[![Build Status](https://travis-ci.com/luizrcs/KotlinNBT.svg?branch=mter)](https://travis-ci.com/luizrcs/KotlinNBT)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.3.72-orange)](https://kotlinlang.org/)
-[![JitPack](https://jitpack.io/v/MrPNG/KotlinNBT.svg)](https://jitpack.io/#MrPNG/KotlinNBT)
-[![License: MIT](https://img.shields.io/github/license/MrPNG/KotlinNBT)](https://opensource.org/licenses/MIT)
+[![JitPack](https://jitpack.io/v/luizrcs/KotlinNBT.svg)](https://jitpack.io/#luizrcs/KotlinNBT)
+[![License: MIT](https://img.shields.io/github/license/luizrcs/KotlinNBT)](https://opensource.org/licenses/MIT)
 [![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/mrpng)
 
 
 # KotlinNBT
 
-Type-safe Named Binary Tags (NBT) implementation in Kotlin for reading and writing files/streams with a simple and
+Type-safe Named Binary Tags (NBT) implementation in Kotlin for the JVM for reading and writing files/streams with a simple and
 concise builder API.
 
 This project is based on the original NBT specification by Notch ([Wayback Machine][WebArchive]) with the most recent
@@ -28,7 +28,7 @@ Maven:
 
 ```xml
 <dependency>
-    <groupId>com.github.MrPNG</groupId>
+    <groupId>com.github.luizrcs</groupId>
     <artifactId>KotlinNBT</artifactId>
     <version>Tag</version>
 </dependency>
@@ -44,7 +44,7 @@ repositories {
 
 ```groovy
 dependencies {
-    implementation 'com.github.MrPNG:KotlinNBT:1.0.0'
+    implementation 'com.github.luizrcs:KotlinNBT:1.0.0'
 }
 ```
 
@@ -58,7 +58,7 @@ repositories {
 
 ```kotlin
 dependencies {
-    implementation("com.github.MrPNG:KotlinNBT:1.0.0")
+    implementation("com.github.luizrcs:KotlinNBT:1.0.0")
 }
 ```
 
@@ -129,9 +129,9 @@ prints a `TagCompound` using a schema based on the way [NBTExplorer][NBTExplorer
 In the example above, the typed values can be obtained with type-safe accessors:
 
 ```kotlin
-val fibonacci: IntArray = nbt["testCompound"].asTagCompound["fibonacciWithoutZero"].asIntArray
-val message: String = nbt["testList"].asTagList[0].asTagCompound["firstString"].asString
-val timestamp: Long = nbt["timestamp"].asLong
+val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacciWithoutZero"].intArray
+val message: String = nbt["testList"].tagList[0].tagCompound["firstString"].string
+val timestamp: Long = nbt["timestamp"].long
 	
 println(fibonacci.toList())
 println(message)
@@ -187,4 +187,4 @@ Everyone loves open-source <3
 [Gamepedia]: https://minecraft.gamepedia.com/NBT_format
 [WikiVG]: https://wiki.vg/NBT
 [NBTExplorer]: https://github.com/jaquadro/NBTExplorer
-[Donation]: https://donorbox.org/mrpng
+[Donation]: https://donorbox.org/luizrcs

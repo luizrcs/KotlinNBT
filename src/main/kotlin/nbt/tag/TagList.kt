@@ -1,13 +1,12 @@
-package io.github.mrpng.nbt.implementation
+package br.com.luizrcs.nbt.tag
 
-import io.github.mrpng.nbt.*
-import io.github.mrpng.nbt.TagType.*
-import io.github.mrpng.nbt.extension.*
+import br.com.luizrcs.nbt.extension.*
+import br.com.luizrcs.nbt.tag.TagType.*
 import java.nio.*
 
 class TagList private constructor(name: String? = null): Tag<List<TagAny>>(TAG_LIST, name) {
 	
-	override val sizeInBytes get() = Byte.SIZE_BYTES + Int.SIZE_BYTES + _value.sumBy { it.sizeInBytes }
+	override val sizeInBytes get() = Byte.SIZE_BYTES + Int.SIZE_BYTES + _value.sumOf { it.sizeInBytes }
 	
 	private lateinit var _elementsType: TagType
 	val elementsType get() = _elementsType
@@ -28,7 +27,7 @@ class TagList private constructor(name: String? = null): Tag<List<TagAny>>(TAG_L
 	private fun check(elementsType: TagType, list: List<TagAny>) = list.all { it.type == elementsType }
 	
 	override fun read(byteBuffer: ByteBuffer) {
-		val elementsId = byteBuffer.byte.toInt()
+		val elementsId = byteBuffer.byte
 		val size = byteBuffer.int
 		
 		_elementsType = TagType[elementsId]
@@ -52,10 +51,10 @@ class TagList private constructor(name: String? = null): Tag<List<TagAny>>(TAG_L
 		if (_value.isNotEmpty()) {
 			when (_elementsType) {
 				TAG_COMPOUND, TAG_LIST -> {
-					appendln().tab()
-					appendln(_value.joinToString(",\n\t") { it.toString().replace("\n", "\n\t") })
+					appendLine().tab()
+					appendLine(_value.joinToString(",\n\t") { it.toString().replace("\n", "\n\t") })
 				}
-				else -> append(_value.joinToString(", ") { it.valueToString() })
+				else                   -> append(_value.joinToString(", ") { it.valueToString() })
 			}
 		}
 		

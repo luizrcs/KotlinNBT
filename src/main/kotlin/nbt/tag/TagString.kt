@@ -1,8 +1,7 @@
-package io.github.mrpng.nbt.implementation
+package br.com.luizrcs.nbt.tag
 
-import io.github.mrpng.nbt.*
-import io.github.mrpng.nbt.TagType.*
-import io.github.mrpng.nbt.extension.*
+import br.com.luizrcs.nbt.extension.*
+import br.com.luizrcs.nbt.tag.TagType.*
 import java.nio.*
 
 class TagString private constructor(name: String? = null): Tag<String>(TAG_STRING, name) {

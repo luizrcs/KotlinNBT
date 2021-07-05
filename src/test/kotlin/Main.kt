@@ -1,8 +1,9 @@
-import io.github.mrpng.nbt.*
-import io.github.mrpng.nbt.api.*
-import io.github.mrpng.nbt.io.*
-import io.github.mrpng.nbt.io.NbtIO.Compression.*
+import br.com.luizrcs.nbt.api.*
+import br.com.luizrcs.nbt.io.*
+import br.com.luizrcs.nbt.io.NbtIO.Compression.*
+import br.com.luizrcs.nbt.tag.*
 import java.io.*
+import kotlin.system.*
 
 fun main() {
 	val nbt = nbt("root") {
@@ -19,14 +20,17 @@ fun main() {
 		long["timestamp"] = System.currentTimeMillis()
 	}
 	
-	val fibonacci: IntArray = nbt["testCompound"].asTagCompound["fibonacciWithoutZero"].asIntArray
-	val message: String = nbt["testList"].asTagList[0].asTagCompound["firstString"].asString
-	val timestamp: Long = nbt["timestamp"].asLong
+	val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacciWithoutZero"].intArray
+	val message: String = nbt["testList"].tagList[0].tagCompound["firstString"].string
+	val timestamp: Long = nbt["timestamp"].long
 	
 	println(fibonacci.toList())
 	println(message)
 	println(timestamp)
 	
-	NbtIO.write(nbt, File("test.nbt"), GZIP)
-	println(NbtIO.read(File("test.nbt"), GZIP))
+	println(measureNanoTime { NbtIO.write(nbt, File("test.nbt"), GZIP) })
+	
+	val readNbt: TagCompound
+	println(measureNanoTime { readNbt = NbtIO.read(File("test.nbt"), GZIP) })
+	println(readNbt)
 }

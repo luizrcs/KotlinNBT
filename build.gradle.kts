@@ -2,11 +2,11 @@ import org.jetbrains.kotlin.gradle.dsl.*
 
 plugins {
 	`kotlin-jvm`
-	maven
+	// maven
 }
 
-group = "io.github.mrpng"
-version = "1.0.0"
+group = "br.com.luizrcs"
+version = "1.1.0"
 
 repositories {
 	mavenCentral()
@@ -14,14 +14,13 @@ repositories {
 }
 
 dependencies {
-	implementation(kotlin("stdlib-jdk8", kotlinVersion))
+	kotlin("stdlib-jdk8", kotlinVersion)
 }
 
 val compileKotlinOptions: KotlinJvmOptions.() -> Unit = {
 	jvmTarget = "1.8"
-	languageVersion = "1.4"
-	
 	suppressWarnings = true
+	freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
 tasks.compileKotlin {

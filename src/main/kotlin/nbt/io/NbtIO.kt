@@ -1,62 +1,63 @@
-package io.github.mrpng.nbt.io
+package br.com.luizrcs.nbt.io
 
-import io.github.mrpng.nbt.*
-import io.github.mrpng.nbt.TagType.*
-import io.github.mrpng.nbt.extension.*
-import io.github.mrpng.nbt.implementation.*
-import io.github.mrpng.nbt.io.NbtIO.Compression.*
+import br.com.luizrcs.nbt.extension.*
+import br.com.luizrcs.nbt.io.NbtIO.Compression.*
+import br.com.luizrcs.nbt.tag.*
+import br.com.luizrcs.nbt.tag.TagType.*
 import java.io.*
 import java.nio.*
 import java.util.zip.*
 
 object NbtIO {
 	
+	private fun read(byteBuffer: ByteBuffer): TagAny {
+		val id = byteBuffer.byte
+		val name = byteBuffer.string
+		
+		return if (id == TAG_COMPOUND.id) TagCompound(byteBuffer, name) else Tag.read(id, byteBuffer)
+	}
+	
 	fun read(inputStream: BufferedInputStream, compression: Compression = NONE): TagAny {
 		val byteArray = when (compression) {
 			NONE -> inputStream
 			GZIP -> GZIPInputStream(inputStream)
 			ZLIB -> InflaterInputStream(inputStream)
-		}.readBytes()
+		}.use(InputStream::readBytes)
 		
 		return read(ByteBuffer.wrap(byteArray))
 	}
 	
 	fun read(file: File, compression: Compression = NONE) =
-		read(file.inputStream().buffered(), compression).asTagCompound
+		read(file.inputStream().buffered(), compression).tagCompound
 	
 	fun write(tagCompound: TagCompound, outputStream: BufferedOutputStream, compression: Compression = NONE) {
 		val tagCompoundSize = (tagCompound.name?.toByteArray()?.size ?: 0) + tagCompound.sizeInBytes
 		val byteBuffer = ByteBuffer.allocate(Byte.SIZE_BYTES + Short.SIZE_BYTES + tagCompoundSize)
 		val byteArray = byteBuffer.also { tagCompound.writeRoot(it) }.array()
 		
-		val _outputStream = when (compression) {
+		when (compression) {
 			NONE -> outputStream
 			GZIP -> GZIPOutputStream(outputStream)
 			ZLIB -> DeflaterOutputStream(outputStream)
-		}.exhaustive
-		_outputStream.use { it.write(byteArray) }
+		}.exhaustive.use { it.write(byteArray) }
 	}
 	
 	fun write(tagCompound: TagCompound, file: File, compression: Compression = NONE) =
 		write(tagCompound, file.outputStream().buffered(), compression)
 	
-	private fun read(byteBuffer: ByteBuffer): TagAny {
-		val id = byteBuffer.byte.toInt()
-		val name = byteBuffer.string
-		
-		return if (id == TAG_COMPOUND.id) TagCompound(byteBuffer, name) else Tag.read(id, byteBuffer)
-	}
-	
-	enum class Compression(val id: Int) {
+	enum class Compression(private val id: Int) {
 		
 		NONE(0), GZIP(1), ZLIB(2);
 		
-		companion object {
+		operator fun component1() = id
+		
+		companion object: LinkedHashMap<Int, Compression>() {
 			
-			private val compressionByIndex = values().map { it.id to it }.toMap()
+			init {
+				putAll(values().associateBy { (id) -> id })
+			}
 			
-			operator fun get(id: Int) =
-				compressionByIndex[id] ?: throw IllegalArgumentException("No compression method with id $id")
+			override fun get(id: Int) = super.get(id) ?: throw IllegalArgumentException("No compression method with id $id")
 		}
 	}
 }

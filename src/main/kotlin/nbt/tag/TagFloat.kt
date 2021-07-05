@@ -1,7 +1,6 @@
-package io.github.mrpng.nbt.implementation
+package br.com.luizrcs.nbt.tag
 
-import io.github.mrpng.nbt.*
-import io.github.mrpng.nbt.TagType.*
+import br.com.luizrcs.nbt.tag.TagType.*
 import java.nio.*
 
 class TagFloat private constructor(name: String? = null): Tag<Float>(TAG_FLOAT, name) {

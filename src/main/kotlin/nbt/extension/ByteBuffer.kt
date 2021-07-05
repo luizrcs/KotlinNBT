@@ -1,4 +1,4 @@
-package io.github.mrpng.nbt.extension
+package br.com.luizrcs.nbt.extension
 
 import java.nio.*
 
