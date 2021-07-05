@@ -18,7 +18,7 @@ dependencies {
 }
 
 val compileKotlinOptions: KotlinJvmOptions.() -> Unit = {
-	jvmTarget = "1.8"
+	jvmTarget = "16"
 	languageVersion = "1.5.10"
 	
 	suppressWarnings = true
