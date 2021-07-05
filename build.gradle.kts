@@ -1,8 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.*
 
 plugins {
-	java
-	kotlin("jvm") version "1.5.10"
+	`kotlin-jvm`
 }
 
 group = "io.github.mrpng"
@@ -19,8 +18,6 @@ dependencies {
 
 val compileKotlinOptions: KotlinJvmOptions.() -> Unit = {
 	jvmTarget = "1.8"
-	languageVersion = "1.5.10"
-	
 	suppressWarnings = true
 }
 
