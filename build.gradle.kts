@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.*
-
 plugins {
 	java
 	kotlin("jvm") version "1.5.10"
@@ -10,24 +8,15 @@ version = "1.0.0"
 
 repositories {
 	mavenCentral()
-	mavenLocal()
+	maven("https://jitpack.io")
 }
 
 dependencies {
-	implementation(kotlin("stdlib", kotlinVersion))
+	implementation(kotlin("stdlib"))
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
-val compileKotlinOptions: KotlinJvmOptions.() -> Unit = {
-	jvmTarget = "16"
-	languageVersion = "1.5.10"
-	
-	suppressWarnings = true
-}
-
-tasks.compileKotlin {
-	kotlinOptions(compileKotlinOptions)
-}
-
-tasks.compileTestKotlin {
-	kotlinOptions(compileKotlinOptions)
+tasks.getByName<Test>("test") {
+	useJUnitPlatform()
 }
