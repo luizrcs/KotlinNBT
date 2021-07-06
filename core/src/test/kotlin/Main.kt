@@ -33,10 +33,15 @@ fun main() {
 	val file = File("test.nbt")
 	NbtIO.write(nbt, file, GZIP)
 	
-	val bytes = GZIPInputStream(FileInputStream(file)).readBytes()
+	val nanoTime: Long
+	
+	val bytes = GZIPInputStream(FileInputStream(file)).use(InputStream::readBytes)
 	val readNbt: TagAny
-	val nanoTime = measureNanoTime { readNbt = NbtIO.read(ByteArrayInputStream(bytes).buffered()) }
+	nanoTime = measureNanoTime { readNbt = NbtIO.read(ByteArrayInputStream(bytes).buffered()) }
 	println(readNbt)
 	println()
+	
 	println(nanoTime.toString() + "ns")
+	
+	file.delete()
 }

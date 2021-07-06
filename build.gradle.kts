@@ -1,32 +1,24 @@
-import org.jetbrains.kotlin.gradle.dsl.*
-
 plugins {
-	`kotlin-jvm`
-	// maven
+	kotlin("jvm") version Versions.kotlin apply false
 }
 
-group = "br.com.luizrcs"
-version = "2.0.0"
-
-repositories {
-	mavenCentral()
-	mavenLocal()
-}
-
-dependencies {
-	kotlin("stdlib-jdk8", kotlinVersion)
-}
-
-val compileKotlinOptions: KotlinJvmOptions.() -> Unit = {
-	jvmTarget = "1.8"
-	suppressWarnings = true
-	freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-}
-
-tasks.compileKotlin {
-	kotlinOptions(compileKotlinOptions)
-}
-
-tasks.compileTestKotlin {
-	kotlinOptions(compileKotlinOptions)
+subprojects {
+	group = "br.com.luizrcs"
+	
+	repositories {
+		mavenCentral()
+		mavenLocal()
+	}
+	
+	dependencies {
+		kotlin("stdlib-jdk8", Versions.kotlin)
+	}
+	
+	tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+		kotlinOptions {
+			jvmTarget = "1.8"
+			suppressWarnings = true
+			freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+		}
+	}
 }

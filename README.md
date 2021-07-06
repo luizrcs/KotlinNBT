@@ -15,52 +15,7 @@ additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg][WikiVG]).
 
 ## Installation
 
-Maven:
-
-```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
-
-```xml
-<dependency>
-    <groupId>com.github.luizrcs</groupId>
-    <artifactId>KotlinNBT</artifactId>
-    <version>Tag</version>
-</dependency>
-```
-
-Gradle Groovy:
-
-```groovy
-repositories {
-    maven { url 'https://jitpack.io' }
-}
-```
-
-```groovy
-dependencies {
-    implementation 'com.github.luizrcs:KotlinNBT:1.0.0'
-}
-```
-
-Gradle Kotlin:
-
-```kotlin
-repositories {
-    maven("https://jitpack.io")
-}
-```
-
-```kotlin
-dependencies {
-    implementation("com.github.luizrcs:KotlinNBT:1.0.0")
-}
-```
+*WIP*
 
 ## Usage
 
