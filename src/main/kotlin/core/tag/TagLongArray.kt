@@ -1,6 +1,6 @@
-package br.com.luizrcs.nbt.tag
+package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.tag.TagType.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
 class TagLongArray private constructor(name: String? = null): Tag<LongArray>(TAG_LONG_ARRAY, name) {

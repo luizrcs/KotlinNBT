@@ -1,9 +1,9 @@
-package br.com.luizrcs.nbt.io
+package br.com.luizrcs.nbt.core.io
 
-import br.com.luizrcs.nbt.extension.*
-import br.com.luizrcs.nbt.io.NbtIO.Compression.*
-import br.com.luizrcs.nbt.tag.*
-import br.com.luizrcs.nbt.tag.TagType.*
+import br.com.luizrcs.nbt.core.extension.*
+import br.com.luizrcs.nbt.core.io.NbtIO.Compression.*
+import br.com.luizrcs.nbt.core.tag.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.io.*
 import java.nio.*
 import java.util.zip.*

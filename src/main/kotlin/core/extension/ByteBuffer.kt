@@ -1,4 +1,4 @@
-package br.com.luizrcs.nbt.extension
+package br.com.luizrcs.nbt.core.extension
 
 import java.nio.*
 

@@ -1,6 +1,6 @@
-package br.com.luizrcs.nbt.tag
+package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.tag.TagType.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
 class TagDouble private constructor(name: String? = null): Tag<Double>(TAG_DOUBLE, name) {

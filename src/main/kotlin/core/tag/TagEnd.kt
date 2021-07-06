@@ -1,6 +1,6 @@
-package br.com.luizrcs.nbt.tag
+package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.tag.TagType.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
 object TagEnd: Tag<Nothing>(TAG_END, null) {

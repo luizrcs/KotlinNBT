@@ -1,7 +1,7 @@
-package br.com.luizrcs.nbt.api
+package br.com.luizrcs.nbt.core.api
 
-import br.com.luizrcs.nbt.tag.*
-import br.com.luizrcs.nbt.tag.TagType.*
+import br.com.luizrcs.nbt.core.tag.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
 
 @DslMarker
 annotation class NbtBuilder

@@ -1,6 +1,6 @@
-package br.com.luizrcs.nbt.tag
+package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.tag.TagType.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
 class TagByteArray private constructor(name: String? = null): Tag<ByteArray>(TAG_BYTE_ARRAY, name) {

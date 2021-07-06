@@ -1,7 +1,7 @@
-package br.com.luizrcs.nbt.tag
+package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.extension.*
-import br.com.luizrcs.nbt.tag.TagType.*
+import br.com.luizrcs.nbt.core.extension.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
 class TagByte private constructor(name: String? = null): Tag<Byte>(TAG_BYTE, name) {

@@ -1,8 +1,9 @@
-import br.com.luizrcs.nbt.api.*
-import br.com.luizrcs.nbt.io.*
-import br.com.luizrcs.nbt.io.NbtIO.Compression.*
-import br.com.luizrcs.nbt.tag.*
+import br.com.luizrcs.nbt.core.api.*
+import br.com.luizrcs.nbt.core.io.*
+import br.com.luizrcs.nbt.core.io.NbtIO.Compression.*
+import br.com.luizrcs.nbt.core.tag.*
 import java.io.*
+import java.util.zip.*
 import kotlin.system.*
 
 fun main() {
@@ -27,10 +28,15 @@ fun main() {
 	println(fibonacci.toList())
 	println(message)
 	println(timestamp)
+	println()
 	
-	println(measureNanoTime { NbtIO.write(nbt, File("test.nbt"), GZIP) })
+	val file = File("test.nbt")
+	NbtIO.write(nbt, file, GZIP)
 	
-	val readNbt: TagCompound
-	println(measureNanoTime { readNbt = NbtIO.read(File("test.nbt"), GZIP) })
+	val bytes = GZIPInputStream(FileInputStream(file)).readBytes()
+	val readNbt: TagAny
+	val nanoTime = measureNanoTime { readNbt = NbtIO.read(ByteArrayInputStream(bytes).buffered()) }
 	println(readNbt)
+	println()
+	println(nanoTime.toString() + "ns")
 }
