@@ -44,7 +44,7 @@ class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_
 	
 	override fun clone(name: String?) = TagList(elementsType, value.map { it.clone(null) }, false, name)
 	
-	override fun prefix() = "${if (name.isNullOrEmpty()) "" else "$name: "}$type<$_elementsType> = "
+	override fun prefix() = "${if (name.isNullOrEmpty()) "" else "${if (name.matches(nameRegex)) name else "`$name`"}: "}$type<$_elementsType> = "
 	
 	override fun toString() = buildString {
 		append("${prefix()}[")
