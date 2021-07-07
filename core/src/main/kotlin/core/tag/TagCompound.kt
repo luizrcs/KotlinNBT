@@ -3,6 +3,8 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.extension.*
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
+import java.util.*
+import kotlin.Comparator
 
 typealias CompoundMap = Map<String, TagAny>
 
@@ -43,17 +45,17 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 	
 	override fun write(byteBuffer: ByteBuffer) {
 		_value.entries.forEach { (name, tag) ->
-			byteBuffer.put(tag.type.id.toByte())
+			byteBuffer.put(tag.type.id)
 			byteBuffer.putString(name)
 			
 			tag.write(byteBuffer)
 		}
 		
-		byteBuffer.put(TAG_END.id.toByte())
+		byteBuffer.put(TAG_END.id)
 	}
 	
 	internal fun writeRoot(byteBuffer: ByteBuffer) {
-		byteBuffer.put(TAG_COMPOUND.id.toByte())
+		byteBuffer.put(TAG_COMPOUND.id)
 		byteBuffer.putString(name ?: "")
 		
 		write(byteBuffer)
@@ -89,7 +91,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 			val type1 = tag1.type
 			val type2 = tag2.type
 			
-			fun compareNames() = name1.toLowerCase().compareTo(name2.toLowerCase())
+			fun compareNames() = name1.lowercase().compareTo(name2.lowercase())
 			
 			when {
 				type1 == TAG_COMPOUND -> if (type2 == TAG_COMPOUND) compareNames() else -1

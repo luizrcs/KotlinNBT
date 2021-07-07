@@ -1,4 +1,4 @@
-object Versions {
+object ModuleVersions {
 	const val kotlinxCli = "0.3.2"
 }
 
@@ -17,7 +17,7 @@ application.mainClass.set("$group.nbt.cli.MainKt")
 dependencies {
 	implementation(project(":core"))
 	
-	kotlinx("cli", Versions.kotlinxCli)
+	kotlinx("cli", ModuleVersions.kotlinxCli)
 }
 
 tasks.shadowJar {

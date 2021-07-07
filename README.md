@@ -6,9 +6,11 @@
 
 # KotlinNBT
 
-Type-safe Named Binary Tags (NBT) implementation in Kotlin for the JVM for reading and writing files/streams with a simple and concise builder API.
+Type-safe Named Binary Tags (NBT) implementation in Kotlin for the JVM for reading and writing files/streams with a
+simple and concise builder API.
 
-This project is based on the original NBT specification by Notch ([Wayback Machine][WebArchive]) with the most recent additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg][WikiVG]).
+This project is based on the original NBT specification by Notch ([Wayback Machine][WebArchive]) with the most recent
+additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg][WikiVG]).
 
 ## Installation
 
@@ -16,7 +18,8 @@ This project is based on the original NBT specification by Notch ([Wayback Machi
 
 ## Usage
 
-The object `NbtIO` is used similarly to `javax.imageio.ImageIO` to read/write a NBT `TagCompound`. The available compression methods are: `GZIP`, `ZLIB` and `NONE` (no compression).
+The object `NbtIO` is used similarly to `javax.imageio.ImageIO` to read/write a NBT `TagCompound`. The available
+compression methods are: `GZIP`, `ZLIB` and `NONE` (no compression).
 
 ### Reading from file
 
@@ -72,7 +75,8 @@ root: Compound = {
 }
 ```
 
-**Important:** according to the NBT specification, the order of the displayed/read tags is not guaranteed. KotlinNBT prints a `TagCompound` using a schema based on the way [NBTExplorer][NBTExplorer] does it.
+**Important:** according to the NBT specification, the order of the displayed/read tags is not guaranteed. KotlinNBT
+prints a `TagCompound` using a schema based on the way [NBTExplorer][NBTExplorer] does it.
 
 ### Type safety
 
@@ -96,7 +100,8 @@ I'm the first String :)
 1591470914831
 ```
 
-To check the tag types before accessing them (whether they exist or not), properties `isTagX` can be used, where `X` is a tag type:
+To check the tag types before accessing them (whether they exist or not), properties `isTagX` can be used, where `X` is
+a tag type:
 
 ```kotlin
 println(nbt["testCompound"].isTagCompound)
@@ -114,7 +119,8 @@ false
 
 ### Cloning tags
 
-The provided `Tag<T>.clone()` functions deep copy the tag (that is, the tag itself and its children are cloned recursively) while keeping the type safety:
+The provided `Tag<T>.clone()` functions deep copy the tag (that is, the tag itself and its children are cloned
+recursively) while keeping the type safety:
 
 ```kotlin
 nbt.clone() // to keep the same name, "root"
@@ -126,7 +132,8 @@ nbt["testList"]?.clone("actualList")
 
 KotlinNBT is free and open-source for everyone to enjoy.
 
-If you wish to support the continuous development of this and other projects, you can [donate][Donation]! Of course, I'm always providing support for anyone independently on the donations.
+If you wish to support the continuous development of this and other projects, you can [donate][Donation]! Of course, I'm
+always providing support for anyone independently on the donations.
 
 Everyone loves open-source <3
 

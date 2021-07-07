@@ -35,7 +35,7 @@ class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_
 	}
 	
 	override fun write(byteBuffer: ByteBuffer) {
-		byteBuffer.put(_elementsType.id.toByte())
+		byteBuffer.put(_elementsType.id)
 		byteBuffer.putInt(_value.size)
 		
 		_value.forEach { it.write(byteBuffer) }
