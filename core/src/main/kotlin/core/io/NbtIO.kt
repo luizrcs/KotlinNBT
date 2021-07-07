@@ -51,7 +51,7 @@ object NbtIO {
 		
 		operator fun component1() = id
 		
-		companion object: LinkedHashMap<Int, Compression>() {
+		companion object : LinkedHashMap<Int, Compression>() {
 			
 			init {
 				putAll(values().associateBy { (id) -> id })

@@ -3,7 +3,7 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-object TagEnd: Tag<Nothing>(TAG_END, null) {
+object TagEnd : Tag<Nothing>(TAG_END, null) {
 	
 	override val sizeInBytes = 0
 	

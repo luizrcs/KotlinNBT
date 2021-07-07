@@ -54,7 +54,7 @@ val TagAny?.longArray get() = tagLongArray._value
  * @param type the type of this tag.
  * @param name this tag's name, if inside a [TagCompound].
  */
-sealed class Tag<T: Any>(val type: TagType, val name: String?) {
+sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	
 	/**
 	 * Backing mutable property for this tag's [value].
@@ -82,7 +82,7 @@ sealed class Tag<T: Any>(val type: TagType, val name: String?) {
 	 * before calling this function.
 	 * @throws IllegalStateException thrown if trying to cast to an incorrect type.
 	 */
-	inline fun <reified T: TagAny?> getAs() = this as? T ?: throw IllegalStateException("Tag is not a ${T::class.simpleName}")
+	inline fun <reified T : TagAny?> getAs() = this as? T ?: throw IllegalStateException("Tag is not a ${T::class.simpleName}")
 	
 	/**
 	 * Reads this tag from a [ByteBuffer] to [_value] with appropriate type.
@@ -124,13 +124,15 @@ sealed class Tag<T: Any>(val type: TagType, val name: String?) {
 	 */
 	internal fun ensureName(name: String?) = if (this.name == name) this else clone(name)
 	
+	private val nameRegex = """^[a-zA-Z_][a-zA-Z0-9_]*$""".toRegex()
+	
 	/**
 	 * Prefix of this tag's value when calling [toString].
 	 * Should always contain the tag type.
 	 *
 	 * @return the prefix for use in [toString]
 	 */
-	open fun prefix() = "${if (name.isNullOrEmpty()) "" else "$name: "}$type = "
+	open fun prefix() = "${if (name.isNullOrEmpty()) "" else "${if (name.matches(nameRegex)) name else "`$name`"}: "}$type = "
 	
 	/**
 	 * Only the portion of [toString] containing this tag's value, formatted according to its type.
@@ -210,7 +212,7 @@ enum class TagType(val id: Byte, private val string: String) {
 	
 	override fun toString() = string
 	
-	companion object: LinkedHashMap<Byte, TagType>() {
+	companion object : LinkedHashMap<Byte, TagType>() {
 		
 		init {
 			putAll(values().associateBy { (id) -> id })

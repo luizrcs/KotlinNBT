@@ -3,15 +3,15 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagLongArray private constructor(name: String? = null): Tag<LongArray>(TAG_LONG_ARRAY, name) {
+class TagLongArray private constructor(name: String? = null) : Tag<LongArray>(TAG_LONG_ARRAY, name) {
 	
 	override val sizeInBytes get() = Int.SIZE_BYTES + _value.size * Long.SIZE_BYTES
 	
-	constructor(value: LongArray, name: String? = null): this(name) {
+	constructor(value: LongArray, name: String? = null) : this(name) {
 		_value = value
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null) : this(name) {
 		read(byteBuffer)
 	}
 	

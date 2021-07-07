@@ -4,7 +4,7 @@ import br.com.luizrcs.nbt.core.extension.*
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagList private constructor(name: String? = null): Tag<List<TagAny>>(TAG_LIST, name) {
+class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_LIST, name) {
 	
 	override val sizeInBytes get() = Byte.SIZE_BYTES + Int.SIZE_BYTES + _value.sumOf { it.sizeInBytes }
 	
@@ -13,14 +13,14 @@ class TagList private constructor(name: String? = null): Tag<List<TagAny>>(TAG_L
 	
 	operator fun get(index: Int) = _value[index]
 	
-	constructor(elementsType: TagType, value: List<TagAny>, check: Boolean = true, name: String? = null): this(name) {
+	constructor(elementsType: TagType, value: List<TagAny>, check: Boolean = true, name: String? = null) : this(name) {
 		require(!check || check(elementsType, value)) { "TagList elements must be of a single type" }
 		
 		_elementsType = elementsType
 		_value = value.map { tag -> tag.ensureName(null) }.toList()
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null) : this(name) {
 		read(byteBuffer)
 	}
 	

@@ -3,15 +3,15 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagDouble private constructor(name: String? = null): Tag<Double>(TAG_DOUBLE, name) {
+class TagDouble private constructor(name: String? = null) : Tag<Double>(TAG_DOUBLE, name) {
 	
 	override val sizeInBytes = Long.SIZE_BYTES
 	
-	constructor(value: Double, name: String? = null): this(name) {
+	constructor(value: Double, name: String? = null) : this(name) {
 		_value = value
 	}
 	
-	constructor(byteBuffer: ByteBuffer, name: String? = null): this(name) {
+	constructor(byteBuffer: ByteBuffer, name: String? = null) : this(name) {
 		read(byteBuffer)
 	}
 	

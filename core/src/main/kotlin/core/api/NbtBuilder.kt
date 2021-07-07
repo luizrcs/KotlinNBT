@@ -41,7 +41,7 @@ open class TagCompoundBuilder(private val name: String?, entries: CompoundMap) {
 	
 	open fun build() = TagCompound(entries, name)
 	
-	inner class TagCompoundEntry<T: Any> internal constructor(private val factory: (T, String) -> TagAny) {
+	inner class TagCompoundEntry<T : Any> internal constructor(private val factory: (T, String) -> TagAny) {
 		
 		operator fun set(name: String, value: T) {
 			entries[name] = factory(value, name)
