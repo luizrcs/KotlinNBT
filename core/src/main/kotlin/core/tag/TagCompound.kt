@@ -4,8 +4,6 @@ import br.com.luizrcs.nbt.core.extension.*
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import kotlinx.collections.immutable.*
 import java.nio.*
-import java.util.*
-import kotlin.Comparator
 
 typealias CompoundMap = Map<String, TagAny>
 

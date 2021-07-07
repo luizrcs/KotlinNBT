@@ -125,7 +125,7 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 */
 	internal fun ensureName(name: String?) = if (this.name == name) this else clone(name)
 	
-	private val nameRegex = """^[a-zA-Z_][a-zA-Z0-9_]*$""".toRegex()
+	internal val nameRegex = """[a-zA-Z][a-zA-Z0-9_]*""".toRegex()
 	
 	/**
 	 * Prefix of this tag's value when calling [toString].
@@ -133,8 +133,7 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 *
 	 * @return the prefix for use in [toString]
 	 */
-	open fun prefix() =
-		"${if (name.isNullOrEmpty()) "" else "${if (name.matches(nameRegex)) name else "`$name`"}: "}$type = "
+	open fun prefix() = "${if (name.isNullOrEmpty()) "" else "${if (name.matches(nameRegex)) name else "`$name`"}: "}$type = "
 	
 	/**
 	 * Only the portion of [toString] containing this tag's value, formatted according to its type.
