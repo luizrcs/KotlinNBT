@@ -2,6 +2,7 @@ package br.com.luizrcs.nbt.core.tag
 
 import br.com.luizrcs.nbt.core.extension.*
 import br.com.luizrcs.nbt.core.tag.TagType.*
+import kotlinx.collections.immutable.*
 import java.nio.*
 
 class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_LIST, name) {
@@ -14,10 +15,10 @@ class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_
 	operator fun get(index: Int) = _value[index]
 	
 	constructor(elementsType: TagType, value: List<TagAny>, check: Boolean = true, name: String? = null) : this(name) {
-		require(!check || check(elementsType, value)) { "TagList elements must be of a single type" }
+		require(!check || check(elementsType, value)) { "TagList elements must be of the same type" }
 		
 		_elementsType = elementsType
-		_value = value.map { tag -> tag.ensureName(null) }.toList()
+		_value = value.map { tag -> tag.ensureName(null) }.toList().toImmutableList()
 	}
 	
 	constructor(byteBuffer: ByteBuffer, name: String? = null) : this(name) {
@@ -31,7 +32,7 @@ class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_
 		val size = byteBuffer.int
 		
 		_elementsType = TagType[elementsId]
-		_value = List(size) { read(_elementsType, byteBuffer) }
+		_value = List(size) { read(_elementsType, byteBuffer) }.toImmutableList()
 	}
 	
 	override fun write(byteBuffer: ByteBuffer) {

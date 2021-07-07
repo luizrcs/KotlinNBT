@@ -2,6 +2,7 @@ package br.com.luizrcs.nbt.core.tag
 
 import br.com.luizrcs.nbt.core.extension.*
 import br.com.luizrcs.nbt.core.tag.TagType.*
+import kotlinx.collections.immutable.*
 import java.nio.*
 import java.util.*
 import kotlin.Comparator
@@ -16,7 +17,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 		} + Byte.SIZE_BYTES
 	
 	constructor(value: CompoundMap, name: String? = null) : this(name) {
-		_value = value.map { (name, tag) -> name to tag.ensureName(name) }.toMap()
+		_value = value.map { (name, tag) -> name to tag.ensureName(name) }.toMap().toImmutableMap()
 	}
 	
 	constructor(byteBuffer: ByteBuffer, name: String? = null) : this(name) {
@@ -40,7 +41,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 			value[nextName] = nextTag
 		} while (true)
 		
-		_value = value
+		_value = value.toImmutableMap()
 	}
 	
 	override fun write(byteBuffer: ByteBuffer) {
@@ -64,15 +65,15 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 	override fun clone(name: String?): Tag<CompoundMap> = clone(name, true)
 	
 	override fun clone(name: String?, deep: Boolean): Tag<CompoundMap> =
-		TagCompound(value.entries.associate { (name, tag) -> name to if (deep) tag.clone(name, deep) else tag }, name)
+		TagCompound(_value.entries.associate { (name, tag) -> name to if (deep) tag.clone(name, deep) else tag }, name)
 	
 	override fun toString() = buildString {
 		append("${prefix()}{")
 		
-		if (value.isNotEmpty()) {
+		if (_value.isNotEmpty()) {
 			appendLine().tab()
 			appendLine(
-				value.entries.sortedWith(nbtComparator).joinToString(",\n\t") { (_, nextTag) ->
+				_value.entries.sortedWith(nbtComparator).joinToString(",\n\t") { (_, nextTag) ->
 					when (nextTag.type) {
 						TAG_COMPOUND, TAG_LIST -> nextTag.toString().replace("\n", "\n\t")
 						else                   -> nextTag.toString()

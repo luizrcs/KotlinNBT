@@ -57,7 +57,8 @@ object NbtIO {
 				putAll(values().associateBy { (id) -> id })
 			}
 			
-			override fun get(id: Int) = super.get(id) ?: throw IllegalArgumentException("No compression method with id $id")
+			override fun get(key: Int) = super.get(key)
+				?: throw IllegalArgumentException("No compression method with id $key")
 		}
 	}
 }
