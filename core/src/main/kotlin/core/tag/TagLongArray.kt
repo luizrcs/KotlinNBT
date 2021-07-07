@@ -5,6 +5,8 @@ import java.nio.*
 
 class TagLongArray private constructor(name: String? = null) : Tag<LongArray>(TAG_LONG_ARRAY, name) {
 	
+	override val value get() = _value.copyOf()
+	
 	override val sizeInBytes get() = Int.SIZE_BYTES + _value.size * Long.SIZE_BYTES
 	
 	constructor(value: LongArray, name: String? = null) : this(name) {

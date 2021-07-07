@@ -5,6 +5,8 @@ import java.nio.*
 
 class TagByteArray private constructor(name: String? = null) : Tag<ByteArray>(TAG_BYTE_ARRAY, name) {
 	
+	override val value get() = _value.copyOf()
+	
 	override val sizeInBytes get() = Int.SIZE_BYTES + _value.size
 	
 	constructor(value: ByteArray, name: String? = null) : this(name) {

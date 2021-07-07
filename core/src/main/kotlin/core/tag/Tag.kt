@@ -33,18 +33,18 @@ val TagAny?.tagCompound get() = this!!.getAs<TagCompound>()
 val TagAny?.tagIntArray get() = this!!.getAs<TagIntArray>()
 val TagAny?.tagLongArray get() = this!!.getAs<TagLongArray>()
 
-val TagAny?.byte get() = tagByte._value
-val TagAny?.short get() = tagShort._value
-val TagAny?.int get() = tagInt._value
-val TagAny?.long get() = tagLong._value
-val TagAny?.float get() = tagFloat._value
-val TagAny?.double get() = tagDouble._value
-val TagAny?.byteArray get() = tagByteArray._value
-val TagAny?.string get() = tagString._value
-val TagAny?.list get() = tagList._value
-val TagAny?.compound get() = tagCompound._value
-val TagAny?.intArray get() = tagIntArray._value
-val TagAny?.longArray get() = tagLongArray._value
+val TagAny?.byte get() = tagByte.value
+val TagAny?.short get() = tagShort.value
+val TagAny?.int get() = tagInt.value
+val TagAny?.long get() = tagLong.value
+val TagAny?.float get() = tagFloat.value
+val TagAny?.double get() = tagDouble.value
+val TagAny?.byteArray get() = tagByteArray.value
+val TagAny?.string get() = tagString.value
+val TagAny?.list get() = tagList.value
+val TagAny?.compound get() = tagCompound.value
+val TagAny?.intArray get() = tagIntArray.value
+val TagAny?.longArray get() = tagLongArray.value
 
 /**
  * Creates a [Tag] with the specified type [T] and, if appropriate in regards to the NBT specs,
@@ -57,14 +57,14 @@ val TagAny?.longArray get() = tagLongArray._value
 sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	
 	/**
-	 * Backing mutable property for this tag's [value].
+	 * Backing mutable property for this tag's [value]. Should never be used externally.
 	 */
-	@PublishedApi internal lateinit var _value: T
+	internal lateinit var _value: T
 	
 	/**
-	 * Accessible tag value, already correctly typed and "immutable".
+	 * Accessible tag value, already correctly typed and safe from mutability.
 	 */
-	val value: T get() = _value
+	open val value: T get() = _value
 	
 	/**
 	 * Used to calculate this tag (and its children, if applicable) size in bytes, not considering
@@ -82,7 +82,8 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 * before calling this function.
 	 * @throws IllegalStateException thrown if trying to cast to an incorrect type.
 	 */
-	inline fun <reified T : TagAny?> getAs() = this as? T ?: throw IllegalStateException("Tag is not a ${T::class.simpleName}")
+	inline fun <reified T : TagAny?> getAs() =
+		this as? T ?: throw IllegalStateException("Tag is not a ${T::class.simpleName}")
 	
 	/**
 	 * Reads this tag from a [ByteBuffer] to [_value] with appropriate type.
@@ -132,7 +133,8 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 *
 	 * @return the prefix for use in [toString]
 	 */
-	open fun prefix() = "${if (name.isNullOrEmpty()) "" else "${if (name.matches(nameRegex)) name else "`$name`"}: "}$type = "
+	open fun prefix() =
+		"${if (name.isNullOrEmpty()) "" else "${if (name.matches(nameRegex)) name else "`$name`"}: "}$type = "
 	
 	/**
 	 * Only the portion of [toString] containing this tag's value, formatted according to its type.
@@ -218,6 +220,6 @@ enum class TagType(val id: Byte, private val string: String) {
 			putAll(values().associateBy { (id) -> id })
 		}
 		
-		override fun get(id: Byte) = super.get(id) ?: throw IllegalArgumentException("Invalid tag id $id")
+		override fun get(key: Byte) = super.get(key) ?: throw IllegalArgumentException("Invalid tag id $key")
 	}
 }
