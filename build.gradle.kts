@@ -3,7 +3,7 @@ plugins {
 }
 
 subprojects {
-	group = "br.com.luizrcs"
+	group = "br.com.luizrcs.nbt"
 	
 	repositories {
 		mavenCentral()
