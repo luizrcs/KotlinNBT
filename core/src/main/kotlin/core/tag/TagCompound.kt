@@ -6,6 +6,8 @@ import kotlinx.collections.immutable.*
 import java.nio.*
 
 typealias CompoundMap = Map<String, TagAny>
+typealias CompoundEntry = Map.Entry<String, TagAny>
+typealias MutableCompoundMap = LinkedHashMap<String, TagAny>
 
 open class TagCompound protected constructor(name: String? = null) : Tag<CompoundMap>(TAG_COMPOUND, name) {
 	
@@ -25,7 +27,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 	operator fun get(name: String) = _value[name]
 	
 	final override fun read(byteBuffer: ByteBuffer) {
-		val value = mutableMapOf<String, TagAny>()
+		val value = MutableCompoundMap()
 		
 		var nextId: Byte
 		do {
@@ -86,7 +88,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 	companion object {
 		
 		/** Custom [Comparator] for NBT entries in a [TagCompound], inspired by NBTExplorer. */
-		val nbtComparator = Comparator<Map.Entry<String, TagAny>> { (name1, tag1), (name2, tag2) ->
+		val nbtComparator = Comparator<CompoundEntry> { (name1, tag1), (name2, tag2) ->
 			val type1 = tag1.type
 			val type2 = tag2.type
 			

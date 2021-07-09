@@ -16,7 +16,7 @@ inline fun nbt(
 @NbtBuilder
 open class TagCompoundBuilder(private val name: String?, entries: CompoundMap) {
 	
-	@PublishedApi internal val entries = mutableMapOf<String, TagAny>().apply { putAll(entries) }
+	@PublishedApi internal val entries = MutableCompoundMap().apply { putAll(entries) }
 	
 	@NbtBuilder val byte = TagCompoundEntry<Byte> { value, name -> TagByte(value, name) }
 	@NbtBuilder val short = TagCompoundEntry<Short> { value, name -> TagShort(value, name) }
