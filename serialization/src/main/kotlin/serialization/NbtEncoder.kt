@@ -12,24 +12,15 @@ import kotlinx.serialization.descriptors.StructureKind.*
 import kotlinx.serialization.internal.*
 import kotlinx.serialization.modules.*
 
-fun <T> encodeToNbt(serializer: SerializationStrategy<T>, value: T): TagAny {
-	lateinit var tag: TagAny
-	val encoder = NbtEncoder { tag = it }
-	encoder.encodeSerializableValue(serializer, value)
-	return tag
-}
-
-inline fun <reified T> encodeToNbt(value: T) = encodeToNbt(serializer(), value)
-
 open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEncoder() {
-	private val map = mutableMapOf<String, TagAny>()
+	private val compoundMap = MutableCompoundMap()
 	
 	override val serializersModule = EmptySerializersModule
 	
-	open fun getTag(): TagAny = TagCompound(map)
+	open fun currentTag(): TagAny = TagCompound(compoundMap)
 	
 	open fun putTag(key: String, tag: TagAny) {
-		map[key] = tag
+		compoundMap[key] = tag
 	}
 	
 	override fun encodeTaggedByte(tag: String, value: Byte) = putTag(tag, TagByte(value, tag))
@@ -55,7 +46,7 @@ open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEnc
 	}
 	
 	override fun endEncode(descriptor: SerialDescriptor) {
-		tagConsumer(getTag())
+		tagConsumer(currentTag())
 	}
 }
 
@@ -68,5 +59,5 @@ class ListNbtEncoder(tagConsumer: (TagAny) -> Unit) : NbtEncoder(tagConsumer) {
 		list.add(key.toInt(), tag)
 	}
 	
-	override fun getTag() = TagList(list.first().type, list)
+	override fun currentTag() = TagList(list.first().type, list)
 }
