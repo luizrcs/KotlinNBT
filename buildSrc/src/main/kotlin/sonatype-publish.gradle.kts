@@ -17,7 +17,6 @@ tasks.create<Jar>("sourcesJar") {
 publishing {
 	publications {
 		create<MavenPublication>(project.name) {
-			groupId = project.group.toString() + ".nbt"
 			artifactId = "nbt-" + project.name
 			
 			pom {
