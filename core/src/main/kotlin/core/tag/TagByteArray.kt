@@ -3,11 +3,13 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagByteArray private constructor(name: String? = null) : Tag<ByteArray>(TAG_BYTE_ARRAY, name) {
+class TagByteArray private constructor(name: String? = null) : TagArray<ByteArray, Byte>(TAG_BYTE_ARRAY, name) {
 	
 	override val value get() = _value.copyOf()
 	
 	override val sizeInBytes get() = Int.SIZE_BYTES + _value.size
+	
+	override val size get() = _value.size
 	
 	constructor(value: ByteArray, name: String? = null) : this(name) {
 		_value = value
@@ -16,6 +18,8 @@ class TagByteArray private constructor(name: String? = null) : Tag<ByteArray>(TA
 	constructor(byteBuffer: ByteBuffer, name: String? = null) : this(name) {
 		read(byteBuffer)
 	}
+	
+	override fun get(index: Int) = _value[index]
 	
 	override fun read(byteBuffer: ByteBuffer) {
 		val length = byteBuffer.int
