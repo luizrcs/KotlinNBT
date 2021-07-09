@@ -10,6 +10,14 @@ import java.util.zip.*
 
 object NbtIO {
 	
+	fun fromByteArray(byteArray: ByteArray) = read(ByteBuffer.wrap(byteArray))
+	
+	fun toByteArray(tag: TagAny) = if (tag is TagCompound) {
+		val tagCompoundSize = (tag.name?.toByteArray()?.size ?: 0) + tag.sizeInBytes
+		val byteBuffer = ByteBuffer.allocate(Byte.SIZE_BYTES + Short.SIZE_BYTES + tagCompoundSize)
+		byteBuffer.also { tag.writeRoot(it) }.array() as ByteArray
+	} else byteArrayOf()
+	
 	private fun read(byteBuffer: ByteBuffer): TagAny {
 		val id = byteBuffer.byte
 		val name = byteBuffer.string
@@ -17,33 +25,26 @@ object NbtIO {
 		return if (id == TAG_COMPOUND.id) TagCompound(byteBuffer, name) else Tag.read(id, byteBuffer)
 	}
 	
-	fun read(inputStream: BufferedInputStream, compression: Compression = NONE): TagAny {
-		val byteArray = when (compression) {
+	fun read(inputStream: InputStream, compression: Compression = NONE) = fromByteArray(
+		when (compression) {
 			NONE -> inputStream
 			GZIP -> GZIPInputStream(inputStream)
 			ZLIB -> InflaterInputStream(inputStream)
-		}.use(InputStream::readBytes)
-		
-		return read(ByteBuffer.wrap(byteArray))
-	}
+		}.buffered().use(InputStream::readBytes)
+	)
 	
-	fun read(file: File, compression: Compression = NONE) =
-		read(file.inputStream().buffered(), compression).tagCompound
+	fun read(file: File, compression: Compression = NONE) = read(file.inputStream(), compression).tagCompound
 	
-	fun write(tagCompound: TagCompound, outputStream: BufferedOutputStream, compression: Compression = NONE) {
-		val tagCompoundSize = (tagCompound.name?.toByteArray()?.size ?: 0) + tagCompound.sizeInBytes
-		val byteBuffer = ByteBuffer.allocate(Byte.SIZE_BYTES + Short.SIZE_BYTES + tagCompoundSize)
-		val byteArray = byteBuffer.also { tagCompound.writeRoot(it) }.array()
-		
+	fun write(tagCompound: TagCompound, outputStream: OutputStream, compression: Compression = NONE) {
 		when (compression) {
 			NONE -> outputStream
 			GZIP -> GZIPOutputStream(outputStream)
 			ZLIB -> DeflaterOutputStream(outputStream)
-		}.exhaustive.use { it.write(byteArray) }
+		}.exhaustive.buffered().use { it.write(toByteArray(tagCompound)) }
 	}
 	
 	fun write(tagCompound: TagCompound, file: File, compression: Compression = NONE) =
-		write(tagCompound, file.outputStream().buffered(), compression)
+		write(tagCompound, file.outputStream(), compression)
 	
 	enum class Compression(private val id: Int) {
 		
