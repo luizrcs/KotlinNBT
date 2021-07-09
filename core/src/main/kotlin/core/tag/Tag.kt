@@ -83,7 +83,7 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 * @throws IllegalStateException thrown if trying to cast to an incorrect type.
 	 */
 	inline fun <reified T : TagAny?> getAs() =
-		this as? T ?: throw IllegalStateException("Tag is not a ${T::class.simpleName}")
+		this as? T ?: throw IllegalStateException("Tag is not a ${T::class.java.simpleName}")
 	
 	/**
 	 * Reads this tag from a [ByteBuffer] to [_value] with appropriate type.
