@@ -15,4 +15,6 @@ dependencies {
 	implementation(project(":core"))
 	
 	kotlinx("serialization-core-jvm", ModuleVersions.kotlinxSerialization)
+	
+	testImplementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", ModuleVersions.kotlinxSerialization)
 }
