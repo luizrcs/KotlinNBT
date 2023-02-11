@@ -16,9 +16,11 @@ subprojects {
 	
 	tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 		kotlinOptions {
-			jvmTarget = "1.8"
+			apiVersion = "1.7"
+			languageVersion = "1.7"
+			
 			suppressWarnings = true
-			freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+			freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
 		}
 	}
 }

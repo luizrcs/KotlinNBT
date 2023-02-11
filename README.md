@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/luizrcs/KotlinNBT.svg?branch=master)](https://travis-ci.com/luizrcs/KotlinNBT)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.5.20-green)](https://kotlinlang.org/)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.5.21-green)](https://kotlinlang.org/)
 [![JitPack](https://jitpack.io/v/luizrcs/KotlinNBT.svg)](https://jitpack.io/#luizrcs/KotlinNBT)
 [![License: MIT](https://img.shields.io/github/license/luizrcs/KotlinNBT)](https://opensource.org/licenses/MIT)
 [![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/luizrcs)
@@ -43,17 +43,17 @@ NbtIO.write(someTagCompound, file, compression)
 
 ```kotlin
 val nbt = nbt("root") {
-	compound("testCompound") {
-		intArray["fibonacciWithoutZero"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
-	}
-	list["testList"] = listOf(
-		compound {
-			string["firstString"] = "I'm the first String :)"
-			string["secondString"] = "I'm the second String, but order is not guaranteed :/"
-			int["justAnInteger"] = 1
-		}
-	)
-	long["timestamp"] = System.currentTimeMillis()
+    compound["testCompound"] = {
+        intArray["fibonacciWithoutZero"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
+    }
+    list["testList"] = listOf(
+        {
+            string["firstString"] = "I'm the first String :)"
+            string["secondString"] = "I'm the second String, but order is not guaranteed :/"
+            int["justAnInteger"] = 1
+        }
+    )
+    long["timestamp"] = System.currentTimeMillis()
 }
 ```
 

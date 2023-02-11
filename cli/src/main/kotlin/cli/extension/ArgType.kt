@@ -1,6 +1,6 @@
 package br.com.luizrcs.nbt.cli.extension
 
-import kotlinx.cli.ArgType
+import kotlinx.cli.*
 import java.io.*
 
 object CustomArgType {

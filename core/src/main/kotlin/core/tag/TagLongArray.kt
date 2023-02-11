@@ -32,5 +32,5 @@ class TagLongArray private constructor(name: String? = null) : TagArray<LongArra
 	
 	override fun clone(name: String?) = TagLongArray(value, name)
 	
-	override fun valueToString() = "[${_value.joinToString("L, ")}L]"
+	override fun valueToString() = "[${_value.joinToString { "${it}L" }}]"
 }

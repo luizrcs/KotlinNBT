@@ -1,0 +1,13 @@
+*.iml
+.DS_Store/
+.externalNativeBuild/
+.gradle/
+.idea/
+build/
+captures/
+out/
+gradle.properties
+
+*.dat
+*.mca
+*.nbt

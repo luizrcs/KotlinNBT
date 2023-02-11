@@ -14,42 +14,41 @@ inline fun nbt(
 ) = TagCompoundBuilder(name, entries).apply(builder).build()
 
 @NbtBuilder
-open class TagCompoundBuilder(private val name: String?, entries: CompoundMap) {
+open class TagCompoundBuilder @PublishedApi internal constructor(private val name: String?, entries: CompoundMap = emptyMap()) {
 	
 	@PublishedApi internal val entries = MutableCompoundMap().apply { putAll(entries) }
 	
-	@NbtBuilder val byte = TagCompoundEntry<Byte> { value, name -> TagByte(value, name) }
-	@NbtBuilder val short = TagCompoundEntry<Short> { value, name -> TagShort(value, name) }
-	@NbtBuilder val int = TagCompoundEntry<Int> { value, name -> TagInt(value, name) }
-	@NbtBuilder val long = TagCompoundEntry<Long> { value, name -> TagLong(value, name) }
-	@NbtBuilder val float = TagCompoundEntry<Float> { value, name -> TagFloat(value, name) }
-	@NbtBuilder val double = TagCompoundEntry<Double> { value, name -> TagDouble(value, name) }
-	@NbtBuilder val byteArray = TagCompoundEntry<ByteArray> { value, name -> TagByteArray(value, name) }
-	@NbtBuilder val string = TagCompoundEntry<String> { value, name -> TagString(value, name) }
-	@NbtBuilder val list = TagCompoundListEntry()
-	@NbtBuilder val intArray = TagCompoundEntry<IntArray> { value, name -> TagIntArray(value, name) }
-	@NbtBuilder val longArray = TagCompoundEntry<LongArray> { value, name -> TagLongArray(value, name) }
+	@NbtBuilder val byte = TagCompoundEntryType(tagByteFactory)
+	@NbtBuilder val short = TagCompoundEntryType(tagShortFactory)
+	@NbtBuilder val int = TagCompoundEntryType(tagIntFactory)
+	@NbtBuilder val long = TagCompoundEntryType(tagLongFactory)
+	@NbtBuilder val float = TagCompoundEntryType(tagFloatFactory)
+	@NbtBuilder val double = TagCompoundEntryType(tagDoubleFactory)
+	@NbtBuilder val byteArray = TagCompoundEntryType(tagByteArrayFactory)
+	@NbtBuilder val string = TagCompoundEntryType(tagStringFactory)
+	@NbtBuilder val list = TagCompoundListEntryType()
+	@NbtBuilder val compound = TagCompoundEntryType(tagCompoundFactory)
+	@NbtBuilder val intArray = TagCompoundEntryType(tagIntArrayFactory)
+	@NbtBuilder val longArray = TagCompoundEntryType(tagLongArrayFactory)
 	
 	@NbtBuilder
-	inline fun compound(name: String, entries: CompoundMap = emptyMap(), builder: TagCompoundBuilder.() -> Unit) {
-		this.entries[name] = TagCompoundBuilder(name, entries).apply(builder).build()
-	}
-	
+	fun listOf(vararg tagCompounds: TagCompoundBuilder.() -> Unit) = tagCompounds.map { TagCompoundBuilder(null).apply(it).build() }
+
 	@NbtBuilder
-	inline fun compound(entries: CompoundMap = emptyMap(), builder: TagCompoundBuilder.() -> Unit) =
-		TagCompoundBuilder(null, entries).apply(builder).build()
+	inline fun compound(
+		entries: CompoundMap = emptyMap(),
+		builder: TagCompoundBuilder.() -> Unit
+	) = TagCompoundBuilder(null, entries).apply(builder).build()
 	
 	open fun build() = TagCompound(entries, name)
 	
-	inner class TagCompoundEntry<T : Any> internal constructor(private val factory: (T, String) -> TagAny) {
-		
+	inner class TagCompoundEntryType<T : Any> internal constructor(private val factory: (T, String) -> TagAny) {
 		operator fun set(name: String, value: T) {
 			entries[name] = factory(value, name)
 		}
 	}
 	
-	inner class TagCompoundListEntry {
-		
+	inner class TagCompoundListEntryType {
 		fun List<*>.toListOfByte() = map { TagByte(it as Byte) }
 		fun List<*>.toListOfShort() = map { TagShort(it as Short) }
 		fun List<*>.toListOfInt() = map { TagInt(it as Int) }
@@ -61,39 +60,54 @@ open class TagCompoundBuilder(private val name: String?, entries: CompoundMap) {
 		fun List<*>.toListOfIntArray() = map { TagIntArray(it as IntArray) }
 		fun List<*>.toListOfLongArray() = map { TagLongArray(it as LongArray) }
 		
+		@PublishedApi
+		internal fun <T : TagAny> List<*>.toListOf() = map { (it as TagAny).clone(null) } as List<T>
+		
 		fun set(name: String, value: TagList) {
 			entries[name] = value
 		}
 		
 		inline operator fun <reified T> set(name: String, value: List<T>) {
-			set(
-				name, when (val clazz = T::class.java) {
-					Byte::class.java         -> TagList(TAG_BYTE, value.toListOfByte(), false)
-					Short::class.java        -> TagList(TAG_SHORT, value.toListOfShort(), false)
-					Int::class.java          -> TagList(TAG_INT, value.toListOfInt(), false)
-					Long::class.java         -> TagList(TAG_LONG, value.toListOfLong(), false)
-					Float::class.java        -> TagList(TAG_FLOAT, value.toListOfFloat(), false)
-					Double::class.java       -> TagList(TAG_DOUBLE, value.toListOfDouble(), false)
-					ByteArray::class.java    -> TagList(TAG_BYTE_ARRAY, value.toListOfByteArray(), false)
-					String::class.java       -> TagList(TAG_STRING, value.toListOfString(), false)
-					IntArray::class.java     -> TagList(TAG_INT_ARRAY, value.toListOfIntArray(), false)
-					LongArray::class.java    -> TagList(TAG_LONG_ARRAY, value.toListOfLongArray(), false)
-					TagByte::class.java      -> TagList(TAG_BYTE, value as List<TagByte>, false)
-					TagShort::class.java     -> TagList(TAG_SHORT, value as List<TagShort>, false)
-					TagInt::class.java       -> TagList(TAG_INT, value as List<TagInt>, false)
-					TagLong::class.java      -> TagList(TAG_LONG, value as List<TagLong>, false)
-					TagFloat::class.java     -> TagList(TAG_FLOAT, value as List<TagFloat>, false)
-					TagDouble::class.java    -> TagList(TAG_DOUBLE, value as List<TagDouble>, false)
-					TagByteArray::class.java -> TagList(TAG_BYTE_ARRAY, value as List<TagByteArray>, false)
-					TagString::class.java    -> TagList(TAG_STRING, value as List<TagString>, false)
-					TagList::class.java      -> TagList(TAG_LIST, value as List<TagList>, false)
-					TagCompound::class.java  -> TagList(TAG_COMPOUND, value as List<TagCompound>, false)
-					TagIntArray::class.java  -> TagList(TAG_INT_ARRAY, value as List<TagIntArray>, false)
-					TagLongArray::class.java -> TagList(TAG_LONG_ARRAY, value as List<TagLongArray>, false)
-					Any::class.java          -> throw IllegalArgumentException("Mixed types are not supported for TagList")
-					else                     -> throw IllegalArgumentException("Unsupported type ${clazz.simpleName} for TagList")
-				}
-			)
+			entries[name] = when (val clazz = T::class) {
+				Byte::class         -> TagList(TAG_BYTE, value.toListOfByte(), false)
+				Short::class        -> TagList(TAG_SHORT, value.toListOfShort(), false)
+				Integer::class      -> TagList(TAG_INT, value.toListOfInt(), false)
+				Long::class         -> TagList(TAG_LONG, value.toListOfLong(), false)
+				Float::class        -> TagList(TAG_FLOAT, value.toListOfFloat(), false)
+				Double::class       -> TagList(TAG_DOUBLE, value.toListOfDouble(), false)
+				ByteArray::class    -> TagList(TAG_BYTE_ARRAY, value.toListOfByteArray(), false)
+				String::class       -> TagList(TAG_STRING, value.toListOfString(), false)
+				IntArray::class     -> TagList(TAG_INT_ARRAY, value.toListOfIntArray(), false)
+				LongArray::class    -> TagList(TAG_LONG_ARRAY, value.toListOfLongArray(), false)
+				TagByte::class      -> TagList(TAG_BYTE, value.toListOf<TagByte>(), false)
+				TagShort::class     -> TagList(TAG_SHORT, value.toListOf<TagShort>(), false)
+				TagInt::class       -> TagList(TAG_INT, value.toListOf<TagInt>(), false)
+				TagLong::class      -> TagList(TAG_LONG, value.toListOf<TagLong>(), false)
+				TagFloat::class     -> TagList(TAG_FLOAT, value.toListOf<TagFloat>(), false)
+				TagDouble::class    -> TagList(TAG_DOUBLE, value.toListOf<TagDouble>(), false)
+				TagByteArray::class -> TagList(TAG_BYTE_ARRAY, value.toListOf<TagByteArray>(), false)
+				TagString::class    -> TagList(TAG_STRING, value.toListOf<TagString>(), false)
+				TagList::class      -> TagList(TAG_LIST, value.toListOf<TagList>(), false)
+				TagCompound::class  -> TagList(TAG_COMPOUND, value.toListOf<TagCompound>(), false)
+				TagIntArray::class  -> TagList(TAG_INT_ARRAY, value.toListOf<TagIntArray>(), false)
+				TagLongArray::class -> TagList(TAG_LONG_ARRAY, value.toListOf<TagLongArray>(), false)
+				Any::class          -> throw IllegalArgumentException("Mixed types are not supported for TagList")
+				else                -> throw IllegalArgumentException("Unsupported type ${clazz.simpleName} for TagList")
+			}
 		}
+	}
+	
+	companion object {
+		val tagByteFactory = { value: Byte, name: String -> TagByte(value, name) }
+		val tagShortFactory = { value: Short, name: String -> TagShort(value, name) }
+		val tagIntFactory = { value: Int, name: String -> TagInt(value, name) }
+		val tagLongFactory = { value: Long, name: String -> TagLong(value, name) }
+		val tagFloatFactory = { value: Float, name: String -> TagFloat(value, name) }
+		val tagDoubleFactory = { value: Double, name: String -> TagDouble(value, name) }
+		val tagByteArrayFactory = { value: ByteArray, name: String -> TagByteArray(value, name) }
+		val tagStringFactory = { value: String, name: String -> TagString(value, name) }
+		val tagCompoundFactory = { value: TagCompoundBuilder.() -> Unit, name: String -> TagCompoundBuilder(name).apply(value).build() }
+		val tagIntArrayFactory = { value: IntArray, name: String -> TagIntArray(value, name) }
+		val tagLongArrayFactory = { value: LongArray, name: String -> TagLongArray(value, name) }
 	}
 }

@@ -18,7 +18,7 @@ class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_
 		require(!check || check(elementsType, value)) { "TagList elements must be of the same type" }
 		
 		_elementsType = elementsType
-		_value = value.map { tag -> tag.ensureName(null) }.toList().toImmutableList()
+		_value = value.map { tag -> tag.ensureName(null) }.toImmutableList()
 	}
 	
 	constructor(byteBuffer: ByteBuffer, name: String? = null) : this(name) {

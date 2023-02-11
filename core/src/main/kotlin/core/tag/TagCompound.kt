@@ -86,7 +86,6 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 	}
 	
 	companion object {
-		
 		/** Custom [Comparator] for NBT entries in a [TagCompound], inspired by NBTExplorer. */
 		val nbtComparator = Comparator<CompoundEntry> { (name1, tag1), (name2, tag2) ->
 			val type1 = tag1.type
