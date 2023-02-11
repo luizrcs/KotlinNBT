@@ -59,7 +59,7 @@ object NbtIO {
 			}
 			
 			override fun get(key: Int) = super.get(key)
-				?: throw IllegalArgumentException("No compression method with id $key")
+				?: throw IllegalArgumentException("No compression method with id '$key'")
 		}
 	}
 }

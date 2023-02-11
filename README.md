@@ -44,7 +44,7 @@ NbtIO.write(someTagCompound, file, compression)
 ```kotlin
 val nbt = nbt("root") {
     compound["testCompound"] = {
-        intArray["fibonacciWithoutZero"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
+        intArray["fibonacci"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
     }
     list["testList"] = listOf(
         {
@@ -62,7 +62,7 @@ Using `println(nbt)` will print a Kotlin-styled tree:
 ```
 root: Compound = {
     testCompound: Compound = {
-        fibonacciWithoutZero: IntArray = [1, 1, 2, 3, 5, 8, 13, 21]
+        fibonacci: IntArray = [1, 1, 2, 3, 5, 8, 13, 21]
     },
     testList: List<Compound> = [
         Compound = {
@@ -83,7 +83,7 @@ prints a `TagCompound` using a schema based on the way [NBTExplorer][NBTExplorer
 In the example above, the typed values can be obtained with type-safe accessors:
 
 ```kotlin
-val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacciWithoutZero"].intArray
+val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacci"].intArray
 val message: String = nbt["testList"].tagList[0].tagCompound["firstString"].string
 val timestamp: Long = nbt["timestamp"].long
 

@@ -3,8 +3,7 @@ object ModuleVersions {
 }
 
 plugins {
-	kotlin("jvm")
-	
+	kotlinJvm
 	application
 	shadowJar
 	`sonatype-publish`

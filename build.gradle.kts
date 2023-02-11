@@ -1,5 +1,5 @@
 plugins {
-	kotlin("jvm") version Versions.kotlin apply false
+	kotlinJvm apply false
 }
 
 subprojects {
@@ -11,13 +11,13 @@ subprojects {
 	}
 	
 	dependencies {
-		kotlin("stdlib-jdk8", Versions.kotlin)
+		kotlin("stdlib", Versions.kotlin)
 	}
 	
 	tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 		kotlinOptions {
-			apiVersion = "1.7"
-			languageVersion = "1.7"
+			apiVersion = "1.8"
+			languageVersion = "1.8"
 			
 			suppressWarnings = true
 			freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")

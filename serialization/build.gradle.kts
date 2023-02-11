@@ -3,9 +3,8 @@ object ModuleVersions {
 }
 
 plugins {
-	kotlin("jvm")
+	kotlinJvm
 	kotlin("plugin.serialization") version Versions.kotlin
-	
 	`sonatype-publish`
 }
 

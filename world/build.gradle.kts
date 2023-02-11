@@ -1,7 +1,6 @@
 plugins {
-	kotlin("jvm")
-	kotlin("plugin.serialization") version Versions.kotlin
-	
+	kotlinJvm
+	kotlinSerialization
 	`sonatype-publish`
 }
 

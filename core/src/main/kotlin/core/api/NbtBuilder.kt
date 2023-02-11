@@ -10,7 +10,7 @@ annotation class NbtBuilder
 inline fun nbt(
 	name: String? = null,
 	entries: CompoundMap = emptyMap(),
-	builder: TagCompoundBuilder.() -> Unit
+	builder: TagCompoundBuilder.() -> Unit,
 ) = TagCompoundBuilder(name, entries).apply(builder).build()
 
 @NbtBuilder
@@ -33,11 +33,11 @@ open class TagCompoundBuilder @PublishedApi internal constructor(private val nam
 	
 	@NbtBuilder
 	fun listOf(vararg tagCompounds: TagCompoundBuilder.() -> Unit) = tagCompounds.map { TagCompoundBuilder(null).apply(it).build() }
-
+	
 	@NbtBuilder
 	inline fun compound(
 		entries: CompoundMap = emptyMap(),
-		builder: TagCompoundBuilder.() -> Unit
+		builder: TagCompoundBuilder.() -> Unit,
 	) = TagCompoundBuilder(null, entries).apply(builder).build()
 	
 	open fun build() = TagCompound(entries, name)

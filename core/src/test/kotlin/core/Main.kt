@@ -14,7 +14,7 @@ fun main() {
 	val nbtBuilderTime = measureTimeMillis {
 		nbt = nbt("root") {
 			compound["testCompound"] = {
-				intArray["fibonacciWithoutZero"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
+				intArray["fibonacci"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
 			}
 			list["testList"] = listOf(
 				{
@@ -30,7 +30,7 @@ fun main() {
 	val repeatedNbtBuilderTime = measureNanoTime {
 		nbt = nbt("root") {
 			compound["testCompound"] = {
-				intArray["fibonacciWithoutZero"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
+				intArray["fibonacci"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
 			}
 			list["testList"] = listOf(
 				{
@@ -43,7 +43,9 @@ fun main() {
 		}
 	}
 	
-	val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacciWithoutZero"].intArray
+	println(nbt["testCompound"])
+	
+	val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacci"].intArray
 	val message: String = nbt["testList"].tagList[0].tagCompound["firstString"].string
 	val timestamp: Long = nbt["timestamp"].long
 	

@@ -69,13 +69,13 @@ fun main() {
 data class TestA(val testCompound: TestB, val testList: List<TestC>, val timestamp: Long)
 
 @Serializable
-data class TestB(val fibonacciWithoutZero: FloatArray) {
+data class TestB(val fibonacci: FloatArray) {
 	
 	override fun equals(other: Any?) = this === other
 			|| javaClass == other?.javaClass
-			&& fibonacciWithoutZero.contentEquals((other as TestB).fibonacciWithoutZero)
+			&& fibonacci.contentEquals((other as TestB).fibonacci)
 	
-	override fun hashCode() = fibonacciWithoutZero.contentHashCode()
+	override fun hashCode() = fibonacci.contentHashCode()
 }
 
 @Serializable
