@@ -5,7 +5,10 @@ import br.com.luizrcs.nbt.core.tag.TagType.*
 import kotlinx.collections.immutable.*
 import java.nio.*
 
-class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_LIST, name) {
+typealias TagListList = List<TagAny>
+typealias MutableTagListList = MutableList<TagAny>
+
+class TagList private constructor(name: String? = null) : Tag<TagListList>(TAG_LIST, name) {
 	
 	override val sizeInBytes get() = Byte.SIZE_BYTES + Int.SIZE_BYTES + _value.sumOf { it.sizeInBytes }
 	
@@ -14,7 +17,7 @@ class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_
 	
 	operator fun get(index: Int) = _value[index]
 	
-	constructor(elementsType: TagType, value: List<TagAny>, check: Boolean = true, name: String? = null) : this(name) {
+	constructor(elementsType: TagType, value: TagListList, check: Boolean = true, name: String? = null) : this(name) {
 		require(!check || check(elementsType, value)) { "TagList elements must be of the same type" }
 		
 		_elementsType = elementsType
@@ -25,7 +28,7 @@ class TagList private constructor(name: String? = null) : Tag<List<TagAny>>(TAG_
 		read(byteBuffer)
 	}
 	
-	private fun check(elementsType: TagType, list: List<TagAny>) = list.all { it.type == elementsType }
+	private fun check(elementsType: TagType, list: TagListList) = list.all { it.type == elementsType }
 	
 	override fun read(byteBuffer: ByteBuffer) {
 		val elementsId = byteBuffer.byte

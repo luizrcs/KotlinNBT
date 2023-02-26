@@ -170,7 +170,7 @@ If you wish to support the continuous development of this and other projects, yo
 
 [WebArchive]: https://web.archive.org/web/20100124085747/http://www.minecraft.net/docs/NBT.txt
 
-[Gamepedia]: https://minecraft.gamepedia.com/NBT_format
+[Gamepedia]: https://minecraft.fandom.com/wiki/NBT_format
 
 [Maven Central]: https://central.sonatype.com/namespace/br.com.luizrcs.nbt
 

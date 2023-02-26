@@ -5,18 +5,18 @@ import br.com.luizrcs.nbt.core.tag.TagType.*
 import kotlinx.collections.immutable.*
 import java.nio.*
 
-typealias CompoundMap = Map<String, TagAny>
-typealias CompoundEntry = Map.Entry<String, TagAny>
-typealias MutableCompoundMap = LinkedHashMap<String, TagAny>
+typealias TagCompoundMap = Map<String, TagAny>
+typealias TagCompoundMapEntry = Map.Entry<String, TagAny>
+typealias MutableTagCompoundMap = LinkedHashMap<String, TagAny>
 
-open class TagCompound protected constructor(name: String? = null) : Tag<CompoundMap>(TAG_COMPOUND, name) {
+open class TagCompound protected constructor(name: String? = null) : Tag<TagCompoundMap>(TAG_COMPOUND, name) {
 	
 	override val sizeInBytes
 		get() = _value.entries.sumOf { (name, tag) ->
 			Byte.SIZE_BYTES + (Short.SIZE_BYTES + name.toByteArray().size) + tag.sizeInBytes
 		} + Byte.SIZE_BYTES
 	
-	constructor(value: CompoundMap, name: String? = null) : this(name) {
+	constructor(value: TagCompoundMap, name: String? = null) : this(name) {
 		_value = value.map { (name, tag) -> name to tag.ensureName(name) }.toMap().toImmutableMap()
 	}
 	
@@ -27,7 +27,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 	operator fun get(name: String) = _value[name]
 	
 	final override fun read(byteBuffer: ByteBuffer) {
-		val value = MutableCompoundMap()
+		val value = MutableTagCompoundMap()
 		
 		var nextId: Byte
 		do {
@@ -62,9 +62,9 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 		write(byteBuffer)
 	}
 	
-	override fun clone(name: String?): Tag<CompoundMap> = clone(name, true)
+	override fun clone(name: String?): Tag<TagCompoundMap> = clone(name, true)
 	
-	override fun clone(name: String?, deep: Boolean): Tag<CompoundMap> =
+	override fun clone(name: String?, deep: Boolean): Tag<TagCompoundMap> =
 		TagCompound(_value.entries.associate { (name, tag) -> name to if (deep) tag.clone(name, deep) else tag }, name)
 	
 	override fun toString() = buildString {
@@ -87,7 +87,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<Compoun
 	
 	companion object {
 		/** Custom [Comparator] for NBT entries in a [TagCompound], inspired by NBTExplorer. */
-		val nbtComparator = Comparator<CompoundEntry> { (name1, tag1), (name2, tag2) ->
+		val nbtComparator = Comparator<TagCompoundMapEntry> { (name1, tag1), (name2, tag2) ->
 			val type1 = tag1.type
 			val type2 = tag2.type
 			

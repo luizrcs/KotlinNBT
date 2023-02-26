@@ -14,7 +14,7 @@ import kotlinx.serialization.internal.*
 import kotlinx.serialization.modules.*
 
 open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEncoder() {
-	private val compoundMap = MutableCompoundMap()
+	private val compoundMap = MutableTagCompoundMap()
 	
 	override val serializersModule = EmptySerializersModule
 	

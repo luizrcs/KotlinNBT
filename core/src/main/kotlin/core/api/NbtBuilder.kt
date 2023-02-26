@@ -6,24 +6,33 @@ import br.com.luizrcs.nbt.core.tag.TagType.*
 @DslMarker
 annotation class NbtBuilder
 
-inline fun buildNbt(
+inline fun buildTagList(
 	name: String? = null,
-	entries: CompoundMap = emptyMap(),
-	builder: TagCompoundBuilder.() -> Unit,
-) = TagCompoundBuilder(name, entries).apply(builder).build()
+	entries: TagListList = emptyList(),
+	builder: TagListBuilder.() -> Unit,
+) = TagListBuilder(name, entries).apply(builder).build()
 
 inline fun buildTagCompound(
 	name: String? = null,
-	entries: CompoundMap = emptyMap(),
+	entries: TagCompoundMap = emptyMap(),
 	builder: TagCompoundBuilder.() -> Unit,
-) = buildNbt(name, entries, builder)
+) = TagCompoundBuilder(name, entries).apply(builder).build()
+
+inline fun buildNbt(
+	name: String? = null,
+	entries: TagCompoundMap = emptyMap(),
+	builder: TagCompoundBuilder.() -> Unit,
+) = buildTagCompound(name, entries, builder)
 
 @NbtBuilder
-class TagCompoundBuilder @PublishedApi internal constructor(private val name: String?, entries: CompoundMap = emptyMap()) {
+abstract class TagBuilder<T : TagAny, U : Any>(protected val name: String?, @PublishedApi internal val entries: U) {
+	abstract fun build(): T
+}
+
+class TagCompoundBuilder @PublishedApi internal constructor(name: String?, entries: TagCompoundMap = emptyMap()) :
+	TagBuilder<TagCompound, MutableTagCompoundMap>(name, MutableTagCompoundMap().apply { putAll(entries) }) {
 	
-	@PublishedApi internal val entries = MutableCompoundMap().apply { putAll(entries) }
-	
-	fun build() = TagCompound(entries, name)
+	override fun build() = TagCompound(entries, name)
 	
 	fun put(name: String, tag: TagAny) = entries.put(name, tag)
 	
@@ -52,46 +61,46 @@ class TagCompoundBuilder @PublishedApi internal constructor(private val name: St
 	@PublishedApi internal fun List<*>.toListOfIntArray() = map { TagIntArray(it as IntArray) }
 	@PublishedApi internal fun List<*>.toListOfLongArray() = map { TagLongArray(it as LongArray) }
 	
-	@PublishedApi internal fun <T : TagAny> List<*>.toListOf() = map { (it as TagAny).clone(null) } as List<T>
+	@PublishedApi internal fun <T : TagAny> List<*>.toListOf() = map { (it as TagAny).clone(null) as T }
 	
 	inline fun <reified T> put(name: String, value: List<T>) {
-		put(
-			name, when (val clazz = T::class) {
-				Byte::class         -> TagList(TAG_BYTE, value.toListOfByte(), false)
-				Short::class        -> TagList(TAG_SHORT, value.toListOfShort(), false)
-				Integer::class      -> TagList(TAG_INT, value.toListOfInt(), false)
-				Long::class         -> TagList(TAG_LONG, value.toListOfLong(), false)
-				Float::class        -> TagList(TAG_FLOAT, value.toListOfFloat(), false)
-				Double::class       -> TagList(TAG_DOUBLE, value.toListOfDouble(), false)
-				ByteArray::class    -> TagList(TAG_BYTE_ARRAY, value.toListOfByteArray(), false)
-				String::class       -> TagList(TAG_STRING, value.toListOfString(), false)
-				IntArray::class     -> TagList(TAG_INT_ARRAY, value.toListOfIntArray(), false)
-				LongArray::class    -> TagList(TAG_LONG_ARRAY, value.toListOfLongArray(), false)
-				TagByte::class      -> TagList(TAG_BYTE, value.toListOf<TagByte>(), false)
-				TagShort::class     -> TagList(TAG_SHORT, value.toListOf<TagShort>(), false)
-				TagInt::class       -> TagList(TAG_INT, value.toListOf<TagInt>(), false)
-				TagLong::class      -> TagList(TAG_LONG, value.toListOf<TagLong>(), false)
-				TagFloat::class     -> TagList(TAG_FLOAT, value.toListOf<TagFloat>(), false)
-				TagDouble::class    -> TagList(TAG_DOUBLE, value.toListOf<TagDouble>(), false)
-				TagByteArray::class -> TagList(TAG_BYTE_ARRAY, value.toListOf<TagByteArray>(), false)
-				TagString::class    -> TagList(TAG_STRING, value.toListOf<TagString>(), false)
-				TagList::class      -> TagList(TAG_LIST, value.toListOf<TagList>(), false)
-				TagCompound::class  -> TagList(TAG_COMPOUND, value.toListOf<TagCompound>(), false)
-				TagIntArray::class  -> TagList(TAG_INT_ARRAY, value.toListOf<TagIntArray>(), false)
-				TagLongArray::class -> TagList(TAG_LONG_ARRAY, value.toListOf<TagLongArray>(), false)
-				Any::class          -> throw IllegalArgumentException("TagList elements must be of the same type")
-				else                -> throw IllegalArgumentException("Unsupported type ${clazz.simpleName} for TagList")
-			}
-		)
+		val tagList = when (val clazz = T::class) {
+			Byte::class         -> TagList(TAG_BYTE, value.toListOfByte(), false)
+			Short::class        -> TagList(TAG_SHORT, value.toListOfShort(), false)
+			Integer::class      -> TagList(TAG_INT, value.toListOfInt(), false)
+			Long::class         -> TagList(TAG_LONG, value.toListOfLong(), false)
+			Float::class        -> TagList(TAG_FLOAT, value.toListOfFloat(), false)
+			Double::class       -> TagList(TAG_DOUBLE, value.toListOfDouble(), false)
+			ByteArray::class    -> TagList(TAG_BYTE_ARRAY, value.toListOfByteArray(), false)
+			String::class       -> TagList(TAG_STRING, value.toListOfString(), false)
+			IntArray::class     -> TagList(TAG_INT_ARRAY, value.toListOfIntArray(), false)
+			LongArray::class    -> TagList(TAG_LONG_ARRAY, value.toListOfLongArray(), false)
+			TagByte::class      -> TagList(TAG_BYTE, value.toListOf<TagByte>(), false)
+			TagShort::class     -> TagList(TAG_SHORT, value.toListOf<TagShort>(), false)
+			TagInt::class       -> TagList(TAG_INT, value.toListOf<TagInt>(), false)
+			TagLong::class      -> TagList(TAG_LONG, value.toListOf<TagLong>(), false)
+			TagFloat::class     -> TagList(TAG_FLOAT, value.toListOf<TagFloat>(), false)
+			TagDouble::class    -> TagList(TAG_DOUBLE, value.toListOf<TagDouble>(), false)
+			TagByteArray::class -> TagList(TAG_BYTE_ARRAY, value.toListOf<TagByteArray>(), false)
+			TagString::class    -> TagList(TAG_STRING, value.toListOf<TagString>(), false)
+			TagList::class      -> TagList(TAG_LIST, value.toListOf<TagList>(), false)
+			TagCompound::class  -> TagList(TAG_COMPOUND, value.toListOf<TagCompound>(), false)
+			TagIntArray::class  -> TagList(TAG_INT_ARRAY, value.toListOf<TagIntArray>(), false)
+			TagLongArray::class -> TagList(TAG_LONG_ARRAY, value.toListOf<TagLongArray>(), false)
+			Any::class          -> throw IllegalArgumentException("TagList elements must be of the same type")
+			else                -> throw IllegalArgumentException("Unsupported type ${clazz.simpleName} for TagList")
+		}
+		
+		put(name, tagList)
 	}
 }
 
-@NbtBuilder
-class TagListBuilder @PublishedApi internal constructor(private val name: String?, entries: List<TagAny> = emptyList()) {
-	val entries = entries.toMutableList()
-	private var elementsType: TagType? = entries.firstOrNull()?.type
+class TagListBuilder @PublishedApi internal constructor(name: String?, entries: TagListList = emptyList()) :
+	TagBuilder<TagList, MutableTagListList>(name, entries.toMutableList()) {
 	
-	fun build() = TagList(TAG_COMPOUND, entries, false, name)
+	private var elementsType = entries.firstOrNull()?.type
+	
+	override fun build() = TagList(elementsType ?: TAG_END, entries, false, name)
 	
 	fun add(tag: TagAny) {
 		if (elementsType == null) elementsType = tag.type

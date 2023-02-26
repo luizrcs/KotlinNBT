@@ -125,8 +125,6 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 */
 	internal fun ensureName(name: String?) = if (this.name == name) this else clone(name)
 	
-	internal val nameRegex = """[a-zA-Z][a-zA-Z0-9_]*""".toRegex()
-	
 	/**
 	 * Prefix of this tag's value when calling [toString].
 	 * Should always contain the tag type.
@@ -153,6 +151,8 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	override fun toString() = prefix() + valueToString()
 	
 	companion object {
+		/** Regex to check if a tag name is a valid Java identifier. */
+		internal val nameRegex = """[a-zA-Z_$][a-zA-Z0-9_$]*""".toRegex()
 		
 		/**
 		 * Reads a tag given its type and a [ByteBuffer] to read from. A name can also be
