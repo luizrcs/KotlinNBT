@@ -6,10 +6,11 @@
 # KotlinNBT
 
 Type-safe Named Binary Tags (NBT) implementation in Kotlin for the JVM for reading and writing files/streams with a
-simple and concise builder DSL.
+simple and concise builder DSL. Supports [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)
+with `nbt-serialization` module.
 
 This project is based on the original NBT specification by Notch ([Wayback Machine][WebArchive]) with the most recent
-additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg](https://wiki.vg/NBT)).
+additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg](https://wiki.vg/NBT)) for the Java game version.
 
 ## Installation
 
@@ -58,27 +59,27 @@ val tagCompound = NbtIO.read(file, compression)
 val file = File("test.nbt")
 val compression = NbtIO.Compression.GZIP
 
-NbtIO.write(someTagCompound, file, compression)
+NbtIO.write(tagCompound, file, compression)
 ```
 
-### NBT builder DSL
+### Builder DSL
 
 The `buildNbt` function is used to create a `TagCompound` with a simple and concise builder DSL
 (based on the way [kotlinx-serialization-json][kotlinx-serialization-json] does it):
 
 ```kotlin
 val nbt = buildNbt("root") {
-	putTagCompound("testCompound") {
-		put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
-	}
-	putTagList("testList") {
-		addTagCompound {
-			put("firstString", "I'm the first String :)")
-			put("secondString", "I'm the second String, but order is not guaranteed :/")
-			put("justAnInteger", 1)
-		}
-	}
-	put("timestamp", System.currentTimeMillis())
+    putTagCompound("testCompound") {
+        put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
+    }
+    putTagList("testList") {
+        addTagCompound {
+            put("firstString", "I'm the first String :)")
+            put("secondString", "I'm the second String, but order is not guaranteed :/")
+            put("justAnInteger", 1)
+        }
+    }
+    put("timestamp", System.currentTimeMillis())
 }
 ```
 
@@ -86,17 +87,17 @@ Which can be printed as a Kotlin-styled tree:
 
 ```kotlin
 root: Compound = {
-	testCompound: Compound = {
-	fibonacci: IntArray = [1, 1, 2, 3, 5, 8, 13, 21]
-},
-	testList: List<Compound> = [
-	Compound = {
-		firstString: String = "I'm the first String :)",
-		justAnInteger: Int = 1,
-		secondString: String = "I'm the second String, but order is not guaranteed :/"
-	}
-	],
-	timestamp: Long = 1591470914831L
+    testCompound: Compound = {
+        fibonacci: IntArray = [1, 1, 2, 3, 5, 8, 13, 21]
+    },
+    testList: List<Compound> = [
+        Compound = {
+			firstString: String = "I'm the first String :)",
+            justAnInteger: Int = 1,
+            secondString: String = "I'm the second String, but order is not guaranteed :/"
+        }
+    ],
+    timestamp: Long = 1591470914831L
 }
 ```
 
@@ -153,14 +154,19 @@ nbt.clone("rootClone") // to change the root tag name
 nbt["testList"]?.clone("actualList")
 ```
 
+### SNBT
+
+[WIP] `nbt-snbt-converter` module.
+
+### "NBT to JSON" and "JSON to NBT"
+
+[WIP] `nbt-json-converter` module.
+
 ## Donate
 
-KotlinNBT is free and open-source for everyone to enjoy.
+KotlinNBT is free and open-source for everyone to enjoy ❤️
 
-If you wish to support the continuous development of this and other projects, you can [donate](https://donorbox.org/luizrcs)! Of course, I'm
-always providing support for anyone independently on the donations.
-
-Everyone loves open-source <3
+If you wish to support the continuous development of this and other projects, you can [donate](https://donorbox.org/luizrcs)!
 
 [WebArchive]: https://web.archive.org/web/20100124085747/http://www.minecraft.net/docs/NBT.txt
 
