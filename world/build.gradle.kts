@@ -4,7 +4,7 @@ plugins {
 	`sonatype-publish`
 }
 
-version = "1.0.0$suffix"
+version = "${rootProject.version}$suffix"
 
 dependencies {
 	implementation(project(":core"))

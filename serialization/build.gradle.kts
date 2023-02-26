@@ -8,11 +8,10 @@ plugins {
 	`sonatype-publish`
 }
 
-version = "1.0.0$suffix"
+version = "${rootProject.version}$suffix"
 
 dependencies {
 	implementation(project(":core"))
-	
 	kotlinx("serialization-core-jvm", ModuleVersions.kotlinxSerialization)
 	
 	testImplementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", ModuleVersions.kotlinxSerialization)

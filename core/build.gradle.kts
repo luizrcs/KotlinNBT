@@ -7,7 +7,7 @@ plugins {
 	`sonatype-publish`
 }
 
-version = "2.0.0$suffix"
+version = "${rootProject.version}$suffix"
 
 dependencies {
 	kotlinx("collections-immutable-jvm", ModuleVersions.kotlinxCollections)

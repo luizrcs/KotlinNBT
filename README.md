@@ -16,7 +16,7 @@ additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg](https://wiki.vg/N
 
 All projects under the `br.com.luizrcs.nbt` namespace are available on [Maven Central][Maven Central] and
 follow the [Semantic Versioning 2.0.0](https://semver.org/) specification, but keep the same version across all
-modules. This means that a version bump in one module doesn't necessarily imply updates were made to it,
+modules (except `nbt-cli`). This means that a version bump in one module doesn't necessarily imply updates were made to it,
 but should be treated like so.
 
 The dependencies can be added to your project using [Gradle](https://gradle.org/):
@@ -92,7 +92,7 @@ root: Compound = {
     },
     testList: List<Compound> = [
         Compound = {
-			firstString: String = "I'm the first String :)",
+            firstString: String = "I'm the first String :)",
             justAnInteger: Int = 1,
             secondString: String = "I'm the second String, but order is not guaranteed :/"
         }

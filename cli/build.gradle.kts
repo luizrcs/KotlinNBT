@@ -6,16 +6,16 @@ plugins {
 	kotlinJvm
 	application
 	shadowJar
-	`sonatype-publish`
 }
 
 version = "1.0.0$suffix"
 
-application.mainClass.set("$group.nbt.cli.MainKt")
+application {
+	mainClass.set("$group.nbt.cli.MainKt")
+}
 
 dependencies {
 	implementation(project(":core"))
-	
 	kotlinx("cli", ModuleVersions.kotlinxCli)
 }
 
