@@ -1,13 +1,12 @@
 [![Build Status](https://travis-ci.com/luizrcs/KotlinNBT.svg?branch=master)](https://travis-ci.com/luizrcs/KotlinNBT)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.5.21-green)](https://kotlinlang.org/)
-[![JitPack](https://jitpack.io/v/luizrcs/KotlinNBT.svg)](https://jitpack.io/#luizrcs/KotlinNBT)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.8.10-green)](https://kotlinlang.org/)
 [![License: MIT](https://img.shields.io/github/license/luizrcs/KotlinNBT)](https://opensource.org/licenses/MIT)
 [![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/luizrcs)
 
 # KotlinNBT
 
 Type-safe Named Binary Tags (NBT) implementation in Kotlin for the JVM for reading and writing files/streams with a
-simple and concise builder API.
+simple and concise builder DSL.
 
 This project is based on the original NBT specification by Notch ([Wayback Machine][WebArchive]) with the most recent
 additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg][WikiVG]).
@@ -39,27 +38,30 @@ val compression = NbtIO.Compression.GZIP
 NbtIO.write(someTagCompound, file, compression)
 ```
 
-### NBT builder
+### NBT builder DSL
+
+The `buildNbt` function is used to create a `TagCompound` with a simple and concise builder DSL
+based on the way [kotlinx-serialization-json][kotlinx-serialization-json] does it.
 
 ```kotlin
-val nbt = nbt("root") {
-    compound["testCompound"] = {
-        intArray["fibonacci"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
+val nbt = buildNbt("root") {
+    putTagCompound("testCompound") {
+        put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
     }
-    list["testList"] = listOf(
-        {
-            string["firstString"] = "I'm the first String :)"
-            string["secondString"] = "I'm the second String, but order is not guaranteed :/"
-            int["justAnInteger"] = 1
+    putTagList("testList") {
+        addTagCompound {
+            put("firstString", "I'm the first String :)")
+            put("secondString", "I'm the second String, but order is not guaranteed :/")
+            put("justAnInteger", 1)
         }
-    )
-    long["timestamp"] = System.currentTimeMillis()
+    }
+    put("timestamp", System.currentTimeMillis())
 }
 ```
 
 Using `println(nbt)` will print a Kotlin-styled tree:
 
-```
+```kotlin
 root: Compound = {
     testCompound: Compound = {
         fibonacci: IntArray = [1, 1, 2, 3, 5, 8, 13, 21]
@@ -142,6 +144,8 @@ Everyone loves open-source <3
 [Gamepedia]: https://minecraft.gamepedia.com/NBT_format
 
 [WikiVG]: https://wiki.vg/NBT
+
+[kotlinx-serialization-json]: https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md#json-element-builders
 
 [NBTExplorer]: https://github.com/jaquadro/NBTExplorer
 

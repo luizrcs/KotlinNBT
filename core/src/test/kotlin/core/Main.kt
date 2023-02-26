@@ -12,38 +12,36 @@ fun main() {
 	var nbt: TagCompound
 	
 	val nbtBuilderTime = measureTimeMillis {
-		nbt = nbt("root") {
-			compound["testCompound"] = {
-				intArray["fibonacci"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
+		nbt = buildNbt("root") {
+			putTagCompound("testCompound") {
+				put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
 			}
-			list["testList"] = listOf(
-				{
-					string["firstString"] = "I'm the first String :)"
-					string["secondString"] = "I'm the second String, but order is not guaranteed :/"
-					int["justAnInteger"] = 1
+			putTagList("testList") {
+				addTagCompound {
+					put("firstString", "I'm the first String :)")
+					put("secondString", "I'm the second String, but order is not guaranteed :/")
+					put("justAnInteger", 1)
 				}
-			)
-			long["timestamp"] = System.currentTimeMillis()
+			}
+			put("timestamp", System.currentTimeMillis())
 		}
 	}
 	
 	val repeatedNbtBuilderTime = measureNanoTime {
-		nbt = nbt("root") {
-			compound["testCompound"] = {
-				intArray["fibonacci"] = intArrayOf(1, 1, 2, 3, 5, 8, 13, 21)
+		nbt = buildNbt("root") {
+			putTagCompound("testCompound") {
+				put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
 			}
-			list["testList"] = listOf(
-				{
-					string["firstString"] = "I'm the first String :)"
-					string["secondString"] = "I'm the second String, but order is not guaranteed :/"
-					int["justAnInteger"] = 1
+			putTagList("testList") {
+				addTagCompound {
+					put("firstString", "I'm the first String :)")
+					put("secondString", "I'm the second String, but order is not guaranteed :/")
+					put("justAnInteger", 1)
 				}
-			)
-			long["timestamp"] = System.currentTimeMillis()
+			}
+			put("timestamp", System.currentTimeMillis())
 		}
 	}
-	
-	println(nbt["testCompound"])
 	
 	val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacci"].intArray
 	val message: String = nbt["testList"].tagList[0].tagCompound["firstString"].string

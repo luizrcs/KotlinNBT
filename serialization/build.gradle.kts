@@ -1,5 +1,5 @@
 object ModuleVersions {
-	const val kotlinxSerialization = "1.2.1"
+	const val kotlinxSerialization = "1.5.0"
 }
 
 plugins {

@@ -1,5 +1,5 @@
 object ModuleVersions {
-	const val kotlinxCli = "0.3.2"
+	const val kotlinxCli = "0.3.5"
 }
 
 plugins {

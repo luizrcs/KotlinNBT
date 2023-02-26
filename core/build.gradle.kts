@@ -1,10 +1,9 @@
 object ModuleVersions {
-	const val kotlinxCollections = "0.3.4"
+	const val kotlinxCollections = "0.3.5"
 }
 
 plugins {
-	kotlin("jvm")
-	
+	kotlinJvm
 	`sonatype-publish`
 }
 
