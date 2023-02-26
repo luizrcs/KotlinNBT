@@ -16,7 +16,7 @@ import kotlinx.serialization.modules.*
 open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEncoder() {
 	private val compoundMap = MutableTagCompoundMap()
 	
-	override val serializersModule = EmptySerializersModule
+	override val serializersModule = EmptySerializersModule()
 	
 	open fun currentTag(): TagAny = TagCompound(compoundMap)
 	
@@ -24,6 +24,7 @@ open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEnc
 		compoundMap[key] = tag
 	}
 	
+	// Fully supported types -> standard encoding
 	override fun encodeTaggedByte(tag: String, value: Byte) = putTag(tag, TagByte(value, tag))
 	override fun encodeTaggedShort(tag: String, value: Short) = putTag(tag, TagShort(value, tag))
 	override fun encodeTaggedInt(tag: String, value: Int) = putTag(tag, TagInt(value, tag))
@@ -32,10 +33,11 @@ open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEnc
 	override fun encodeTaggedDouble(tag: String, value: Double) = putTag(tag, TagDouble(value, tag))
 	override fun encodeTaggedString(tag: String, value: String) = putTag(tag, TagString(value, tag))
 	
-	// unsupported types
+	// Unsupported types -> non-standard encoding
 	override fun encodeTaggedBoolean(tag: String, value: Boolean) = putTag(tag, TagByte((if (value) 1 else 0).toByte()))
-	override fun encodeTaggedChar(tag: String, value: Char) = putTag(tag, TagByte(value.toByte()))
+	override fun encodeTaggedChar(tag: String, value: Char) = putTag(tag, TagByte(value.code.toByte()))
 	
+	@OptIn(ExperimentalSerializationApi::class)
 	override fun beginStructure(descriptor: SerialDescriptor): NbtEncoder {
 		val consumer =
 			if (currentTagOrNull == null) tagConsumer
@@ -47,7 +49,7 @@ open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEnc
 			LIST  -> when {
 				serialName.endsWith("Array") -> PrimitiveArrayNbtEncoder(serialName.substringAfterLast('.'), consumer)
 				serialName.endsWith("List")  -> ListNbtEncoder(consumer)
-				else                         -> throw IllegalArgumentException("Nbt encoding for $serialName not implemented")
+				else                         -> throw IllegalArgumentException("NBT encoding for $serialName not implemented")
 			}
 			else  -> this
 		}
@@ -58,42 +60,43 @@ open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEnc
 	}
 }
 
-class PrimitiveArrayNbtEncoder(val serialName: String, tagConsumer: (TagAny) -> Unit) : NbtEncoder(tagConsumer) {
+class PrimitiveArrayNbtEncoder(private val serialName: String, tagConsumer: (TagAny) -> Unit) : NbtEncoder(tagConsumer) {
 	private val list = mutableListOf<Any>()
 	
-	private fun putPrimitive(primitive: Any) {
+	private fun addPrimitive(primitive: Any) {
 		list += primitive
 	}
 	
-	// fully supported types
-	override fun encodeTaggedByte(tag: String, value: Byte) = putPrimitive(value)
-	override fun encodeTaggedInt(tag: String, value: Int) = putPrimitive(value)
-	override fun encodeTaggedLong(tag: String, value: Long) = putPrimitive(value)
+	// Fully supported types -> standard encoding
+	override fun encodeTaggedByte(tag: String, value: Byte) = addPrimitive(value)
+	override fun encodeTaggedInt(tag: String, value: Int) = addPrimitive(value)
+	override fun encodeTaggedLong(tag: String, value: Long) = addPrimitive(value)
 	
-	// barely supported types
-	override fun encodeTaggedShort(tag: String, value: Short) = putPrimitive(value)
-	override fun encodeTaggedFloat(tag: String, value: Float) = putPrimitive(value)
-	override fun encodeTaggedDouble(tag: String, value: Double) = putPrimitive(value)
+	// Barely supported types -> unoptimized encoding
+	override fun encodeTaggedShort(tag: String, value: Short) = addPrimitive(value)
+	override fun encodeTaggedFloat(tag: String, value: Float) = addPrimitive(value)
+	override fun encodeTaggedDouble(tag: String, value: Double) = addPrimitive(value)
 	
-	// unsupported types
-	override fun encodeTaggedBoolean(tag: String, value: Boolean) = putPrimitive(value)
-	override fun encodeTaggedChar(tag: String, value: Char) = putPrimitive(value)
+	// Unsupported types -> non-standard encoding
+	override fun encodeTaggedBoolean(tag: String, value: Boolean) = addPrimitive(value)
+	override fun encodeTaggedChar(tag: String, value: Char) = addPrimitive(value)
 	
+	@Suppress("UNCHECKED_CAST")
 	override fun currentTag() = when (serialName) {
-		// fully supported types
+		// Fully supported types -> standard encoding
 		"ByteArray"    -> TagByteArray((list as List<Byte>).toByteArray())
 		"IntArray"     -> TagIntArray((list as List<Int>).toIntArray())
 		"LongArray"    -> TagLongArray((list as List<Long>).toLongArray())
 		
-		// barely supported types
+		// Barely supported types -> unoptimized encoding
 		"ShortArray"   -> TagIntArray((list as List<Short>).map { it.toInt() }.toIntArray())
 		"FloatArray"   -> TagList(TAG_FLOAT, (list as List<Float>).map(::TagFloat))
 		"DoubleArray"  -> TagList(TAG_DOUBLE, (list as List<Double>).map(::TagDouble))
 		
-		// unsupported types
+		// Unsupported types -> non-standard encoding
 		"BooleanArray" -> TagByteArray((list as List<Boolean>).map { (if (it) 1 else 0).toByte() }.toByteArray())
-		"CharArray"    -> TagByteArray((list as List<Char>).map { it.toByte() }.toByteArray())
-		else           -> throw IllegalArgumentException("Nbt encoding for $serialName not implemented")
+		"CharArray"    -> TagByteArray((list as List<Char>).map { it.code.toByte() }.toByteArray())
+		else           -> throw IllegalArgumentException("NBT encoding for $serialName not implemented")
 	}
 }
 

@@ -73,9 +73,9 @@ open class TagCompound protected constructor(name: String? = null) : Tag<TagComp
 		if (_value.isNotEmpty()) {
 			appendLine().tab()
 			appendLine(
-				_value.entries.sortedWith(nbtComparator).joinToString(",\n\t") { (_, nextTag) ->
+				_value.entries.sortedWith(nbtComparator).joinToString(",\n$tab") { (_, nextTag) ->
 					when (nextTag.type) {
-						TAG_COMPOUND, TAG_LIST -> nextTag.toString().replace("\n", "\n\t")
+						TAG_COMPOUND, TAG_LIST -> nextTag.toString().replace("\n", "\n$tab")
 						else                   -> nextTag.toString()
 					}
 				}

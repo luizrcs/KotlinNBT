@@ -61,6 +61,7 @@ class TagCompoundBuilder @PublishedApi internal constructor(name: String?, entri
 	@PublishedApi internal fun List<*>.toListOfIntArray() = map { TagIntArray(it as IntArray) }
 	@PublishedApi internal fun List<*>.toListOfLongArray() = map { TagLongArray(it as LongArray) }
 	
+	@Suppress("UNCHECKED_CAST")
 	@PublishedApi internal fun <T : TagAny> List<*>.toListOf() = map { (it as TagAny).clone(null) as T }
 	
 	inline fun <reified T> put(name: String, value: List<T>) {

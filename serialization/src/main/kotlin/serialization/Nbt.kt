@@ -8,7 +8,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.modules.*
 
 object Nbt : BinaryFormat {
-	override val serializersModule = EmptySerializersModule
+	override val serializersModule = EmptySerializersModule()
 	
 	fun <T> encodeToNbt(serializer: SerializationStrategy<T>, value: T): TagAny {
 		lateinit var tag: TagAny

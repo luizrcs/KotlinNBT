@@ -56,7 +56,7 @@ class TagList private constructor(name: String? = null) : Tag<TagListList>(TAG_L
 			when (_elementsType) {
 				TAG_COMPOUND, TAG_LIST -> {
 					appendLine().tab()
-					appendLine(_value.joinToString(",\n\t") { it.toString().replace("\n", "\n\t") })
+					appendLine(_value.joinToString(",\n$tab") { it.toString().replace("\n", "\n$tab") })
 				}
 				else                   -> append(_value.joinToString(", ") { it.valueToString() })
 			}
