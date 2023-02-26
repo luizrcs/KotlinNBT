@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/luizrcs/KotlinNBT.svg?branch=master)](https://travis-ci.com/luizrcs/KotlinNBT)
+[![Build Status](https://travis-ci.com/luizrcs/KotlinNBT.svg?branch=dev)](https://travis-ci.com/github/luizrcs/KotlinNBT)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.8.10-green)](https://kotlinlang.org/)
 [![License: MIT](https://img.shields.io/github/license/luizrcs/KotlinNBT)](https://opensource.org/licenses/MIT)
 [![Donation](https://img.shields.io/badge/donate-DonorBox-blue)](https://donorbox.org/luizrcs)
@@ -9,11 +9,34 @@ Type-safe Named Binary Tags (NBT) implementation in Kotlin for the JVM for readi
 simple and concise builder DSL.
 
 This project is based on the original NBT specification by Notch ([Wayback Machine][WebArchive]) with the most recent
-additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg][WikiVG]).
+additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg](https://wiki.vg/NBT)).
 
 ## Installation
 
-*WIP*
+All projects under the `br.com.luizrcs.nbt` namespace are available on [Maven Central][Maven Central] and
+follow the [Semantic Versioning 2.0.0](https://semver.org/) specification, but keep the same version across all
+modules. This means that a version bump in one module doesn't necessarily imply updates were made to it,
+but should be treated like so.
+
+The dependencies can be added to your project using [Gradle](https://gradle.org/):
+
+### Groovy DSL
+
+```groovy
+dependencies {
+    implementation 'br.com.luizrcs.nbt:nbt-core:2.0.0'
+    implementation 'br.com.luizrcs.nbt:nbt-serialization:2.0.0'
+}
+```
+
+### Kotlin DSL
+
+```kotlin
+dependencies {
+    implementation("br.com.luizrcs.nbt:nbt-core:2.0.0")
+    implementation("br.com.luizrcs.nbt:nbt-serialization:2.0.0")
+}
+```
 
 ## Usage
 
@@ -41,39 +64,39 @@ NbtIO.write(someTagCompound, file, compression)
 ### NBT builder DSL
 
 The `buildNbt` function is used to create a `TagCompound` with a simple and concise builder DSL
-based on the way [kotlinx-serialization-json][kotlinx-serialization-json] does it.
+(based on the way [kotlinx-serialization-json][kotlinx-serialization-json] does it):
 
 ```kotlin
 val nbt = buildNbt("root") {
-    putTagCompound("testCompound") {
-        put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
-    }
-    putTagList("testList") {
-        addTagCompound {
-            put("firstString", "I'm the first String :)")
-            put("secondString", "I'm the second String, but order is not guaranteed :/")
-            put("justAnInteger", 1)
-        }
-    }
-    put("timestamp", System.currentTimeMillis())
+	putTagCompound("testCompound") {
+		put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
+	}
+	putTagList("testList") {
+		addTagCompound {
+			put("firstString", "I'm the first String :)")
+			put("secondString", "I'm the second String, but order is not guaranteed :/")
+			put("justAnInteger", 1)
+		}
+	}
+	put("timestamp", System.currentTimeMillis())
 }
 ```
 
-Using `println(nbt)` will print a Kotlin-styled tree:
+Which can be printed as a Kotlin-styled tree:
 
 ```kotlin
 root: Compound = {
-    testCompound: Compound = {
-        fibonacci: IntArray = [1, 1, 2, 3, 5, 8, 13, 21]
-    },
-    testList: List<Compound> = [
-        Compound = {
-            firstString: String = "I'm the first String :)",
-            justAnInteger: Int = 1,
-            secondString: String = "I'm the second String, but order is not guaranteed :/"
-        }
-    ],
-    timestamp: Long = 1591470914831L
+	testCompound: Compound = {
+	fibonacci: IntArray = [1, 1, 2, 3, 5, 8, 13, 21]
+},
+	testList: List<Compound> = [
+	Compound = {
+		firstString: String = "I'm the first String :)",
+		justAnInteger: Int = 1,
+		secondString: String = "I'm the second String, but order is not guaranteed :/"
+	}
+	],
+	timestamp: Long = 1591470914831L
 }
 ```
 
@@ -134,7 +157,7 @@ nbt["testList"]?.clone("actualList")
 
 KotlinNBT is free and open-source for everyone to enjoy.
 
-If you wish to support the continuous development of this and other projects, you can [donate][Donation]! Of course, I'm
+If you wish to support the continuous development of this and other projects, you can [donate](https://donorbox.org/luizrcs)! Of course, I'm
 always providing support for anyone independently on the donations.
 
 Everyone loves open-source <3
@@ -143,10 +166,8 @@ Everyone loves open-source <3
 
 [Gamepedia]: https://minecraft.gamepedia.com/NBT_format
 
-[WikiVG]: https://wiki.vg/NBT
+[Maven Central]: https://central.sonatype.com/namespace/br.com.luizrcs.nbt
 
 [kotlinx-serialization-json]: https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md#json-element-builders
 
 [NBTExplorer]: https://github.com/jaquadro/NBTExplorer
-
-[Donation]: https://donorbox.org/luizrcs
