@@ -156,11 +156,11 @@ nbt["testList"]?.clone("actualList")
 
 ### SNBT
 
-[WIP] `nbt-snbt-converter` module.
+[WIP] `nbt-converter-snbt` module.
 
 ### "NBT to JSON" and "JSON to NBT"
 
-[WIP] `nbt-json-converter` module.
+[WIP] `nbt-converter-json` module.
 
 ## Donate
 

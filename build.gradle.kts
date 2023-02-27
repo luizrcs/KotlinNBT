@@ -6,6 +6,7 @@ version = "2.0.0"
 
 subprojects {
 	group = "br.com.luizrcs.nbt"
+	version = "${rootProject.version}$suffix"
 	
 	repositories {
 		mavenCentral()

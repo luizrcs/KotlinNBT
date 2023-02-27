@@ -19,15 +19,19 @@ publishing {
 		create<MavenPublication>(project.name) {
 			artifactId = "nbt-" + project.name
 			
+			val authorId = properties["authorId"].toString()
+			val authorName = properties["authorName"].toString()
+			val authorEmail = properties["authorEmail"].toString()
+			
 			pom {
-				name.set("${rootProject.name} ${project.name.capitalize()}")
-				url.set("https://github.com/luizrcs/${rootProject.name}")
+				name.set("${rootProject.name}: ${project.name.capitalize()}")
+				url.set("https://github.com/$authorId/${rootProject.name}")
 				
 				developers {
 					developer {
-						id.set("luizrcs")
-						name.set("Luiz Rodrigo")
-						email.set("luizrodrigo40@gmail.com")
+						id.set(authorId)
+						name.set(authorName)
+						email.set(authorEmail)
 					}
 				}
 				
@@ -39,8 +43,8 @@ publishing {
 				}
 				
 				scm {
-					connection.set("scm:git:git://github.com/luizrcs/${rootProject.name}.git")
-					url.set("https://github.com/luizrcs/${rootProject.name}")
+					connection.set("scm:git:git://github.com/$authorId/${rootProject.name}.git")
+					url.set("https://github.com/$authorId/${rootProject.name}")
 				}
 			}
 			
