@@ -41,8 +41,6 @@ val TagAny?.float get() = tagFloat.value
 val TagAny?.double get() = tagDouble.value
 val TagAny?.byteArray get() = tagByteArray.value
 val TagAny?.string get() = tagString.value
-val TagAny?.list get() = tagList.value
-val TagAny?.compound get() = tagCompound.value
 val TagAny?.intArray get() = tagIntArray.value
 val TagAny?.longArray get() = tagLongArray.value
 
@@ -54,7 +52,7 @@ val TagAny?.longArray get() = tagLongArray.value
  * @param type the type of this tag.
  * @param name this tag's name, if inside a [TagCompound].
  */
-sealed class Tag<T : Any>(val type: TagType, val name: String?) {
+sealed class Tag<T : Any>(val name: String?, val type: TagType, private val converters: Map<String, Tag<T>.() -> Any>) {
 	
 	/**
 	 * Backing mutable property for this tag's [value]. Should never be used externally.
@@ -80,6 +78,9 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 *
 	 * @param T type to cast this tag to; should be checked with one the "is[T]" properties
 	 * before calling this function.
+	 *
+	 * @return this tag cast to the specified type [T].
+	 *
 	 * @throws IllegalStateException thrown if trying to cast to an incorrect type.
 	 */
 	inline fun <reified T : TagAny?> getAs() =
@@ -103,15 +104,30 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 * Deep-clones this tag. Some properties can be changed during the copy.
 	 *
 	 * @param name the name to apply to the cloned tag.
+	 *
 	 * @return a clone of this tag; some properties may have been changed with the params.
 	 */
 	internal abstract fun clone(name: String? = this.name): Tag<T>
+	
+	/**
+	 * Converts this tag to a specified type [U].
+	 *
+	 * @param U the type to convert this tag to.
+	 * @param converter the name of the converter function.
+	 *
+	 * @return the converted tag value.
+	 */
+	internal fun <U> convert(converter: String): U {
+		val _converter = converters[converter] ?: throw IllegalArgumentException("""Converter "$converter" not found for tag type "$type"""")
+		return _converter(this) as U
+	}
 	
 	/**
 	 * Clones this tag. Some properties can be changed during the copy.
 	 *
 	 * @param name the name to apply to the cloned tag.
 	 * @param deep perform deep clone.
+	 *
 	 * @return a clone of this tag; some properties may have been changed with the params.
 	 */
 	internal open fun clone(name: String? = this.name, deep: Boolean): Tag<T> = clone(name)
@@ -121,6 +137,7 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 	 * Used when building a [TagCompound] or a [TagList].
 	 *
 	 * @param name the name to be ensured in this tag.
+	 *
 	 * @return this tag, if the name is correct, or a clone with the new name.
 	 */
 	internal fun ensureName(name: String?) = if (this.name == name) this else clone(name)
@@ -162,6 +179,8 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 		 * @param tagType type of the tag to be read.
 		 * @param byteBuffer the [ByteBuffer] to read from.
 		 * @param name the name of the tag to be read; defaults to null.
+		 *
+		 * @return the read tag.
 		 */
 		fun read(tagType: TagType, byteBuffer: ByteBuffer, name: String? = null) = when (tagType) {
 			TAG_END        -> TagEnd
@@ -187,13 +206,14 @@ sealed class Tag<T : Any>(val type: TagType, val name: String?) {
 		 * @param id type id of the tag to be read.
 		 * @param byteBuffer the [ByteBuffer] to read from.
 		 * @param name the name of the tag to be read; defaults to null.
+		 *
+		 * @return the read tag.
 		 */
 		fun read(id: Byte, byteBuffer: ByteBuffer, name: String? = null) = read(TagType[id], byteBuffer, name)
 	}
 }
 
 enum class TagType(val id: Byte, private val string: String) {
-	
 	TAG_END(0, "End"),
 	TAG_BYTE(1, "Byte"),
 	TAG_SHORT(2, "Short"),
@@ -214,11 +234,16 @@ enum class TagType(val id: Byte, private val string: String) {
 	override fun toString() = string
 	
 	companion object : LinkedHashMap<Byte, TagType>() {
-		
 		init {
 			putAll(values().associateBy { (id) -> id })
 		}
 		
 		override fun get(key: Byte) = super.get(key) ?: throw IllegalArgumentException("Invalid tag id $key")
 	}
+}
+
+open class TagCompanion<T : Any> {
+	internal val converters = mutableMapOf<String, Tag<T>.() -> Any>()
+	
+	fun addConverter(converter: String, function: Tag<T>.() -> Any) = converters.put(converter, function)
 }

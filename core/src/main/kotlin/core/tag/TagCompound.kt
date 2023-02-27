@@ -9,7 +9,7 @@ typealias TagCompoundMap = Map<String, TagAny>
 typealias TagCompoundMapEntry = Map.Entry<String, TagAny>
 typealias MutableTagCompoundMap = LinkedHashMap<String, TagAny>
 
-open class TagCompound protected constructor(name: String? = null) : Tag<TagCompoundMap>(TAG_COMPOUND, name) {
+open class TagCompound protected constructor(name: String? = null) : Tag<TagCompoundMap>(name, TAG_COMPOUND, converters) {
 	
 	override val sizeInBytes
 		get() = _value.entries.sumOf { (name, tag) ->
@@ -85,7 +85,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<TagComp
 		append("}")
 	}
 	
-	companion object {
+	companion object: TagCompanion<TagCompoundMap>() {
 		/** Custom [Comparator] for NBT entries in a [TagCompound], inspired by NBTExplorer. */
 		val nbtComparator = Comparator<TagCompoundMapEntry> { (name1, tag1), (name2, tag2) ->
 			val type1 = tag1.type

@@ -3,7 +3,7 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagFloat private constructor(name: String? = null) : Tag<Float>(TAG_FLOAT, name) {
+class TagFloat private constructor(name: String? = null) : Tag<Float>(name, TAG_FLOAT, converters) {
 	
 	override val sizeInBytes = Int.SIZE_BYTES
 	
@@ -26,4 +26,6 @@ class TagFloat private constructor(name: String? = null) : Tag<Float>(TAG_FLOAT,
 	override fun clone(name: String?) = TagFloat(value, name)
 	
 	override fun valueToString() = "${_value}f"
+	
+	companion object : TagCompanion<Float>()
 }

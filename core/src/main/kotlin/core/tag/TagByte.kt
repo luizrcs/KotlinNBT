@@ -4,7 +4,7 @@ import br.com.luizrcs.nbt.core.extension.*
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagByte private constructor(name: String? = null) : Tag<Byte>(TAG_BYTE, name) {
+class TagByte private constructor(name: String? = null) : Tag<Byte>(name, TAG_BYTE, converters) {
 	
 	override val sizeInBytes = Byte.SIZE_BYTES
 	
@@ -25,4 +25,6 @@ class TagByte private constructor(name: String? = null) : Tag<Byte>(TAG_BYTE, na
 	}
 	
 	override fun clone(name: String?) = TagByte(value, name)
+	
+	companion object : TagCompanion<Byte>()
 }

@@ -8,7 +8,7 @@ import java.nio.*
 typealias TagListList = List<TagAny>
 typealias MutableTagListList = MutableList<TagAny>
 
-class TagList private constructor(name: String? = null) : Tag<TagListList>(TAG_LIST, name) {
+class TagList private constructor(name: String? = null) : Tag<TagListList>(name, TAG_LIST, converters) {
 	
 	override val sizeInBytes get() = Byte.SIZE_BYTES + Int.SIZE_BYTES + _value.sumOf { it.sizeInBytes }
 	
@@ -64,4 +64,6 @@ class TagList private constructor(name: String? = null) : Tag<TagListList>(TAG_L
 		
 		append("]")
 	}
+	
+	companion object : TagCompanion<TagListList>()
 }

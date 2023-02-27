@@ -3,7 +3,7 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagDouble private constructor(name: String? = null) : Tag<Double>(TAG_DOUBLE, name) {
+class TagDouble private constructor(name: String? = null) : Tag<Double>(name, TAG_DOUBLE, converters) {
 	
 	override val sizeInBytes = Long.SIZE_BYTES
 	
@@ -24,4 +24,6 @@ class TagDouble private constructor(name: String? = null) : Tag<Double>(TAG_DOUB
 	}
 	
 	override fun clone(name: String?) = TagDouble(value, name)
+	
+	companion object : TagCompanion<Double>()
 }

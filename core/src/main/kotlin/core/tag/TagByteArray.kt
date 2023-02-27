@@ -3,7 +3,7 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagByteArray private constructor(name: String? = null) : TagArray<ByteArray, Byte>(TAG_BYTE_ARRAY, name) {
+class TagByteArray private constructor(name: String? = null) : TagArray<ByteArray, Byte>(name, TAG_BYTE_ARRAY, converters) {
 	
 	override val value get() = _value.copyOf()
 	
@@ -36,4 +36,6 @@ class TagByteArray private constructor(name: String? = null) : TagArray<ByteArra
 	override fun clone(name: String?) = TagByteArray(value, name)
 	
 	override fun valueToString() = "[${_value.joinToString()}]"
+	
+	companion object : TagCompanion<ByteArray>()
 }

@@ -4,7 +4,7 @@ import br.com.luizrcs.nbt.core.extension.*
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagString private constructor(name: String? = null) : Tag<String>(TAG_STRING, name) {
+class TagString private constructor(name: String? = null) : Tag<String>(name, TAG_STRING, converters) {
 	
 	override val sizeInBytes get() = Short.SIZE_BYTES + _value.toByteArray().size
 	
@@ -27,4 +27,6 @@ class TagString private constructor(name: String? = null) : Tag<String>(TAG_STRI
 	override fun clone(name: String?) = TagString(value, name)
 	
 	override fun valueToString() = "\"$_value\""
+	
+	companion object : TagCompanion<String>()
 }

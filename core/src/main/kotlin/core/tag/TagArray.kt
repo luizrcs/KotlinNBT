@@ -1,7 +1,8 @@
 package br.com.luizrcs.nbt.core.tag
 
-abstract class TagArray<T : Any, U : Number> internal constructor(type: TagType, name: String? = null) :
-	Tag<T>(type, name) {
+abstract class TagArray<T : Any, U : Number>
+internal constructor(name: String? = null, type: TagType, converters: Map<String, Tag<T>.() -> Any>) :
+	Tag<T>(name, type, converters) {
 	
 	abstract val size: Int
 	

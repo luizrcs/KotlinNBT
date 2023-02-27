@@ -3,7 +3,7 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagShort private constructor(name: String? = null) : Tag<Short>(TAG_SHORT, name) {
+class TagShort private constructor(name: String? = null) : Tag<Short>(name, TAG_SHORT, converters) {
 	
 	override val sizeInBytes = Short.SIZE_BYTES
 	
@@ -24,4 +24,6 @@ class TagShort private constructor(name: String? = null) : Tag<Short>(TAG_SHORT,
 	}
 	
 	override fun clone(name: String?) = TagShort(value, name)
+	
+	companion object : TagCompanion<Short>()
 }

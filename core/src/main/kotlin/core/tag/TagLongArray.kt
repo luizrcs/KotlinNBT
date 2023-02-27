@@ -3,7 +3,7 @@ package br.com.luizrcs.nbt.core.tag
 import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.nio.*
 
-class TagLongArray private constructor(name: String? = null) : TagArray<LongArray, Long>(TAG_LONG_ARRAY, name) {
+class TagLongArray private constructor(name: String? = null) : TagArray<LongArray, Long>(name, TAG_LONG_ARRAY, converters) {
 	
 	override val value get() = _value.copyOf()
 	
@@ -33,4 +33,6 @@ class TagLongArray private constructor(name: String? = null) : TagArray<LongArra
 	override fun clone(name: String?) = TagLongArray(value, name)
 	
 	override fun valueToString() = "[${_value.joinToString { "${it}L" }}]"
+	
+	companion object : TagCompanion<LongArray>()
 }
