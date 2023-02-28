@@ -34,7 +34,15 @@ object JsonNbtConverter : NbtConverter<JsonElement>("json") {
 			}
 			else                        -> null
 		}
-		is JsonArray     -> value.mapNotNull { convertToTag(it) }.let { TagList(it.first().type, it) }
+		is JsonArray     -> {
+			val converted = value.mapNotNull { convertToTag(it) }
+			when {
+				converted.all { it is TagByte } -> TagByteArray(converted.map { (it as TagByte).value }.toByteArray())
+				converted.all { it is TagInt }  -> TagIntArray(converted.map { (it as TagInt).value }.toIntArray())
+				converted.all { it is TagLong } -> TagLongArray(converted.map { (it as TagLong).value }.toLongArray())
+				else                            -> TagList(converted.first().type, converted)
+			}
+		}
 		is JsonObject    -> value.mapNotNull { (key, value) -> convertToTag(value)?.let { key to it } }.toMap().let(::TagCompound)
 		else             -> null
 	}
