@@ -52,7 +52,7 @@ val TagAny?.longArray get() = tagLongArray.value
  * @param type the type of this tag.
  * @param name this tag's name, if inside a [TagCompound].
  */
-sealed class Tag<T : Any>(val name: String?, val type: TagType, private val converters: Map<String, Tag<T>.() -> Any>) {
+sealed class Tag<T : Any>(val name: String?, val type: TagType, private val converters: Map<String, Tag<T>.() -> Any?>) {
 	
 	/**
 	 * Backing mutable property for this tag's [value]. Should never be used externally.
@@ -137,9 +137,9 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 	 *
 	 * @return the converted tag value.
 	 */
-	fun <U> convert(converter: String): U {
+	fun <U> convert(converter: String): U? {
 		val _converter = converters[converter] ?: throw IllegalArgumentException("""Converter "$converter" not found for tag type "$type"""")
-		return _converter(this) as U
+		return _converter(this) as U?
 	}
 	
 	/**
@@ -243,7 +243,7 @@ enum class TagType(val id: Byte, private val string: String) {
 }
 
 open class TagCompanion<T : Any> {
-	internal val converters = mutableMapOf<String, Tag<T>.() -> Any>()
+	internal val converters = mutableMapOf<String, Tag<T>.() -> Any?>()
 	
-	fun addConverter(converter: String, function: Tag<T>.() -> Any) = converters.put(converter, function)
+	fun addConverter(converter: String, function: Tag<T>.() -> Any?) = converters.put(converter, function)
 }

@@ -1,7 +1,6 @@
 package br.com.luizrcs.nbt.snbt
 
 import br.com.luizrcs.nbt.core.api.*
-import snbt.*
 
 fun main() {
 	Snbt.registerConverter()
@@ -21,6 +20,12 @@ fun main() {
 	}
 	
 	val snbt = Snbt.convert(nbt)
+	
+	println("SNBT:")
 	println(snbt)
-	println(Snbt.parse(snbt))
+	
+	if (snbt != null) {
+		println("NBT:")
+		println(Snbt.parse(snbt))
+	}
 }
