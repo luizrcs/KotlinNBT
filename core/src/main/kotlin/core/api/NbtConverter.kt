@@ -16,6 +16,24 @@ abstract class NbtConverter<T : Any>(val name: String) {
 	abstract val convertTagIntArray: Tag<IntArray>.() -> T
 	abstract val convertTagLongArray: Tag<LongArray>.() -> T
 	
+	/**
+	 * Converts the given tag to this format, or null if the tag cannot be converted.
+	 *
+	 * @param tag the tag to convert.
+	 *
+	 * @return the converted value, or null if the tag cannot be converted to this format.
+	 */
+	abstract fun convert(tag: TagAny): T?
+	
+	/**
+	 * Parses the given value to a [TagAny], or null if the value is not a valid tag.
+	 *
+	 * @param value the value to parse.
+	 *
+	 * @return the parsed tag, or null if the value is not a valid tag.
+	 */
+	abstract fun parse(value: T): TagAny?
+	
 	fun registerConverter() {
 		TagByte.addConverter(name, convertTagByte)
 		TagShort.addConverter(name, convertTagShort)

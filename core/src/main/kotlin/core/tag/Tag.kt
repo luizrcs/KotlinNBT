@@ -110,19 +110,6 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 	internal abstract fun clone(name: String? = this.name): Tag<T>
 	
 	/**
-	 * Converts this tag to a specified type [U].
-	 *
-	 * @param U the type to convert this tag to.
-	 * @param converter the name of the converter function.
-	 *
-	 * @return the converted tag value.
-	 */
-	internal fun <U> convert(converter: String): U {
-		val _converter = converters[converter] ?: throw IllegalArgumentException("""Converter "$converter" not found for tag type "$type"""")
-		return _converter(this) as U
-	}
-	
-	/**
 	 * Clones this tag. Some properties can be changed during the copy.
 	 *
 	 * @param name the name to apply to the cloned tag.
@@ -141,6 +128,19 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 	 * @return this tag, if the name is correct, or a clone with the new name.
 	 */
 	internal fun ensureName(name: String?) = if (this.name == name) this else clone(name)
+	
+	/**
+	 * Converts this tag to a specified type [U].
+	 *
+	 * @param U the type to convert this tag to.
+	 * @param converter the name of the converter function.
+	 *
+	 * @return the converted tag value.
+	 */
+	fun <U> convert(converter: String): U {
+		val _converter = converters[converter] ?: throw IllegalArgumentException("""Converter "$converter" not found for tag type "$type"""")
+		return _converter(this) as U
+	}
 	
 	/**
 	 * Prefix of this tag's value when calling [toString].
