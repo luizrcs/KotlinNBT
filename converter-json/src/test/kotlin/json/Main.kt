@@ -3,7 +3,7 @@ package br.com.luizrcs.nbt.json
 import br.com.luizrcs.nbt.core.api.*
 
 fun main() {
-	Json.registerConverter()
+	JsonNbtConverter.registerConverter()
 	
 	val nbt = buildNbt("root") {
 		putTagCompound("testCompound") {
@@ -19,13 +19,14 @@ fun main() {
 		put("timestamp", System.currentTimeMillis())
 	}
 	
-	val json = Json.convert(nbt)
+	val json = JsonNbtConverter.convertFromTag(nbt)
 	
 	println("JSON:")
 	println(json)
+	println()
 	
 	if (json != null) {
 		println("NBT:")
-		println(Json.parse(json))
+		println(JsonNbtConverter.convertToTag(json))
 	}
 }

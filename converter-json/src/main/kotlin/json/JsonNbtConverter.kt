@@ -4,7 +4,7 @@ import br.com.luizrcs.nbt.core.api.*
 import br.com.luizrcs.nbt.core.tag.*
 import kotlinx.serialization.json.*
 
-object Json : NbtConverter<JsonElement>("json") {
+object JsonNbtConverter : NbtConverter<JsonElement>("json") {
 	override val convertTagByte: Tag<Byte>.() -> JsonElement? = { JsonPrimitive(value) }
 	override val convertTagShort: Tag<Short>.() -> JsonElement? = { JsonPrimitive(value) }
 	override val convertTagInt: Tag<Int>.() -> JsonElement? = { JsonPrimitive(value) }
@@ -18,7 +18,24 @@ object Json : NbtConverter<JsonElement>("json") {
 	override val convertTagIntArray: Tag<IntArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
 	override val convertTagLongArray: Tag<LongArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
 	
-	override fun convert(tag: TagAny) = tag.convert<JsonElement>("json")
-	
-	override fun parse(value: JsonElement): TagAny? = null
+	override fun convertFromTag(tag: TagAny) = tag.convert<JsonElement>("json")
+	override fun convertToTag(value: JsonElement): TagAny? = when (value) {
+		is JsonPrimitive -> when {
+			value.isString              -> TagString(value.content)
+			value.contentOrNull != null -> when {
+				value.content.toBooleanStrictOrNull() != null -> TagByte(if (value.content.toBooleanStrict()) 1 else 0)
+				value.content.toByteOrNull() != null          -> TagByte(value.content.toByte())
+				value.content.toShortOrNull() != null         -> TagShort(value.content.toShort())
+				value.content.toIntOrNull() != null           -> TagInt(value.content.toInt())
+				value.content.toLongOrNull() != null          -> TagLong(value.content.toLong())
+				value.content.toFloatOrNull() != null         -> TagFloat(value.content.toFloat())
+				value.content.toDoubleOrNull() != null        -> TagDouble(value.content.toDouble())
+				else                                          -> TagString(value.content)
+			}
+			else                        -> null
+		}
+		is JsonArray     -> value.mapNotNull { convertToTag(it) }.let { TagList(it.first().type, it) }
+		is JsonObject    -> TagCompound(value.mapValues { (_, value) -> convertToTag(value)!! })
+		else             -> null
+	}
 }

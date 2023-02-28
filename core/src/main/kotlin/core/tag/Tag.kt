@@ -133,13 +133,13 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 	 * Converts this tag to a specified type [U].
 	 *
 	 * @param U the type to convert this tag to.
-	 * @param converter the name of the converter function.
+	 * @param converterName the name of the converter function.
 	 *
 	 * @return the converted tag value.
 	 */
-	fun <U> convert(converter: String): U? {
-		val _converter = converters[converter] ?: throw IllegalArgumentException("""Converter "$converter" not found for tag type "$type"""")
-		return _converter(this) as U?
+	fun <U> convert(converterName: String): U? {
+		val converter = converters[converterName] ?: throw IllegalArgumentException("""Converter "$converterName" not found for tag type "$type"""")
+		return converter(this) as U?
 	}
 	
 	/**

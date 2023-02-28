@@ -23,7 +23,7 @@ abstract class NbtConverter<T : Any>(val name: String) {
 	 *
 	 * @return the converted value, or null if the tag cannot be converted to this format.
 	 */
-	abstract fun convert(tag: TagAny): T?
+	abstract fun convertFromTag(tag: TagAny): T?
 	
 	/**
 	 * Parses the given value to a [TagAny], or null if the value is not a valid tag.
@@ -32,7 +32,7 @@ abstract class NbtConverter<T : Any>(val name: String) {
 	 *
 	 * @return the parsed tag, or null if the value is not a valid tag.
 	 */
-	abstract fun parse(value: T): TagAny?
+	abstract fun convertToTag(value: T): TagAny?
 	
 	fun registerConverter() {
 		TagByte.addConverter(name, convertTagByte)

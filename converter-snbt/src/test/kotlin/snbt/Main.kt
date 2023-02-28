@@ -3,7 +3,7 @@ package br.com.luizrcs.nbt.snbt
 import br.com.luizrcs.nbt.core.api.*
 
 fun main() {
-	Snbt.registerConverter()
+	SnbtNbtConverter.registerConverter()
 	
 	val nbt = buildNbt("root") {
 		putTagCompound("testCompound") {
@@ -19,13 +19,14 @@ fun main() {
 		put("timestamp", System.currentTimeMillis())
 	}
 	
-	val snbt = Snbt.convert(nbt)
+	val snbt = SnbtNbtConverter.convertFromTag(nbt)
 	
 	println("SNBT:")
 	println(snbt)
+	println()
 	
 	if (snbt != null) {
 		println("NBT:")
-		println(Snbt.parse(snbt))
+		println(SnbtNbtConverter.convertToTag(snbt))
 	}
 }
