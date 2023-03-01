@@ -1,10 +1,22 @@
+@file:Suppress(
+	"unused",
+	"MemberVisibilityCanBePrivate",
+)
+
 package br.com.luizrcs.nbt.json
 
 import br.com.luizrcs.nbt.core.api.*
 import br.com.luizrcs.nbt.core.tag.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
+import br.com.luizrcs.nbt.json.JsonNbtConverter.*
 import kotlinx.serialization.json.*
 
-object JsonNbtConverter : NbtConverter<JsonElement>("json") {
+inline fun JsonNbtConverter(builder: JsonNbtConverterBuilder.() -> Unit) = JsonNbtConverterBuilder().apply(builder).build()
+
+open class JsonNbtConverter private constructor(
+	private val conf: JsonNbtConverterBuilder = JsonNbtConverterBuilder(),
+) : NbtConverter<JsonElement>("json") {
+	
 	override val convertTagByte: Tag<Byte>.() -> JsonElement? = { JsonPrimitive(value) }
 	override val convertTagShort: Tag<Short>.() -> JsonElement? = { JsonPrimitive(value) }
 	override val convertTagInt: Tag<Int>.() -> JsonElement? = { JsonPrimitive(value) }
@@ -37,6 +49,7 @@ object JsonNbtConverter : NbtConverter<JsonElement>("json") {
 		is JsonArray     -> {
 			val converted = value.mapNotNull { convertToTag(it) }
 			when {
+				converted.isEmpty()             -> if (conf.convertEmptyJsonArrayToList) TagList(TAG_END, emptyList()) else null
 				converted.all { it is TagByte } -> TagByteArray(converted.map { (it as TagByte).value }.toByteArray())
 				converted.all { it is TagInt }  -> TagIntArray(converted.map { (it as TagInt).value }.toIntArray())
 				converted.all { it is TagLong } -> TagLongArray(converted.map { (it as TagLong).value }.toLongArray())
@@ -46,4 +59,12 @@ object JsonNbtConverter : NbtConverter<JsonElement>("json") {
 		is JsonObject    -> value.mapNotNull { (key, value) -> convertToTag(value)?.let { key to it } }.toMap().let(::TagCompound)
 		else             -> null
 	}
+	
+	class JsonNbtConverterBuilder {
+		var convertEmptyJsonArrayToList: Boolean = false
+		
+		fun build() = JsonNbtConverter(this)
+	}
+	
+	companion object : JsonNbtConverter()
 }

@@ -4,6 +4,7 @@ import br.com.luizrcs.nbt.core.api.*
 import br.com.luizrcs.nbt.core.io.*
 import br.com.luizrcs.nbt.core.io.NbtIO.Compression.*
 import br.com.luizrcs.nbt.core.tag.*
+import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.io.*
 import java.util.zip.*
 import kotlin.system.*

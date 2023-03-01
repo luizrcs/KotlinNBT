@@ -14,4 +14,6 @@ object TagEnd : Tag<Nothing>(null, TAG_END, emptyMap()) {
 	override fun clone(name: String?) = this
 	
 	override fun toString() = ""
+	
+	override fun valueToString() = ""
 }

@@ -1,7 +1,6 @@
 package br.com.luizrcs.nbt.json
 
 import br.com.luizrcs.nbt.core.api.*
-import kotlinx.serialization.json.*
 
 fun main() {
 	JsonNbtConverter.registerConverter()

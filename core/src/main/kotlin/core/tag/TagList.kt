@@ -18,7 +18,10 @@ class TagList private constructor(name: String? = null) : Tag<TagListList>(name,
 	operator fun get(index: Int) = _value[index]
 	
 	constructor(elementsType: TagType, value: TagListList, check: Boolean = true, name: String? = null) : this(name) {
-		require(!check || check(elementsType, value)) { "TagList elements must be of the same type" }
+		@Suppress("NAME_SHADOWING") var value = value
+		
+		if (elementsType == TAG_END) value = emptyList()
+		else require(!check || check(elementsType, value)) { "TagList elements must be of the same type" }
 		
 		_elementsType = elementsType
 		_value = value.map { tag -> tag.ensureName(null) }.toImmutableList()
