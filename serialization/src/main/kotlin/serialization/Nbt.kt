@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalSerializationApi::class)
+@file:Suppress("unused")
 
 package br.com.luizrcs.nbt.serialization
 

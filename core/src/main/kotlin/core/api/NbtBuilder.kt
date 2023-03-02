@@ -1,3 +1,8 @@
+@file:Suppress(
+	"unused",
+	"MemberVisibilityCanBePrivate",
+)
+
 package br.com.luizrcs.nbt.core.api
 
 import br.com.luizrcs.nbt.core.tag.*

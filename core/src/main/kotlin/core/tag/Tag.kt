@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package br.com.luizrcs.nbt.core.tag
 
 import br.com.luizrcs.nbt.core.tag.TagType.*
@@ -45,7 +47,7 @@ val TagAny?.intArray get() = tagIntArray.value
 val TagAny?.longArray get() = tagLongArray.value
 
 /**
- * Creates a [Tag] with the specified type [T] and, if appropriate in regards to the NBT specs,
+ * Creates a [Tag] with the specified type [T] and, if appropriate regarding the NBT specs,
  * a name (only really used inside a [TagCompound]). Should never be called directly, only by subclasses.
  *
  * @param T ensures the typed return value for this tag.
@@ -138,7 +140,7 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 	 * @return the converted tag value.
 	 */
 	fun <U> convert(converterName: String): U? {
-		val converter = converters[converterName] ?: throw IllegalArgumentException("""Converter "$converterName" not found for tag type "$type"""")
+		val converter = converters[converterName] ?: throw IllegalArgumentException("""Converter "$converterName" not registered for tag type $type""")
 		return converter(this) as U?
 	}
 	

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package br.com.luizrcs.nbt.core.tag
 
 import br.com.luizrcs.nbt.core.extension.*
@@ -66,6 +68,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<TagComp
 	
 	override fun clone(name: String?): Tag<TagCompoundMap> = clone(name, true)
 	
+	@Suppress("KotlinConstantConditions")
 	override fun clone(name: String?, deep: Boolean): Tag<TagCompoundMap> =
 		TagCompound(_value.entries.associate { (name, tag) -> name to if (deep) tag.clone(name, deep) else tag }, name)
 	
