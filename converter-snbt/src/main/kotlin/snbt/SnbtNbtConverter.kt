@@ -1,9 +1,19 @@
+@file:Suppress(
+	"unused",
+	"MemberVisibilityCanBePrivate",
+)
+
 package br.com.luizrcs.nbt.snbt
 
 import br.com.luizrcs.nbt.core.api.*
 import br.com.luizrcs.nbt.core.tag.*
+import br.com.luizrcs.nbt.snbt.SnbtNbtConverter.*
 
-object SnbtNbtConverter : NbtConverter<String>("snbt") {
+inline fun SnbtNbtConverter(builder: SnbtNbtConverterBuilder.() -> Unit) = SnbtNbtConverterBuilder().apply(builder).build()
+
+open class SnbtNbtConverter private constructor(
+	private val conf: SnbtNbtConverterBuilder = SnbtNbtConverterBuilder(),
+) : NbtConverter<String>("snbt") {
 	override val convertTagByte: Tag<Byte>.() -> String? = { "${value}b" }
 	override val convertTagShort: Tag<Short>.() -> String? = { "${value}s" }
 	override val convertTagInt: Tag<Int>.() -> String? = { "$value" }
@@ -35,4 +45,10 @@ object SnbtNbtConverter : NbtConverter<String>("snbt") {
 	}
 	
 	private fun quoteString(string: String) = if ('\'' in string) "\"${string.replace("\"", "\\\"")}\"" else "'$string'"
+	
+	class SnbtNbtConverterBuilder {
+		fun build() = SnbtNbtConverter(this)
+	}
+	
+	companion object : SnbtNbtConverter()
 }

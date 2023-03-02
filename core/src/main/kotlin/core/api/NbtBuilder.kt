@@ -8,33 +8,34 @@ annotation class NbtBuilder
 
 inline fun buildTagList(
 	name: String? = null,
-	entries: TagListList = emptyList(),
 	builder: TagListBuilder.() -> Unit,
-) = TagListBuilder(name, entries).apply(builder).build()
+) = TagListBuilder(name).apply(builder).build()
 
 inline fun buildTagCompound(
 	name: String? = null,
-	entries: TagCompoundMap = emptyMap(),
 	builder: TagCompoundBuilder.() -> Unit,
-) = TagCompoundBuilder(name, entries).apply(builder).build()
+) = TagCompoundBuilder(name).apply(builder).build()
 
 inline fun buildNbt(
 	name: String? = null,
-	entries: TagCompoundMap = emptyMap(),
 	builder: TagCompoundBuilder.() -> Unit,
-) = buildTagCompound(name, entries, builder)
+) = buildTagCompound(name, builder)
 
 @NbtBuilder
-abstract class TagBuilder<T : TagAny, U : Any>(protected val name: String?, @PublishedApi internal val entries: U) {
+abstract class TagBuilder<T : TagAny, U : Any>(protected val name: String?) {
+	@PublishedApi internal abstract val entries: U
+	
 	abstract fun build(): T
 }
 
-class TagCompoundBuilder @PublishedApi internal constructor(name: String?, entries: TagCompoundMap = emptyMap()) :
-	TagBuilder<TagCompound, MutableTagCompoundMap>(name, MutableTagCompoundMap().apply { putAll(entries) }) {
+class TagCompoundBuilder @PublishedApi internal constructor(name: String?) :
+	TagBuilder<TagCompound, MutableTagCompoundMap>(name) {
 	
-	override fun build() = TagCompound(entries, name)
+	override val entries = MutableTagCompoundMap()
 	
-	fun put(name: String, tag: TagAny) = entries.put(name, tag)
+	override fun build() = TagCompound(entries, name, false)
+	
+	fun put(name: String, tag: TagAny) = if (tag is TagEnd) throw IllegalArgumentException("Cannot add a TagEnd to a TagCompound") else entries.put(name, tag)
 	
 	fun put(name: String, byte: Byte) = put(name, TagByte(byte, name))
 	fun put(name: String, short: Short) = put(name, TagShort(short, name))
@@ -96,8 +97,10 @@ class TagCompoundBuilder @PublishedApi internal constructor(name: String?, entri
 	}
 }
 
-class TagListBuilder @PublishedApi internal constructor(name: String?, entries: TagListList = emptyList()) :
-	TagBuilder<TagList, MutableTagListList>(name, entries.toMutableList()) {
+class TagListBuilder @PublishedApi internal constructor(name: String?) :
+	TagBuilder<TagList, MutableTagListList>(name) {
+	
+	override val entries = MutableTagListList()
 	
 	private var elementsType = entries.firstOrNull()?.type
 	

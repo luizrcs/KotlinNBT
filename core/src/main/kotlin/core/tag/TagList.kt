@@ -6,7 +6,7 @@ import kotlinx.collections.immutable.*
 import java.nio.*
 
 typealias TagListList = List<TagAny>
-typealias MutableTagListList = MutableList<TagAny>
+typealias MutableTagListList = ArrayList<TagAny>
 
 class TagList private constructor(name: String? = null) : Tag<TagListList>(name, TAG_LIST, converters) {
 	

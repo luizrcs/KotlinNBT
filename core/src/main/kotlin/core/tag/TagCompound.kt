@@ -16,7 +16,9 @@ open class TagCompound protected constructor(name: String? = null) : Tag<TagComp
 			Byte.SIZE_BYTES + (Short.SIZE_BYTES + name.toByteArray().size) + tag.sizeInBytes
 		} + Byte.SIZE_BYTES
 	
-	constructor(value: TagCompoundMap, name: String? = null) : this(name) {
+	constructor(value: TagCompoundMap, name: String? = null, check: Boolean = true) : this(name) {
+		require(!check || value.values.all { tag -> tag !is TagEnd }) { "TagCompound cannot contain TagEnd" }
+		
 		_value = value.map { (name, tag) -> name to tag.ensureName(name) }.toMap().toImmutableMap()
 	}
 	
@@ -85,7 +87,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<TagComp
 		append("}")
 	}
 	
-	companion object: TagCompanion<TagCompoundMap>() {
+	companion object : TagCompanion<TagCompoundMap>() {
 		/** Custom [Comparator] for NBT entries in a [TagCompound], inspired by NBTExplorer. */
 		val nbtComparator = Comparator<TagCompoundMapEntry> { (name1, tag1), (name2, tag2) ->
 			val type1 = tag1.type
