@@ -7,14 +7,16 @@ to `JsonElement` subclasses (which can be further converted to `String`).
 ## Installation
 
 This module must be used alongside KotlinNBT's `nbt-core` and also `kotlinx-serialization-json` dependencies. The
-dependencies can be added to your project using [Gradle](https://gradle.org/):
+dependencies can be added from Maven Central to your project using [Gradle](https://gradle.org/):
 
 ### Groovy DSL
 
 ```groovy
-dependencies {
-    ...
+repositories {
+    mavenCentral()
+}
 
+dependencies {
     implementation 'br.com.luizrcs.nbt:nbt-core:2.0.0'
     implementation 'br.com.luizrcs.nbt:nbt-converter-json:2.0.0'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion"
@@ -24,9 +26,11 @@ dependencies {
 ### Kotlin DSL
 
 ```kotlin
-dependencies {
-    ...
+repositories {
+    mavenCentral()
+}
 
+dependencies {
     implementation("br.com.luizrcs.nbt:nbt-core:2.0.0")
     implementation("br.com.luizrcs.nbt:nbt-converter-json:2.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
