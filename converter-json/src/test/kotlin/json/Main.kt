@@ -2,6 +2,7 @@ package br.com.luizrcs.nbt.json
 
 import br.com.luizrcs.nbt.core.api.*
 
+@OptIn(ExperimentalJsonNbtConverter::class)
 fun main() {
 	JsonNbtConverter.registerConverter()
 	

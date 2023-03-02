@@ -9,8 +9,11 @@ import br.com.luizrcs.nbt.core.api.*
 import br.com.luizrcs.nbt.core.tag.*
 import br.com.luizrcs.nbt.snbt.SnbtNbtConverter.*
 
-inline fun SnbtNbtConverter(builder: SnbtNbtConverterBuilder.() -> Unit) = SnbtNbtConverterBuilder().apply(builder).build()
+@ExperimentalSnbtNbtConverter
+inline fun SnbtNbtConverter(builder: SnbtNbtConverterBuilder.() -> Unit): SnbtNbtConverter =
+	SnbtNbtConverterBuilder().apply(builder).build()
 
+@ExperimentalSnbtNbtConverter
 open class SnbtNbtConverter private constructor(
 	private val conf: SnbtNbtConverterBuilder = SnbtNbtConverterBuilder(),
 ) : NbtConverter<String>("snbt") {
@@ -27,7 +30,7 @@ open class SnbtNbtConverter private constructor(
 	override val convertTagIntArray: Tag<IntArray>.() -> String? = { "[I;${value.joinToString(",")}}" }
 	override val convertTagLongArray: Tag<LongArray>.() -> String? = { "[L;${value.joinToString(",") { long -> "${long}L" }}]" }
 	
-	override fun convertFromTag(tag: TagAny) = tag.convert<String>("snbt")
+	override fun convertFromTag(tag: TagAny): String? = tag.convert<String>("snbt")
 	override fun convertToTag(value: String): TagAny? {
 		var buffer = StringBuilder()
 		
@@ -50,5 +53,19 @@ open class SnbtNbtConverter private constructor(
 		fun build() = SnbtNbtConverter(this)
 	}
 	
+	@ExperimentalSnbtNbtConverter
 	companion object : SnbtNbtConverter()
 }
+
+/**
+ * This annotation marks the conversion between NBT and SNBT as experimental.
+ *
+ * Beware using the annotated API especially if you're developing a library, since your library might become binary
+ * incompatible with future versions of the `nbt-converter-snbt` module.
+ *
+ * Any usage of a declaration annotated with `@ExperimentalSnbtNbtConverter` must be accepted either by annotating that
+ * usage with the [OptIn] annotation, e.g. `@OptIn(ExperimentalSnbtNbtConverter::class)`, or by using the compiler
+ * argument `-opt-in=br.com.luizrcs.nbt.snbt.ExperimentalSnbtNbtConverter`.
+ */
+@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
+annotation class ExperimentalSnbtNbtConverter

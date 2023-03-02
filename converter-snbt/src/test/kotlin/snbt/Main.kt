@@ -2,6 +2,7 @@ package br.com.luizrcs.nbt.snbt
 
 import br.com.luizrcs.nbt.core.api.*
 
+@OptIn(ExperimentalSnbtNbtConverter::class)
 fun main() {
 	SnbtNbtConverter.registerConverter()
 	

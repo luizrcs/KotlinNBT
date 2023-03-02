@@ -11,8 +11,11 @@ import br.com.luizrcs.nbt.core.tag.TagType.*
 import br.com.luizrcs.nbt.json.JsonNbtConverter.*
 import kotlinx.serialization.json.*
 
-inline fun JsonNbtConverter(builder: JsonNbtConverterBuilder.() -> Unit) = JsonNbtConverterBuilder().apply(builder).build()
+@ExperimentalJsonNbtConverter
+inline fun JsonNbtConverter(builder: JsonNbtConverterBuilder.() -> Unit): JsonNbtConverter =
+	JsonNbtConverterBuilder().apply(builder).build()
 
+@ExperimentalJsonNbtConverter
 open class JsonNbtConverter private constructor(
 	private val conf: JsonNbtConverterBuilder = JsonNbtConverterBuilder(),
 ) : NbtConverter<JsonElement>("json") {
@@ -30,7 +33,7 @@ open class JsonNbtConverter private constructor(
 	override val convertTagIntArray: Tag<IntArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
 	override val convertTagLongArray: Tag<LongArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
 	
-	override fun convertFromTag(tag: TagAny) = tag.convert<JsonElement>("json")
+	override fun convertFromTag(tag: TagAny): JsonElement? = tag.convert<JsonElement>("json")
 	override fun convertToTag(value: JsonElement): TagAny? = when (value) {
 		is JsonPrimitive -> when {
 			value.isString              -> TagString(value.content)
@@ -60,11 +63,25 @@ open class JsonNbtConverter private constructor(
 		else             -> null
 	}
 	
-	class JsonNbtConverterBuilder {
+	class JsonNbtConverterBuilder @PublishedApi internal constructor() {
 		var convertEmptyJsonArrayToList: Boolean = false
 		
-		fun build() = JsonNbtConverter(this)
+		fun build(): JsonNbtConverter = JsonNbtConverter(this)
 	}
 	
+	@ExperimentalJsonNbtConverter
 	companion object : JsonNbtConverter()
 }
+
+/**
+ * This annotation marks the conversion between NBT and JSON as experimental.
+ *
+ * Beware using the annotated API especially if you're developing a library, since your library might become binary
+ * incompatible with future versions of the `nbt-converter-json` module.
+ *
+ * Any usage of a declaration annotated with `@ExperimentalJsonNbtConverter` must be accepted either by annotating that
+ * usage with the [OptIn] annotation, e.g. `@OptIn(ExperimentalJsonNbtConverter::class)`, or by using the compiler
+ * argument `-opt-in=br.com.luizrcs.nbt.json.ExperimentalJsonNbtConverter`.
+ */
+@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
+annotation class ExperimentalJsonNbtConverter

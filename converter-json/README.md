@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-### 
+###    
 
 ## Usage
 
@@ -50,6 +50,13 @@ Conversions can be done both ways with the `convertFromTag` and `convertToTag` m
 val json = JsonNbtConverter.convertFromTag(nbt) // Convert NBT to JSON
 val nbt = JsonNbtConverter.convertToTag(json) // Convert JSON to NBT
 ```
+
+### Experimental API
+
+This module is still experimental, and the API or even the logic behind it may change in the future, breaking both
+source and binary compatibility. For this reason, its uses must be accepted either by annotating that usage with the
+`OptIn` annotation (e.g. `@OptIn(ExperimentalJsonNbtConverter::class)`) or by using the compiler
+argument `-opt-in=br.com.luizrcs.nbt.json.ExperimentalJsonNbtConverter`.
 
 ## Conversion rules
 

@@ -3,18 +3,18 @@ package br.com.luizrcs.nbt.core.api
 import br.com.luizrcs.nbt.core.tag.*
 
 abstract class NbtConverter<T : Any>(val name: String) {
-	abstract val convertTagByte: Tag<Byte>.() -> T?
-	abstract val convertTagShort: Tag<Short>.() -> T?
-	abstract val convertTagInt: Tag<Int>.() -> T?
-	abstract val convertTagLong: Tag<Long>.() -> T?
-	abstract val convertTagFloat: Tag<Float>.() -> T?
-	abstract val convertTagDouble: Tag<Double>.() -> T?
-	abstract val convertTagByteArray: Tag<ByteArray>.() -> T?
-	abstract val convertTagString: Tag<String>.() -> T?
-	abstract val convertTagList: Tag<TagListList>.() -> T?
-	abstract val convertTagCompound: Tag<TagCompoundMap>.() -> T?
-	abstract val convertTagIntArray: Tag<IntArray>.() -> T?
-	abstract val convertTagLongArray: Tag<LongArray>.() -> T?
+	protected abstract val convertTagByte: Tag<Byte>.() -> T?
+	protected abstract val convertTagShort: Tag<Short>.() -> T?
+	protected abstract val convertTagInt: Tag<Int>.() -> T?
+	protected abstract val convertTagLong: Tag<Long>.() -> T?
+	protected abstract val convertTagFloat: Tag<Float>.() -> T?
+	protected abstract val convertTagDouble: Tag<Double>.() -> T?
+	protected abstract val convertTagByteArray: Tag<ByteArray>.() -> T?
+	protected abstract val convertTagString: Tag<String>.() -> T?
+	protected abstract val convertTagList: Tag<TagListList>.() -> T?
+	protected abstract val convertTagCompound: Tag<TagCompoundMap>.() -> T?
+	protected abstract val convertTagIntArray: Tag<IntArray>.() -> T?
+	protected abstract val convertTagLongArray: Tag<LongArray>.() -> T?
 	
 	/**
 	 * Converts the given tag to this format, or null if the tag cannot be converted.
