@@ -13,6 +13,8 @@ dependencies can be added to your project using [Gradle](https://gradle.org/):
 
 ```groovy
 dependencies {
+    ...
+
     implementation 'br.com.luizrcs.nbt:nbt-core:2.0.0'
     implementation 'br.com.luizrcs.nbt:nbt-converter-json:2.0.0'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion"
@@ -22,7 +24,9 @@ dependencies {
 ### Kotlin DSL
 
 ```kotlin
-dependencies { 
+dependencies {
+    ...
+
     implementation("br.com.luizrcs.nbt:nbt-core:2.0.0")
     implementation("br.com.luizrcs.nbt:nbt-converter-json:2.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")

@@ -25,6 +25,8 @@ The dependencies can be added to your project using [Gradle](https://gradle.org/
 
 ```groovy
 dependencies {
+    ...
+
     implementation 'br.com.luizrcs.nbt:nbt-core:2.0.0'
     implementation 'br.com.luizrcs.nbt:nbt-serialization:2.0.0'
 }
@@ -34,6 +36,8 @@ dependencies {
 
 ```kotlin
 dependencies {
+    ...
+
     implementation("br.com.luizrcs.nbt:nbt-core:2.0.0")
     implementation("br.com.luizrcs.nbt:nbt-serialization:2.0.0")
 }
