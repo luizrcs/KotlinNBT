@@ -1,7 +1,7 @@
 package br.com.luizrcs.nbt.core.tag
 
 abstract class TagArray<T : Any, U : Number>
-protected constructor(name: String? = null, type: TagType, converters: Map<String, Tag<T>.() -> Any?>) :
+protected constructor(name: String? = null, type: TagType, converters: MutableMap<String, Tag<T>.() -> Any?>) :
 	Tag<T>(name, type, converters) {
 	
 	/** Returns the number of elements in the array. */

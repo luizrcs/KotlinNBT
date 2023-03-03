@@ -6,7 +6,7 @@ import br.com.luizrcs.nbt.core.api.*
 fun main() {
 	SnbtNbtConverter.registerConverter()
 	
-	val nbt = buildNbt("root") {
+	val nbt = buildNbt {
 		putTagCompound("testCompound") {
 			put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
 		}

@@ -29,24 +29,135 @@ open class SnbtNbtConverter private constructor(
 	override val convertTagString: Tag<String>.() -> String? = { quoteString(value) }
 	override val convertTagList: Tag<TagListList>.() -> String? = { "[${value.mapNotNull { tag -> tag.convert("snbt") }.joinToString(",")}]" }
 	override val convertTagCompound: Tag<TagCompoundMap>.() -> String? = { "{${value.entries.mapNotNull { (key, value) -> value.convert<String>("snbt")?.let { "$key:$it" } }.joinToString(",")}}" }
-	override val convertTagIntArray: Tag<IntArray>.() -> String? = { "[I;${value.joinToString(",")}}" }
+	override val convertTagIntArray: Tag<IntArray>.() -> String? = { "[I;${value.joinToString(",")}]" }
 	override val convertTagLongArray: Tag<LongArray>.() -> String? = { "[L;${value.joinToString(",") { long -> "${long}L" }}]" }
 	
 	override fun convertFromTag(tag: TagAny): String? = tag.convert<String>("snbt")
+	
+	@Suppress("JoinDeclarationAndAssignment")
 	override fun convertToTag(value: String): TagAny? {
-		var buffer = StringBuilder()
+		val buffer = StringBuilder()
+		fun flushBuffer() = buffer.toString().also { buffer.clear() }
 		
-		fun flushBuffer(): String {
-			val result = buffer.toString()
-			buffer = StringBuilder()
-			return result
+		var index = 0
+		
+		lateinit var readIdentifier: () -> String
+		lateinit var readTag: () -> TagAny
+		
+		lateinit var readValue: () -> TagAny
+		lateinit var readCompound: () -> TagCompound
+		lateinit var readListOrArray: () -> TagAny
+		
+		readIdentifier = {
+			val condition = when (value[index]) {
+				'"'  -> {
+					index++
+					{ value[index] != '"' || value[index - 1] == '\\' }
+				}
+				'\'' -> {
+					index++
+					{ value[index] != '\'' || value[index - 1] == '\\' }
+				}
+				else -> {
+					{ value[index].toString().matches(identifierRegex) }
+				}
+			}
+			
+			while (condition()) buffer.append(value[index++])
+			if (value[index] == '"' || value[index] == '\'') index++
+			
+			flushBuffer()
 		}
 		
-		value.forEach { char ->
-		
+		readTag = {
+			when (value[index]) {
+				'{'  -> readCompound()
+				'['  -> readListOrArray()
+				else -> readValue()
+			}
 		}
 		
-		return null
+		readValue = {
+			val identifier = readIdentifier()
+			when (value[index]) {
+				'"', '\'' -> TagString(identifier)
+				else      -> when (identifier.lowercase()) {
+					"true"  -> TagByte(1)
+					"false" -> TagByte(0)
+					else    -> {
+						val cutIdentifier = identifier.dropLast(1)
+						when (identifier.last()) {
+							'b'  -> cutIdentifier.toByteOrNull()?.let { TagByte(it) }
+							's'  -> cutIdentifier.toShortOrNull()?.let { TagShort(it) }
+							'l'  -> cutIdentifier.toLongOrNull()?.let { TagLong(it) }
+							'f'  -> cutIdentifier.toFloatOrNull()?.let { TagFloat(it) }
+							'd'  -> cutIdentifier.toDoubleOrNull()?.let { TagDouble(it) }
+							else -> identifier.toIntOrNull()?.let { TagInt(it) } ?: identifier.toDoubleOrNull()?.let { TagDouble(it) }
+						} ?: TagString(identifier)
+					}
+				}
+			}
+		}
+		
+		readCompound = {
+			index++
+			buildTagCompound {
+				while (value[index] != '}') {
+					val key = readIdentifier()
+					if (value[index++] != ':') throw IllegalArgumentException("Expected ':' at index $index")
+					put(key, readTag())
+					if (value[index] == ',' || value[index] == ';') index++
+				}
+				index++
+			}
+		}
+		
+		readListOrArray = {
+			index++
+			when (value.substring(index, index + 2)) {
+				"B;" -> {
+					index += 2
+					val list = mutableListOf<TagByte>()
+					while (value[index] != ']') {
+						list.add(readValue() as TagByte)
+						if (value[index] == ',' || value[index] == ';') index++
+					}
+					index++
+					TagByteArray(list.map { it.value }.toByteArray())
+				}
+				"I;" -> {
+					index += 2
+					val list = mutableListOf<TagInt>()
+					while (value[index] != ']') {
+						list.add(readValue() as TagInt)
+						if (value[index] == ',' || value[index] == ';') index++
+					}
+					index++
+					TagIntArray(list.map { it.value }.toIntArray())
+				}
+				"L;" -> {
+					index += 2
+					val list = mutableListOf<TagLong>()
+					while (value[index] != ']') {
+						list.add(readValue() as TagLong)
+						if (value[index] == ',' || value[index] == ';') index++
+					}
+					index++
+					TagLongArray(list.map { it.value }.toLongArray())
+				}
+				else -> {
+					buildTagList {
+						while (value[index] != ']') {
+							add(readTag())
+							if (value[index] == ',' || value[index] == ';') index++
+						}
+						index++
+					}
+				}
+			}
+		}
+		
+		return readTag()
 	}
 	
 	private fun quoteString(string: String) = if ('\'' in string) "\"${string.replace("\"", "\\\"")}\"" else "'$string'"
@@ -56,7 +167,9 @@ open class SnbtNbtConverter private constructor(
 	}
 	
 	@ExperimentalSnbtNbtConverter
-	companion object : SnbtNbtConverter()
+	companion object : SnbtNbtConverter() {
+		private val identifierRegex = "[0-9A-Za-z_\\-+.]+".toRegex()
+	}
 }
 
 /**

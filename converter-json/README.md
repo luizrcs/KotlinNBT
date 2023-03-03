@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-###    
+###      
 
 ## Usage
 
@@ -93,9 +93,14 @@ The conversion rules are based on the [Minecraft Wiki][Minecraft Wiki] descripti
 
 ## Known issues
 
-- Right now, the only conversion 'behavior' available is the default Minecraft one. However, this is not always
+- The only conversion 'behavior' available is the default Minecraft one. However, this is not always
   desirable, as it makes a lot of assumptions which are not strict nor will fit everyone's data, as a more general use
   format.
+- The conversion is not reversible, as the JSON format is not strict enough to guarantee that the data can be
+  converted back to NBT without losing information. For example, if a `TagInt` with value `1` is converted to JSON,
+  then back to NBT, it will be converted to a `TagByte` with value `1`, as the JSON format does not distinguish
+  between `byte`, `short`, `int`, and `long` numbers; the same applies to `float` and `double` numbers or primitive
+  arrays. In the future, optional type hints will be introduced to allow almost full reversibility.
 
 [kotlinx-serialization-json]: https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md#json-element-builders
 
