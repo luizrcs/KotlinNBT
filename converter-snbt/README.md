@@ -24,16 +24,16 @@ dependencies {
 
 ```kotlin
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation("br.com.luizrcs.nbt:nbt-core:2.0.0")
-	implementation("br.com.luizrcs.nbt:nbt-converter-snbt:2.0.0")
+    implementation("br.com.luizrcs.nbt:nbt-core:2.0.0")
+    implementation("br.com.luizrcs.nbt:nbt-converter-snbt:2.0.0")
 }
 ```
 
-###                           
+###                             
 
 ## Usage
 
@@ -78,20 +78,20 @@ The conversion rules are based on the [Minecraft Wiki][Minecraft Wiki] descripti
 
 ### SNBT to NBT
 
-| SNBT representation                   | KotlinNBT tag type | SNBT example                      |
-|---------------------------------------|--------------------|-----------------------------------|
-| `${value}b`                           | `TagByte`          | `1b`                              |
-| `${value}s`                           | `TagShort`         | `1s`                              |
-| `${value}`                            | `TagInt`           | `1`                               |
-| `${value}L`                           | `TagLong`          | `1L`                              |
-| `${value}f`                           | `TagFloat`         | `1.0f`                            |
-| `${value}d` or `x.x`                  | `TagDouble`        | `1.0d` or `1.0`                   |
-| `[B;${values}]`                       | `TagByteArray`     | `[B;1b,2b,3b]`                    | 
-| `"${value}"` or `'$value'` or `value` | `TagString`        | `"Hello"` or `'Hello'` or `Hello` |
-| `[${values}]`                         | `TagList`          | `[1,2,3]`                         |
-| `{${values}}`                         | `TagCompound`      | `{a:1,b:2,c:3}`                   |
-| `[I;${values}]`                       | `TagIntArray`      | `[I;1,2,3]`                       |
-| `[L;${values}]`                       | `TagLongArray`     | `[L;1L,2L,3L]`                    |
+| SNBT representation                   | SNBT example                      | KotlinNBT tag type |
+|---------------------------------------|-----------------------------------|--------------------|
+| `${value}b`                           | `1b`                              | `TagByte`          |
+| `${value}s`                           | `1s`                              | `TagShort`         |
+| `${value}`                            | `1`                               | `TagInt`           |
+| `${value}L`                           | `1L`                              | `TagLong`          |
+| `${value}f`                           | `1.0f`                            | `TagFloat`         |
+| `${value}d` or `x.y`                  | `1.0d` or `1.0`                   | `TagDouble`        |
+| `[B;${values}]`                       | `[B;1b,2b,3b]`                    | `TagByteArray`     |
+| `"${value}"` or `'$value'` or `value` | `"Hello"` or `'Hello'` or `Hello` | `TagString`        |
+| `[${values}]`                         | `[1,2,3]`                         | `TagList`          |
+| `{${values}}`                         | `{a:1,b:2,c:3}`                   | `TagCompound`      |
+| `[I;${values}]`                       | `[I;1,2,3]`                       | `TagIntArray`      |
+| `[L;${values}]`                       | `[L;1L,2L,3L]`                    | `TagLongArray`     |
 
 ## Known issues
 
