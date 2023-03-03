@@ -2,7 +2,7 @@ package br.com.luizrcs.nbt.core.api
 
 import br.com.luizrcs.nbt.core.tag.*
 
-abstract class NbtConverter<T : Any>(val name: String) {
+abstract class NbtConverter<T : Any> protected constructor(val name: String) {
 	protected abstract val convertTagByte: Tag<Byte>.() -> T?
 	protected abstract val convertTagShort: Tag<Short>.() -> T?
 	protected abstract val convertTagInt: Tag<Int>.() -> T?

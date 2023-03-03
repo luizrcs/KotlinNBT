@@ -14,21 +14,21 @@ annotation class NbtBuilder
 inline fun buildTagList(
 	name: String? = null,
 	builder: TagListBuilder.() -> Unit,
-) = TagListBuilder(name).apply(builder).build()
+): TagList = TagListBuilder(name).apply(builder).build()
 
 inline fun buildTagCompound(
 	name: String? = null,
 	builder: TagCompoundBuilder.() -> Unit,
-) = TagCompoundBuilder(name).apply(builder).build()
+): TagCompound = TagCompoundBuilder(name).apply(builder).build()
 
 inline fun buildNbt(
 	name: String? = null,
 	builder: TagCompoundBuilder.() -> Unit,
-) = buildTagCompound(name, builder)
+): TagCompound = buildTagCompound(name, builder)
 
 @NbtBuilder
-abstract class TagBuilder<T : TagAny, U : Any>(protected val name: String?) {
-	@PublishedApi internal abstract val entries: U
+abstract class TagBuilder<T : TagAny, U : Any> internal constructor(protected val name: String?) {
+	protected abstract val entries: U
 	
 	abstract fun build(): T
 }
@@ -40,21 +40,24 @@ class TagCompoundBuilder @PublishedApi internal constructor(name: String?) :
 	
 	override fun build() = TagCompound(entries, name, false)
 	
-	fun put(name: String, tag: TagAny) = if (tag is TagEnd) throw IllegalArgumentException("Cannot add a TagEnd to a TagCompound") else entries.put(name, tag)
+	fun put(name: String, tag: TagAny) {
+		if (tag is TagEnd) throw IllegalArgumentException("Cannot add a TagEnd to a TagCompound")
+		else entries[name] = tag
+	}
 	
-	fun put(name: String, byte: Byte) = put(name, TagByte(byte, name))
-	fun put(name: String, short: Short) = put(name, TagShort(short, name))
-	fun put(name: String, int: Int) = put(name, TagInt(int, name))
-	fun put(name: String, long: Long) = put(name, TagLong(long, name))
-	fun put(name: String, float: Float) = put(name, TagFloat(float, name))
-	fun put(name: String, double: Double) = put(name, TagDouble(double, name))
-	fun put(name: String, byteArray: ByteArray) = put(name, TagByteArray(byteArray, name))
-	fun put(name: String, string: String) = put(name, TagString(string, name))
-	fun put(name: String, intArray: IntArray) = put(name, TagIntArray(intArray, name))
-	fun put(name: String, longArray: LongArray) = put(name, TagLongArray(longArray, name))
+	fun put(name: String, byte: Byte): Unit = put(name, TagByte(byte, name))
+	fun put(name: String, short: Short): Unit = put(name, TagShort(short, name))
+	fun put(name: String, int: Int): Unit = put(name, TagInt(int, name))
+	fun put(name: String, long: Long): Unit = put(name, TagLong(long, name))
+	fun put(name: String, float: Float): Unit = put(name, TagFloat(float, name))
+	fun put(name: String, double: Double): Unit = put(name, TagDouble(double, name))
+	fun put(name: String, byteArray: ByteArray): Unit = put(name, TagByteArray(byteArray, name))
+	fun put(name: String, string: String): Unit = put(name, TagString(string, name))
+	fun put(name: String, intArray: IntArray): Unit = put(name, TagIntArray(intArray, name))
+	fun put(name: String, longArray: LongArray): Unit = put(name, TagLongArray(longArray, name))
 	
-	fun putTagList(name: String, builder: TagListBuilder.() -> Unit) = put(name, TagListBuilder(name).apply(builder).build())
-	fun putTagCompound(name: String, builder: TagCompoundBuilder.() -> Unit) = put(name, TagCompoundBuilder(null).apply(builder).build())
+	fun putTagList(name: String, builder: TagListBuilder.() -> Unit): Unit = put(name, TagListBuilder(name).apply(builder).build())
+	fun putTagCompound(name: String, builder: TagCompoundBuilder.() -> Unit): Unit = put(name, TagCompoundBuilder(null).apply(builder).build())
 	
 	@PublishedApi internal fun List<*>.toListOfByte() = map { TagByte(it as Byte) }
 	@PublishedApi internal fun List<*>.toListOfShort() = map { TagShort(it as Short) }
@@ -118,17 +121,17 @@ class TagListBuilder @PublishedApi internal constructor(name: String?) :
 		entries.add(tag)
 	}
 	
-	fun add(byte: Byte) = add(TagByte(byte))
-	fun add(short: Short) = add(TagShort(short))
-	fun add(int: Int) = add(TagInt(int))
-	fun add(long: Long) = add(TagLong(long))
-	fun add(float: Float) = add(TagFloat(float))
-	fun add(double: Double) = add(TagDouble(double))
-	fun add(byteArray: ByteArray) = add(TagByteArray(byteArray))
-	fun add(string: String) = add(TagString(string))
-	fun add(intArray: IntArray) = add(TagIntArray(intArray))
-	fun add(longArray: LongArray) = add(TagLongArray(longArray))
+	fun add(byte: Byte): Unit = add(TagByte(byte))
+	fun add(short: Short): Unit = add(TagShort(short))
+	fun add(int: Int): Unit = add(TagInt(int))
+	fun add(long: Long): Unit = add(TagLong(long))
+	fun add(float: Float): Unit = add(TagFloat(float))
+	fun add(double: Double): Unit = add(TagDouble(double))
+	fun add(byteArray: ByteArray): Unit = add(TagByteArray(byteArray))
+	fun add(string: String): Unit = add(TagString(string))
+	fun add(intArray: IntArray): Unit = add(TagIntArray(intArray))
+	fun add(longArray: LongArray): Unit = add(TagLongArray(longArray))
 	
-	fun addTagList(builder: TagListBuilder.() -> Unit) = add(TagListBuilder(null).apply(builder).build())
-	fun addTagCompound(builder: TagCompoundBuilder.() -> Unit) = add(TagCompoundBuilder(null).apply(builder).build())
+	fun addTagList(builder: TagListBuilder.() -> Unit): Unit = add(TagListBuilder(null).apply(builder).build())
+	fun addTagCompound(builder: TagCompoundBuilder.() -> Unit): Unit = add(TagCompoundBuilder(null).apply(builder).build())
 }

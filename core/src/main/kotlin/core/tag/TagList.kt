@@ -21,8 +21,6 @@ class TagList private constructor(name: String? = null) : Tag<TagListList>(name,
 	private lateinit var _elementsType: TagType
 	val elementsType get() = _elementsType
 	
-	operator fun get(index: Int) = _value[index]
-	
 	constructor(elementsType: TagType, value: TagListList, check: Boolean = true, name: String? = null) : this(name) {
 		var value = value
 		
@@ -37,7 +35,14 @@ class TagList private constructor(name: String? = null) : Tag<TagListList>(name,
 		read(byteBuffer)
 	}
 	
-	private fun check(elementsType: TagType, list: TagListList) = list.all { it.type == elementsType }
+	/**
+	 * Returns the value of the element at the specified [index] in the list, or `null` if the [index] is out of bounds of this list.
+	 *
+	 * @param index index of the element to return.
+	 *
+	 * @return the value of the element at the specified [index] in the list, or `null` if the [index] is out of bounds of this list.
+	 */
+	operator fun get(index: Int): TagAny? = if (index in _value.indices) _value[index] else null
 	
 	override fun read(byteBuffer: ByteBuffer) {
 		val elementsId = byteBuffer.byte
@@ -73,6 +78,8 @@ class TagList private constructor(name: String? = null) : Tag<TagListList>(name,
 		
 		append("]")
 	}
+	
+	private fun check(elementsType: TagType, list: TagListList) = list.all { it.type == elementsType }
 	
 	companion object : TagCompanion<TagListList>()
 }

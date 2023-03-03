@@ -85,7 +85,7 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 	 *
 	 * @throws IllegalStateException thrown if trying to cast to an incorrect type.
 	 */
-	inline fun <reified T : TagAny?> getAs() =
+	inline fun <reified T : TagAny?> getAs(): T =
 		this as? T ?: throw IllegalStateException("Tag is not a ${T::class.java.simpleName}")
 	
 	/**
@@ -129,7 +129,7 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 	 *
 	 * @return this tag, if the name is correct, or a clone with the new name.
 	 */
-	internal fun ensureName(name: String?) = if (this.name == name) this else clone(name)
+	internal fun ensureName(name: String?): Tag<T> = if (this.name == name) this else clone(name)
 	
 	/**
 	 * Converts this tag to a specified type [U].
@@ -150,24 +150,21 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 	 *
 	 * @return the prefix for use in [toString]
 	 */
-	open fun prefix() = "${if (name.isNullOrEmpty()) "" else "${if (name.matches(nameRegex)) name else "`$name`"}: "}$type = "
+	open fun prefix(): String = "${if (name.isNullOrEmpty()) "" else "${if (name.matches(nameRegex)) name else "`$name`"}: "}$type = "
 	
 	/**
 	 * Only the portion of [toString] containing this tag's value, formatted according to its type.
 	 *
 	 * @return this tag's value, after formatting.
 	 */
-	open fun valueToString() = "$_value"
-	
-	operator fun component1() = type
-	operator fun component2() = name
+	open fun valueToString(): String = "$_value"
 	
 	/**
 	 * Formatted version of this tag's contents ready for pretty-printing.
 	 *
 	 * @return stringified version of this tag's contents
 	 */
-	override fun toString() = prefix() + valueToString()
+	override fun toString(): String = prefix() + valueToString()
 	
 	companion object {
 		/** Regex to check if a tag name is a valid Java identifier. */
@@ -184,7 +181,7 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 		 *
 		 * @return the read tag.
 		 */
-		fun read(tagType: TagType, byteBuffer: ByteBuffer, name: String? = null) = when (tagType) {
+		fun read(tagType: TagType, byteBuffer: ByteBuffer, name: String? = null): TagAny = when (tagType) {
 			TAG_END        -> TagEnd
 			TAG_BYTE       -> TagByte(byteBuffer, name)
 			TAG_SHORT      -> TagShort(byteBuffer, name)
@@ -211,7 +208,7 @@ sealed class Tag<T : Any>(val name: String?, val type: TagType, private val conv
 		 *
 		 * @return the read tag.
 		 */
-		fun read(id: Byte, byteBuffer: ByteBuffer, name: String? = null) = read(TagType[id], byteBuffer, name)
+		fun read(id: Byte, byteBuffer: ByteBuffer, name: String? = null): TagAny = read(TagType[id], byteBuffer, name)
 	}
 }
 
@@ -230,22 +227,21 @@ enum class TagType(val id: Byte, private val string: String) {
 	TAG_INT_ARRAY(11, "IntArray"),
 	TAG_LONG_ARRAY(12, "LongArray");
 	
-	operator fun component1() = id
-	operator fun component2() = string
-	
-	override fun toString() = string
+	override fun toString(): String = string
 	
 	companion object : LinkedHashMap<Byte, TagType>() {
 		init {
-			putAll(values().associateBy { (id) -> id })
+			putAll(values().associateBy { it.id })
 		}
 		
-		override fun get(key: Byte) = super.get(key) ?: throw IllegalArgumentException("Invalid tag id $key")
+		override fun get(key: Byte): TagType = super.get(key) ?: throw IllegalArgumentException("Invalid tag id $key")
 	}
 }
 
 open class TagCompanion<T : Any> {
-	internal val converters = mutableMapOf<String, Tag<T>.() -> Any?>()
+	internal val converters: MutableMap<String, Tag<T>.() -> Any?> = mutableMapOf()
 	
-	fun addConverter(converter: String, function: Tag<T>.() -> Any?) = converters.put(converter, function)
+	fun addConverter(converter: String, function: Tag<T>.() -> Any?) {
+		converters[converter] = function
+	}
 }

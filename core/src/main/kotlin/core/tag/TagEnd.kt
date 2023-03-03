@@ -5,6 +5,8 @@ import java.nio.*
 
 object TagEnd : Tag<Nothing>(null, TAG_END, emptyMap()) {
 	
+	override val value get() = throw UnsupportedOperationException("TagEnd has no value")
+	
 	override val sizeInBytes = 0
 	
 	override fun read(byteBuffer: ByteBuffer) {}

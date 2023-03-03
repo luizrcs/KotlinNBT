@@ -6,13 +6,12 @@ import java.nio.*
 class TagByteArray private constructor(name: String? = null) : TagArray<ByteArray, Byte>(name, TAG_BYTE_ARRAY, converters) {
 	
 	override val value get() = _value.copyOf()
+	override val size get() = _value.size
 	
 	override val sizeInBytes get() = Int.SIZE_BYTES + _value.size
 	
-	override val size get() = _value.size
-	
 	constructor(value: ByteArray, name: String? = null) : this(name) {
-		_value = value
+		_value = value.copyOf()
 	}
 	
 	constructor(byteBuffer: ByteBuffer, name: String? = null) : this(name) {

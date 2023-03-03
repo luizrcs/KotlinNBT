@@ -28,7 +28,14 @@ open class TagCompound protected constructor(name: String? = null) : Tag<TagComp
 		read(byteBuffer)
 	}
 	
-	operator fun get(name: String) = _value[name]
+	/**
+	 * Returns the value of the element with the specified [name] in the compound, or `null` if this compound does not contain a mapping for the [name].
+	 *
+	 * @param name name of the element to return.
+	 *
+	 * @return the value of the element with the specified [name] in the compound, or `null` if this compound does not contain a mapping for the [name].
+	 */
+	operator fun get(name: String): TagAny? = _value[name]
 	
 	final override fun read(byteBuffer: ByteBuffer) {
 		val value = MutableTagCompoundMap()
@@ -92,7 +99,7 @@ open class TagCompound protected constructor(name: String? = null) : Tag<TagComp
 	
 	companion object : TagCompanion<TagCompoundMap>() {
 		/** Custom [Comparator] for NBT entries in a [TagCompound], inspired by NBTExplorer. */
-		val nbtComparator = Comparator<TagCompoundMapEntry> { (name1, tag1), (name2, tag2) ->
+		private val nbtComparator = Comparator<TagCompoundMapEntry> { (name1, tag1), (name2, tag2) ->
 			val type1 = tag1.type
 			val type2 = tag2.type
 			
