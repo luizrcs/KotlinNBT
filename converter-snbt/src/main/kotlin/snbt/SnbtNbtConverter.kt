@@ -17,6 +17,8 @@ inline fun SnbtNbtConverter(builder: SnbtNbtConverterBuilder.() -> Unit): SnbtNb
 open class SnbtNbtConverter private constructor(
 	private val conf: SnbtNbtConverterBuilder = SnbtNbtConverterBuilder(),
 ) : NbtConverter<String>("snbt") {
+	
+	override val convertTagEnd: Tag<Nothing>.() -> String? = { "" }
 	override val convertTagByte: Tag<Byte>.() -> String? = { "${value}b" }
 	override val convertTagShort: Tag<Short>.() -> String? = { "${value}s" }
 	override val convertTagInt: Tag<Int>.() -> String? = { "$value" }

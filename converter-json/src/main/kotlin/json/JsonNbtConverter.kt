@@ -20,6 +20,7 @@ open class JsonNbtConverter private constructor(
 	private val conf: JsonNbtConverterBuilder = JsonNbtConverterBuilder(),
 ) : NbtConverter<JsonElement>("json") {
 	
+	override val convertTagEnd: Tag<Nothing>.() -> JsonElement? = { JsonNull }
 	override val convertTagByte: Tag<Byte>.() -> JsonElement? = { JsonPrimitive(value) }
 	override val convertTagShort: Tag<Short>.() -> JsonElement? = { JsonPrimitive(value) }
 	override val convertTagInt: Tag<Int>.() -> JsonElement? = { JsonPrimitive(value) }

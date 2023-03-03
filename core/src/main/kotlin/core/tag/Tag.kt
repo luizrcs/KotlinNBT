@@ -54,7 +54,7 @@ val TagAny?.longArray get() = tagLongArray.value
  * @param type the type of this tag.
  * @param name this tag's name, if inside a [TagCompound].
  */
-sealed class Tag<T : Any>(val name: String?, val type: TagType, private val converters: Map<String, Tag<T>.() -> Any?>) {
+sealed class Tag<T : Any>(val name: String?, val type: TagType, protected val converters: MutableMap<String, Tag<T>.() -> Any?>) {
 	
 	/**
 	 * Backing mutable property for this tag's [value]. Should never be used externally.

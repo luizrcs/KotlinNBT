@@ -3,6 +3,7 @@ package br.com.luizrcs.nbt.core.api
 import br.com.luizrcs.nbt.core.tag.*
 
 abstract class NbtConverter<T : Any> protected constructor(val name: String) {
+	protected abstract val convertTagEnd: Tag<Nothing>.() -> T?
 	protected abstract val convertTagByte: Tag<Byte>.() -> T?
 	protected abstract val convertTagShort: Tag<Short>.() -> T?
 	protected abstract val convertTagInt: Tag<Int>.() -> T?
@@ -35,6 +36,7 @@ abstract class NbtConverter<T : Any> protected constructor(val name: String) {
 	abstract fun convertToTag(value: T): TagAny?
 	
 	fun registerConverter() {
+		TagEnd.addConverter(name, convertTagEnd)
 		TagByte.addConverter(name, convertTagByte)
 		TagShort.addConverter(name, convertTagShort)
 		TagInt.addConverter(name, convertTagInt)
