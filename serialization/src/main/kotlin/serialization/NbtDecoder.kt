@@ -1,8 +1,3 @@
-@file:OptIn(
-	ExperimentalSerializationApi::class,
-	InternalSerializationApi::class
-)
-
 package br.com.luizrcs.nbt.serialization
 
 import br.com.luizrcs.nbt.core.tag.*
@@ -12,7 +7,8 @@ import kotlinx.serialization.encoding.*
 import kotlinx.serialization.encoding.CompositeDecoder.Companion.DECODE_DONE
 import kotlinx.serialization.internal.*
 
-open class NbtDecoder(open val tag: TagAny) : NamedValueDecoder() {
+@OptIn(InternalSerializationApi::class)
+internal open class NbtDecoder(open val tag: TagAny) : NamedValueDecoder() {
 	protected open var currentIndex = 0
 	
 	protected open fun currentTag(name: String) = tag.tagCompound[name]
@@ -30,6 +26,7 @@ open class NbtDecoder(open val tag: TagAny) : NamedValueDecoder() {
 	override fun decodeTaggedString(tag: String) = currentTag(tag).string
 	
 	@Suppress("UNCHECKED_CAST")
+	@OptIn(ExperimentalSerializationApi::class)
 	override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
 		val currentTag = currentTag()
 		
@@ -45,7 +42,7 @@ open class NbtDecoder(open val tag: TagAny) : NamedValueDecoder() {
 	}
 }
 
-class PrimitiveArrayNbtDecoder(override val tag: TagArray<Any, Number>) : NbtDecoder(tag) {
+internal class PrimitiveArrayNbtDecoder(override val tag: TagArray<Any, Number>) : NbtDecoder(tag) {
 	override var currentIndex = -1
 	private val lastIndex = tag.size - 1
 	
@@ -68,7 +65,7 @@ class PrimitiveArrayNbtDecoder(override val tag: TagArray<Any, Number>) : NbtDec
 	override fun decodeTaggedChar(tag: String) = currentTag(tag).byteArray[currentIndex].toInt().toChar()
 }
 
-class ListNbtDecoder(override val tag: TagList) : NbtDecoder(tag) {
+internal class ListNbtDecoder(override val tag: TagList) : NbtDecoder(tag) {
 	override var currentIndex = -1
 	private val lastIndex = tag.value.lastIndex
 	

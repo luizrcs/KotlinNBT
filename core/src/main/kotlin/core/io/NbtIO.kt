@@ -9,10 +9,9 @@ import java.nio.*
 import java.util.zip.*
 
 object NbtIO {
+	fun fromByteArray(byteArray: ByteArray): TagAny = read(ByteBuffer.wrap(byteArray))
 	
-	fun fromByteArray(byteArray: ByteArray) = read(ByteBuffer.wrap(byteArray))
-	
-	fun toByteArray(tag: TagAny) = if (tag is TagCompound) {
+	fun toByteArray(tag: TagAny): ByteArray = if (tag is TagCompound) {
 		val tagCompoundSize = (tag.name?.toByteArray()?.size ?: 0) + tag.sizeInBytes
 		val byteBuffer = ByteBuffer.allocate(Byte.SIZE_BYTES + Short.SIZE_BYTES + tagCompoundSize)
 		byteBuffer.also { tag.writeRoot(it) }.array() as ByteArray
@@ -25,7 +24,7 @@ object NbtIO {
 		return if (id == TAG_COMPOUND.id) TagCompound(byteBuffer, name) else Tag.read(id, byteBuffer)
 	}
 	
-	fun read(inputStream: InputStream, compression: Compression = NONE) = fromByteArray(
+	fun read(inputStream: InputStream, compression: Compression = NONE): TagAny = fromByteArray(
 		when (compression) {
 			NONE -> inputStream
 			GZIP -> GZIPInputStream(inputStream)
@@ -33,7 +32,7 @@ object NbtIO {
 		}.buffered().use(InputStream::readBytes)
 	)
 	
-	fun read(file: File, compression: Compression = NONE) = read(file.inputStream(), compression).tagCompound
+	fun read(file: File, compression: Compression = NONE): TagAny = read(file.inputStream(), compression).tagCompound
 	
 	fun write(tagCompound: TagCompound, outputStream: OutputStream, compression: Compression = NONE) {
 		when (compression) {
@@ -43,22 +42,18 @@ object NbtIO {
 		}.exhaustive.buffered().use { it.write(toByteArray(tagCompound)) }
 	}
 	
-	fun write(tagCompound: TagCompound, file: File, compression: Compression = NONE) =
+	fun write(tagCompound: TagCompound, file: File, compression: Compression = NONE): Unit =
 		write(tagCompound, file.outputStream(), compression)
 	
 	enum class Compression(private val id: Int) {
-		
 		NONE(0), GZIP(1), ZLIB(2);
 		
-		operator fun component1() = id
-		
 		companion object : LinkedHashMap<Int, Compression>() {
-			
 			init {
-				putAll(values().associateBy { (id) -> id })
+				putAll(values().associateBy { it.id })
 			}
 			
-			override fun get(key: Int) = super.get(key)
+			override fun get(key: Int): Compression = super.get(key)
 				?: throw IllegalArgumentException("No compression method with id '$key'")
 		}
 	}

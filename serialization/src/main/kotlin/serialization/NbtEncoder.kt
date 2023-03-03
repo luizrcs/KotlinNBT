@@ -1,8 +1,3 @@
-@file:OptIn(
-	ExperimentalSerializationApi::class,
-	InternalSerializationApi::class
-)
-
 package br.com.luizrcs.nbt.serialization
 
 import br.com.luizrcs.nbt.core.tag.*
@@ -13,6 +8,7 @@ import kotlinx.serialization.descriptors.StructureKind.*
 import kotlinx.serialization.internal.*
 import kotlinx.serialization.modules.*
 
+@OptIn(InternalSerializationApi::class)
 open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEncoder() {
 	private val compoundMap = MutableTagCompoundMap()
 	
