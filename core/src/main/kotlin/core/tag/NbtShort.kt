@@ -1,9 +1,10 @@
 package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.core.tag.TagType.*
+import br.com.luizrcs.nbt.core.api.*
+import br.com.luizrcs.nbt.core.tag.NbtType.*
 import java.nio.*
 
-class TagShort private constructor(name: String? = null) : Tag<Short>(name, TAG_SHORT, converters) {
+class NbtShort private constructor(name: String? = null) : NbtBase<Short>(SHORT, name) {
 	
 	override val sizeInBytes = Short.SIZE_BYTES
 	
@@ -23,7 +24,7 @@ class TagShort private constructor(name: String? = null) : Tag<Short>(name, TAG_
 		byteBuffer.putShort(_value)
 	}
 	
-	override fun clone(name: String?) = TagShort(value, name)
+	override fun <U : Any> convert(converter: NbtConverter<U>): U? = converter.convertNbtShort(this)
 	
-	companion object : TagCompanion<Short>()
+	override fun clone(name: String?) = NbtShort(value, name)
 }

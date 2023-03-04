@@ -16,27 +16,27 @@ inline fun SnbtNbtConverter(builder: SnbtNbtConverterBuilder.() -> Unit): SnbtNb
 @ExperimentalSnbtNbtConverter
 open class SnbtNbtConverter private constructor(
 	private val conf: SnbtNbtConverterBuilder = SnbtNbtConverterBuilder(),
-) : NbtConverter<String>("snbt") {
+) : NbtConverter<String>() {
 	
-	override val convertTagEnd: Tag<Nothing>.() -> String? = { "" }
-	override val convertTagByte: Tag<Byte>.() -> String? = { "${value}b" }
-	override val convertTagShort: Tag<Short>.() -> String? = { "${value}s" }
-	override val convertTagInt: Tag<Int>.() -> String? = { "$value" }
-	override val convertTagLong: Tag<Long>.() -> String? = { "${value}L" }
-	override val convertTagFloat: Tag<Float>.() -> String? = { "${value}f" }
-	override val convertTagDouble: Tag<Double>.() -> String? = { "${value}d" }
-	override val convertTagByteArray: Tag<ByteArray>.() -> String? = { "[B;${value.joinToString(",") { byte -> "${byte}b" }}]" }
-	override val convertTagString: Tag<String>.() -> String? = { value.quote() }
-	override val convertTagList: Tag<TagListList>.() -> String? = { "[${value.mapNotNull { tag -> convertFromTag(tag) }.joinToString(",")}]" }
-	override val convertTagCompound: Tag<TagCompoundMap>.() -> String? =
-		{ "{${value.entries.mapNotNull { (key, value) -> convertFromTag(value)?.let { "${key.quote(false)}:$it" } }.joinToString(",")}}" }
-	override val convertTagIntArray: Tag<IntArray>.() -> String? = { "[I;${value.joinToString(",")}]" }
-	override val convertTagLongArray: Tag<LongArray>.() -> String? = { "[L;${value.joinToString(",") { long -> "${long}L" }}]" }
+	override val convertNbtEnd: NbtBase<Nothing>.() -> String? = { "" }
+	override val convertNbtByte: NbtBase<Byte>.() -> String? = { "${value}b" }
+	override val convertNbtShort: NbtBase<Short>.() -> String? = { "${value}s" }
+	override val convertNbtInt: NbtBase<Int>.() -> String? = { "$value" }
+	override val convertNbtLong: NbtBase<Long>.() -> String? = { "${value}L" }
+	override val convertNbtFloat: NbtBase<Float>.() -> String? = { "${value}f" }
+	override val convertNbtDouble: NbtBase<Double>.() -> String? = { "${value}d" }
+	override val convertNbtByteArray: NbtBase<ByteArray>.() -> String? = { "[B;${value.joinToString(",") { byte -> "${byte}b" }}]" }
+	override val convertNbtString: NbtBase<String>.() -> String? = { value.quote() }
+	override val convertNbtList: NbtBase<NbtListList>.() -> String? = { "[${value.mapNotNull { tag -> convertFromNbt(tag) }.joinToString(",")}]" }
+	override val convertNbtCompound: NbtBase<NbtCompoundMap>.() -> String? =
+		{ "{${value.entries.mapNotNull { (key, value) -> convertFromNbt(value)?.let { "${key.quote(false)}:$it" } }.joinToString(",")}}" }
+	override val convertNbtIntArray: NbtBase<IntArray>.() -> String? = { "[I;${value.joinToString(",")}]" }
+	override val convertNbtLongArray: NbtBase<LongArray>.() -> String? = { "[L;${value.joinToString(",") { long -> "${long}L" }}]" }
 	
-	override fun convertFromTag(tag: TagAny): String? = tag.convert<String>("snbt")
+	override fun convertFromNbt(tag: NbtAny): String? = tag.convert(this)
 	
 	@Suppress("JoinDeclarationAndAssignment")
-	override fun convertToTag(value: String): TagAny? {
+	override fun convertToNbt(value: String): NbtAny? {
 		var index = 0
 		
 		val skipWhitespaces = { while (value[index].toString().matches(whitespaceRegex)) index++ }
@@ -55,11 +55,11 @@ open class SnbtNbtConverter private constructor(
 		}
 		
 		lateinit var readIdentifier: () -> String
-		lateinit var readTag: () -> TagAny
+		lateinit var readTag: () -> NbtAny
 		
-		lateinit var readValue: () -> TagAny
-		lateinit var readListOrArray: () -> TagAny
-		lateinit var readCompound: () -> TagCompound
+		lateinit var readValue: () -> NbtAny
+		lateinit var readListOrArray: () -> NbtAny
+		lateinit var readCompound: () -> NbtCompound
 		
 		readIdentifier = {
 			val buffer = StringBuilder()
@@ -100,20 +100,20 @@ open class SnbtNbtConverter private constructor(
 		readValue = {
 			val identifier = readIdentifier()
 			when (value[index]) {
-				'"', '\'' -> TagString(identifier)
+				'"', '\'' -> NbtString(identifier)
 				else      -> when (identifier.lowercase()) {
-					"true"  -> TagByte(1)
-					"false" -> TagByte(0)
+					"true"  -> NbtByte(1)
+					"false" -> NbtByte(0)
 					else    -> {
 						val cutIdentifier = identifier.dropLast(1)
 						when (identifier.last()) {
-							'b'  -> cutIdentifier.toByteOrNull()?.let { TagByte(it) }
-							's'  -> cutIdentifier.toShortOrNull()?.let { TagShort(it) }
-							'l'  -> cutIdentifier.toLongOrNull()?.let { TagLong(it) }
-							'f'  -> cutIdentifier.toFloatOrNull()?.let { TagFloat(it) }
-							'd'  -> cutIdentifier.toDoubleOrNull()?.let { TagDouble(it) }
-							else -> identifier.toIntOrNull()?.let { TagInt(it) } ?: identifier.toDoubleOrNull()?.let { TagDouble(it) }
-						} ?: TagString(identifier)
+							'b'  -> cutIdentifier.toByteOrNull()?.let { NbtByte(it) }
+							's'  -> cutIdentifier.toShortOrNull()?.let { NbtShort(it) }
+							'l'  -> cutIdentifier.toLongOrNull()?.let { NbtLong(it) }
+							'f'  -> cutIdentifier.toFloatOrNull()?.let { NbtFloat(it) }
+							'd'  -> cutIdentifier.toDoubleOrNull()?.let { NbtDouble(it) }
+							else -> identifier.toIntOrNull()?.let { NbtInt(it) } ?: identifier.toDoubleOrNull()?.let { NbtDouble(it) }
+						} ?: NbtString(identifier)
 					}
 				}
 			}
@@ -128,9 +128,9 @@ open class SnbtNbtConverter private constructor(
 				index += 2 // Skip 'B;', 'I;' or 'L;'
 				skipWhitespaces()
 				
-				val list = mutableListOf<Tag<T>>()
+				val list = mutableListOf<NbtBase<T>>()
 				while (value[index] != ']') {
-					list.add(readValue() as Tag<T>)
+					list.add(readValue() as NbtBase<T>)
 					skipSeparator()
 				}
 				index++ // Skip ']'
@@ -139,11 +139,11 @@ open class SnbtNbtConverter private constructor(
 			}
 			
 			when (value.substring(index, index + 2)) {
-				"B;" -> TagByteArray(readArray<Byte>().toByteArray())
-				"I;" -> TagIntArray(readArray<Int>().toIntArray())
-				"L;" -> TagLongArray(readArray<Long>().toLongArray())
+				"B;" -> NbtByteArray(readArray<Byte>().toByteArray())
+				"I;" -> NbtIntArray(readArray<Int>().toIntArray())
+				"L;" -> NbtLongArray(readArray<Long>().toLongArray())
 				else -> {
-					buildTagList {
+					buildNbtList {
 						while (value[index] != ']') {
 							add(readTag())
 							skipSeparator()
@@ -158,7 +158,7 @@ open class SnbtNbtConverter private constructor(
 			index++ // Skip '{'
 			skipWhitespaces()
 			
-			buildTagCompound {
+			buildNbtCompound {
 				while (value[index] != '}') {
 					val key = readIdentifier()
 					skipColon()

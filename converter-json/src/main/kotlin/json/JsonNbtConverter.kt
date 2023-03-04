@@ -7,7 +7,7 @@ package br.com.luizrcs.nbt.json
 
 import br.com.luizrcs.nbt.core.api.*
 import br.com.luizrcs.nbt.core.tag.*
-import br.com.luizrcs.nbt.core.tag.TagType.*
+import br.com.luizrcs.nbt.core.tag.NbtType.*
 import br.com.luizrcs.nbt.json.JsonNbtConverter.*
 import kotlinx.serialization.json.*
 
@@ -18,49 +18,49 @@ inline fun JsonNbtConverter(builder: JsonNbtConverterBuilder.() -> Unit): JsonNb
 @ExperimentalJsonNbtConverter
 open class JsonNbtConverter private constructor(
 	private val conf: JsonNbtConverterBuilder = JsonNbtConverterBuilder(),
-) : NbtConverter<JsonElement>("json") {
+) : NbtConverter<JsonElement>() {
 	
-	override val convertTagEnd: Tag<Nothing>.() -> JsonElement? = { JsonNull }
-	override val convertTagByte: Tag<Byte>.() -> JsonElement? = { JsonPrimitive(value) }
-	override val convertTagShort: Tag<Short>.() -> JsonElement? = { JsonPrimitive(value) }
-	override val convertTagInt: Tag<Int>.() -> JsonElement? = { JsonPrimitive(value) }
-	override val convertTagLong: Tag<Long>.() -> JsonElement? = { JsonPrimitive(value) }
-	override val convertTagFloat: Tag<Float>.() -> JsonElement? = { JsonPrimitive(value) }
-	override val convertTagDouble: Tag<Double>.() -> JsonElement? = { JsonPrimitive(value) }
-	override val convertTagByteArray: Tag<ByteArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
-	override val convertTagString: Tag<String>.() -> JsonElement? = { JsonPrimitive(value) }
-	override val convertTagList: Tag<TagListList>.() -> JsonElement? = { JsonArray(value.mapNotNull { tag -> convertFromTag(tag) }) }
-	override val convertTagCompound: Tag<TagCompoundMap>.() -> JsonElement? = { JsonObject(value.mapNotNull { (key, value) -> convertFromTag(value)?.let { key to it } }.toMap()) }
-	override val convertTagIntArray: Tag<IntArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
-	override val convertTagLongArray: Tag<LongArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
+	override val convertNbtEnd: NbtBase<Nothing>.() -> JsonElement? = { JsonNull }
+	override val convertNbtByte: NbtBase<Byte>.() -> JsonElement? = { JsonPrimitive(value) }
+	override val convertNbtShort: NbtBase<Short>.() -> JsonElement? = { JsonPrimitive(value) }
+	override val convertNbtInt: NbtBase<Int>.() -> JsonElement? = { JsonPrimitive(value) }
+	override val convertNbtLong: NbtBase<Long>.() -> JsonElement? = { JsonPrimitive(value) }
+	override val convertNbtFloat: NbtBase<Float>.() -> JsonElement? = { JsonPrimitive(value) }
+	override val convertNbtDouble: NbtBase<Double>.() -> JsonElement? = { JsonPrimitive(value) }
+	override val convertNbtByteArray: NbtBase<ByteArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
+	override val convertNbtString: NbtBase<String>.() -> JsonElement? = { JsonPrimitive(value) }
+	override val convertNbtList: NbtBase<NbtListList>.() -> JsonElement? = { JsonArray(value.mapNotNull { tag -> convertFromNbt(tag) }) }
+	override val convertNbtCompound: NbtBase<NbtCompoundMap>.() -> JsonElement? = { JsonObject(value.mapNotNull { (key, value) -> convertFromNbt(value)?.let { key to it } }.toMap()) }
+	override val convertNbtIntArray: NbtBase<IntArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
+	override val convertNbtLongArray: NbtBase<LongArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
 	
-	override fun convertFromTag(tag: TagAny): JsonElement? = tag.convert<JsonElement>("json")
-	override fun convertToTag(value: JsonElement): TagAny? = when (value) {
+	override fun convertFromNbt(tag: NbtAny): JsonElement? = tag.convert(this)
+	override fun convertToNbt(value: JsonElement): NbtAny? = when (value) {
 		is JsonPrimitive -> when {
-			value.isString              -> TagString(value.content)
+			value.isString              -> NbtString(value.content)
 			value.contentOrNull != null -> when {
-				value.content.toBooleanStrictOrNull() != null -> TagByte(if (value.content.toBooleanStrict()) 1 else 0)
-				value.content.toByteOrNull() != null          -> TagByte(value.content.toByte())
-				value.content.toShortOrNull() != null         -> TagShort(value.content.toShort())
-				value.content.toIntOrNull() != null           -> TagInt(value.content.toInt())
-				value.content.toLongOrNull() != null          -> TagLong(value.content.toLong())
-				value.content.toFloatOrNull() != null         -> TagFloat(value.content.toFloat())
-				value.content.toDoubleOrNull() != null        -> TagDouble(value.content.toDouble())
-				else                                          -> TagString(value.content)
+				value.content.toBooleanStrictOrNull() != null -> NbtByte(if (value.content.toBooleanStrict()) 1 else 0)
+				value.content.toByteOrNull() != null          -> NbtByte(value.content.toByte())
+				value.content.toShortOrNull() != null         -> NbtShort(value.content.toShort())
+				value.content.toIntOrNull() != null           -> NbtInt(value.content.toInt())
+				value.content.toLongOrNull() != null          -> NbtLong(value.content.toLong())
+				value.content.toFloatOrNull() != null         -> NbtFloat(value.content.toFloat())
+				value.content.toDoubleOrNull() != null        -> NbtDouble(value.content.toDouble())
+				else                                          -> NbtString(value.content)
 			}
 			else                        -> null
 		}
 		is JsonArray     -> {
-			val converted = value.mapNotNull { convertToTag(it) }
+			val converted = value.mapNotNull { convertToNbt(it) }
 			when {
-				converted.isEmpty()             -> if (conf.convertEmptyJsonArrayToList) TagList(TAG_END, emptyList()) else null
-				converted.all { it is TagByte } -> TagByteArray(converted.map { (it as TagByte).value }.toByteArray())
-				converted.all { it is TagInt }  -> TagIntArray(converted.map { (it as TagInt).value }.toIntArray())
-				converted.all { it is TagLong } -> TagLongArray(converted.map { (it as TagLong).value }.toLongArray())
-				else                            -> TagList(converted.first().type, converted)
+				converted.isEmpty()             -> if (conf.convertEmptyJsonArrayToList) NbtList(END, emptyList()) else null
+				converted.all { it is NbtByte } -> NbtByteArray(converted.map { (it as NbtByte).value }.toByteArray())
+				converted.all { it is NbtInt }  -> NbtIntArray(converted.map { (it as NbtInt).value }.toIntArray())
+				converted.all { it is NbtLong } -> NbtLongArray(converted.map { (it as NbtLong).value }.toLongArray())
+				else                            -> NbtList(converted.first().type, converted)
 			}
 		}
-		is JsonObject    -> value.mapNotNull { (key, value) -> convertToTag(value)?.let { key to it } }.toMap().let(::TagCompound)
+		is JsonObject    -> value.mapNotNull { (key, value) -> convertToNbt(value)?.let { key to it } }.toMap().let(::NbtCompound)
 		else             -> null
 	}
 	

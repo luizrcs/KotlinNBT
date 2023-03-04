@@ -1,10 +1,11 @@
 package br.com.luizrcs.nbt.core.tag
 
+import br.com.luizrcs.nbt.core.api.*
 import br.com.luizrcs.nbt.core.extension.*
-import br.com.luizrcs.nbt.core.tag.TagType.*
+import br.com.luizrcs.nbt.core.tag.NbtType.*
 import java.nio.*
 
-class TagString private constructor(name: String? = null) : Tag<String>(name, TAG_STRING, converters) {
+class NbtString private constructor(name: String? = null) : NbtBase<String>(STRING, name) {
 	
 	override val sizeInBytes get() = Short.SIZE_BYTES + _value.toByteArray().size
 	
@@ -24,9 +25,9 @@ class TagString private constructor(name: String? = null) : Tag<String>(name, TA
 		byteBuffer.putString(_value)
 	}
 	
-	override fun clone(name: String?) = TagString(value, name)
+	override fun <U : Any> convert(converter: NbtConverter<U>): U? = converter.convertNbtString(this)
+	
+	override fun clone(name: String?) = NbtString(value, name)
 	
 	override fun valueToString() = "\"$_value\""
-	
-	companion object : TagCompanion<String>()
 }

@@ -1,13 +1,13 @@
 package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.core.tag.TagType.*
+import br.com.luizrcs.nbt.core.api.*
+import br.com.luizrcs.nbt.core.tag.NbtType.*
 import java.nio.*
 
-class TagLongArray private constructor(name: String? = null) : TagArray<LongArray, Long>(name, TAG_LONG_ARRAY, converters) {
+class NbtLongArray private constructor(name: String? = null) : NbtArray<LongArray>(LONG_ARRAY, name) {
 	
 	override val value get() = _value.copyOf()
 	override val size get() = _value.size
-	
 	override val sizeInBytes get() = Int.SIZE_BYTES + _value.size * Long.SIZE_BYTES
 	
 	constructor(value: LongArray, name: String? = null) : this(name) {
@@ -18,8 +18,6 @@ class TagLongArray private constructor(name: String? = null) : TagArray<LongArra
 		read(byteBuffer)
 	}
 	
-	override fun get(index: Int) = _value[index]
-	
 	override fun read(byteBuffer: ByteBuffer) {
 		_value = LongArray(byteBuffer.int) { byteBuffer.long }
 	}
@@ -29,9 +27,9 @@ class TagLongArray private constructor(name: String? = null) : TagArray<LongArra
 		_value.forEach { byteBuffer.putLong(it) }
 	}
 	
-	override fun clone(name: String?) = TagLongArray(value, name)
+	override fun <U : Any> convert(converter: NbtConverter<U>): U? = converter.convertNbtLongArray(this)
+	
+	override fun clone(name: String?) = NbtLongArray(value, name)
 	
 	override fun valueToString() = "[${_value.joinToString { "${it}L" }}]"
-	
-	companion object : TagCompanion<LongArray>()
 }

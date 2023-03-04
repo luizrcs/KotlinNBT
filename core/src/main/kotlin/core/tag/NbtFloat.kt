@@ -1,9 +1,10 @@
 package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.core.tag.TagType.*
+import br.com.luizrcs.nbt.core.api.*
+import br.com.luizrcs.nbt.core.tag.NbtType.*
 import java.nio.*
 
-class TagFloat private constructor(name: String? = null) : Tag<Float>(name, TAG_FLOAT, converters) {
+class NbtFloat private constructor(name: String? = null) : NbtBase<Float>(FLOAT, name) {
 	
 	override val sizeInBytes = Int.SIZE_BYTES
 	
@@ -23,9 +24,9 @@ class TagFloat private constructor(name: String? = null) : Tag<Float>(name, TAG_
 		byteBuffer.putFloat(_value)
 	}
 	
-	override fun clone(name: String?) = TagFloat(value, name)
+	override fun <U : Any> convert(converter: NbtConverter<U>): U? = converter.convertNbtFloat(this)
+	
+	override fun clone(name: String?) = NbtFloat(value, name)
 	
 	override fun valueToString() = "${_value}f"
-	
-	companion object : TagCompanion<Float>()
 }

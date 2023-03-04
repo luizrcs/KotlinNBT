@@ -9,15 +9,15 @@ import java.util.zip.*
 import kotlin.system.*
 
 fun main() {
-	var nbt: TagCompound
+	var nbt: NbtCompound
 	
 	val nbtBuilderTime = measureTimeMillis {
 		nbt = buildNbt("root") {
-			putTagCompound("testCompound") {
+			putNbtCompound("testCompound") {
 				put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
 			}
-			putTagList("testList") {
-				addTagCompound {
+			putNbtList("testList") {
+				addNbtCompound {
 					put("firstString", "I'm the first String :)")
 					put("secondString", "I'm the second String, but order is not guaranteed :/")
 					put("justAnInteger", 1)
@@ -29,11 +29,11 @@ fun main() {
 	
 	val repeatedNbtBuilderTime = measureNanoTime {
 		nbt = buildNbt("root") {
-			putTagCompound("testCompound") {
+			putNbtCompound("testCompound") {
 				put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
 			}
-			putTagList("testList") {
-				addTagCompound {
+			putNbtList("testList") {
+				addNbtCompound {
 					put("firstString", "I'm the first String :)")
 					put("secondString", "I'm the second String, but order is not guaranteed :/")
 					put("justAnInteger", 1)
@@ -43,9 +43,9 @@ fun main() {
 		}
 	}
 	
-	val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacci"].intArray
-	val message: String = nbt["testList"].tagList[0].tagCompound["firstString"].string
-	val timestamp: Long = nbt["timestamp"].long
+	val fibonacci: IntArray = nbt.compound["testCompound"].compound["fibonacci"].intArray
+	val message: String = nbt.compound["testList"].list[0].compound["firstString"].string
+	val timestamp: Long = nbt.compound["timestamp"].long
 	
 	println(fibonacci.toList())
 	println(message)
@@ -62,7 +62,7 @@ fun main() {
 	val nanoTime: Long
 	
 	val bytes = GZIPInputStream(FileInputStream(file)).use(InputStream::readBytes)
-	val readNbt: TagAny
+	val readNbt: NbtAny
 	nanoTime = measureNanoTime { readNbt = NbtIO.read(ByteArrayInputStream(bytes).buffered()) }
 	println(readNbt)
 	println()

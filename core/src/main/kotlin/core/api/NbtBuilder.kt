@@ -6,132 +6,132 @@
 package br.com.luizrcs.nbt.core.api
 
 import br.com.luizrcs.nbt.core.tag.*
-import br.com.luizrcs.nbt.core.tag.TagType.*
+import br.com.luizrcs.nbt.core.tag.NbtType.*
 
 @DslMarker
-annotation class NbtBuilder
+annotation class NbtBuilderDsl
 
-inline fun buildTagList(
+inline fun buildNbtList(
 	name: String? = null,
-	builder: TagListBuilder.() -> Unit,
-): TagList = TagListBuilder(name).apply(builder).build()
+	builder: NbtListBuilder.() -> Unit,
+): NbtList = NbtListBuilder(name).apply(builder).build()
 
-inline fun buildTagCompound(
+inline fun buildNbtCompound(
 	name: String? = null,
-	builder: TagCompoundBuilder.() -> Unit,
-): TagCompound = TagCompoundBuilder(name).apply(builder).build()
+	builder: NbtCompoundBuilder.() -> Unit,
+): NbtCompound = NbtCompoundBuilder(name).apply(builder).build()
 
 inline fun buildNbt(
 	name: String? = null,
-	builder: TagCompoundBuilder.() -> Unit,
-): TagCompound = buildTagCompound(name, builder)
+	builder: NbtCompoundBuilder.() -> Unit,
+): NbtCompound = buildNbtCompound(name, builder)
 
-@NbtBuilder
-abstract class TagBuilder<T : TagAny, U : Any> internal constructor(protected val name: String?) {
+@NbtBuilderDsl
+abstract class NbtBuilder<T : NbtAny, U : Any> internal constructor(protected val name: String?) {
 	protected abstract val entries: U
 	
 	abstract fun build(): T
+	
+	@PublishedApi internal fun List<*>.toListOfByte() = map { NbtByte(it as Byte) }
+	@PublishedApi internal fun List<*>.toListOfShort() = map { NbtShort(it as Short) }
+	@PublishedApi internal fun List<*>.toListOfInt() = map { NbtInt(it as Int) }
+	@PublishedApi internal fun List<*>.toListOfLong() = map { NbtLong(it as Long) }
+	@PublishedApi internal fun List<*>.toListOfFloat() = map { NbtFloat(it as Float) }
+	@PublishedApi internal fun List<*>.toListOfDouble() = map { NbtDouble(it as Double) }
+	@PublishedApi internal fun List<*>.toListOfByteArray() = map { NbtByteArray(it as ByteArray) }
+	@PublishedApi internal fun List<*>.toListOfString() = map { NbtString(it as String) }
+	@PublishedApi internal fun List<*>.toListOfIntArray() = map { NbtIntArray(it as IntArray) }
+	@PublishedApi internal fun List<*>.toListOfLongArray() = map { NbtLongArray(it as LongArray) }
+	
+	@Suppress("UNCHECKED_CAST")
+	@PublishedApi internal fun <T : NbtAny> List<*>.toListOf() = map { (it as NbtAny).clone(null) as T }
+	
+	@PublishedApi internal inline fun <reified T : Any> parseList(value: List<T>) = when (val clazz = T::class) {
+		Byte::class         -> NbtList(BYTE, value.toListOfByte(), false)
+		Short::class        -> NbtList(SHORT, value.toListOfShort(), false)
+		Integer::class      -> NbtList(INT, value.toListOfInt(), false)
+		Long::class         -> NbtList(LONG, value.toListOfLong(), false)
+		Float::class        -> NbtList(FLOAT, value.toListOfFloat(), false)
+		Double::class       -> NbtList(DOUBLE, value.toListOfDouble(), false)
+		ByteArray::class    -> NbtList(BYTE_ARRAY, value.toListOfByteArray(), false)
+		String::class       -> NbtList(STRING, value.toListOfString(), false)
+		IntArray::class     -> NbtList(INT_ARRAY, value.toListOfIntArray(), false)
+		LongArray::class    -> NbtList(LONG_ARRAY, value.toListOfLongArray(), false)
+		NbtByte::class      -> NbtList(BYTE, value.toListOf<NbtByte>(), false)
+		NbtShort::class     -> NbtList(SHORT, value.toListOf<NbtShort>(), false)
+		NbtInt::class       -> NbtList(INT, value.toListOf<NbtInt>(), false)
+		NbtLong::class      -> NbtList(LONG, value.toListOf<NbtLong>(), false)
+		NbtFloat::class     -> NbtList(FLOAT, value.toListOf<NbtFloat>(), false)
+		NbtDouble::class    -> NbtList(DOUBLE, value.toListOf<NbtDouble>(), false)
+		NbtByteArray::class -> NbtList(BYTE_ARRAY, value.toListOf<NbtByteArray>(), false)
+		NbtString::class    -> NbtList(STRING, value.toListOf<NbtString>(), false)
+		NbtList::class      -> NbtList(LIST, value.toListOf<NbtList>(), false)
+		NbtCompound::class  -> NbtList(COMPOUND, value.toListOf<NbtCompound>(), false)
+		NbtIntArray::class  -> NbtList(INT_ARRAY, value.toListOf<NbtIntArray>(), false)
+		NbtLongArray::class -> NbtList(LONG_ARRAY, value.toListOf<NbtLongArray>(), false)
+		Any::class          -> throw IllegalArgumentException("NbtList elements must be of the same type")
+		else                -> throw IllegalArgumentException("Unsupported type ${clazz.simpleName} for NbtList")
+	}
 }
 
-class TagCompoundBuilder @PublishedApi internal constructor(name: String?) :
-	TagBuilder<TagCompound, MutableTagCompoundMap>(name) {
+class NbtCompoundBuilder @PublishedApi internal constructor(name: String?) :
+	NbtBuilder<NbtCompound, MutableNbtCompoundMap>(name) {
 	
-	override val entries = MutableTagCompoundMap()
+	override val entries = MutableNbtCompoundMap()
 	
-	override fun build() = TagCompound(entries, name, false)
+	override fun build() = NbtCompound(entries, name, false)
 	
-	fun put(name: String, tag: TagAny) {
-		if (tag is TagEnd) throw IllegalArgumentException("Cannot add a TagEnd to a TagCompound")
+	fun put(name: String, tag: NbtAny) {
+		if (tag is NbtEnd) throw IllegalArgumentException("Cannot add an NbtEnd to an NbtCompound")
 		else entries[name] = tag
 	}
 	
-	fun put(name: String, byte: Byte): Unit = put(name, TagByte(byte, name))
-	fun put(name: String, short: Short): Unit = put(name, TagShort(short, name))
-	fun put(name: String, int: Int): Unit = put(name, TagInt(int, name))
-	fun put(name: String, long: Long): Unit = put(name, TagLong(long, name))
-	fun put(name: String, float: Float): Unit = put(name, TagFloat(float, name))
-	fun put(name: String, double: Double): Unit = put(name, TagDouble(double, name))
-	fun put(name: String, byteArray: ByteArray): Unit = put(name, TagByteArray(byteArray, name))
-	fun put(name: String, string: String): Unit = put(name, TagString(string, name))
-	fun put(name: String, intArray: IntArray): Unit = put(name, TagIntArray(intArray, name))
-	fun put(name: String, longArray: LongArray): Unit = put(name, TagLongArray(longArray, name))
+	fun put(name: String, byte: Byte): Unit = put(name, NbtByte(byte, name))
+	fun put(name: String, short: Short): Unit = put(name, NbtShort(short, name))
+	fun put(name: String, int: Int): Unit = put(name, NbtInt(int, name))
+	fun put(name: String, long: Long): Unit = put(name, NbtLong(long, name))
+	fun put(name: String, float: Float): Unit = put(name, NbtFloat(float, name))
+	fun put(name: String, double: Double): Unit = put(name, NbtDouble(double, name))
+	fun put(name: String, byteArray: ByteArray): Unit = put(name, NbtByteArray(byteArray, name))
+	fun put(name: String, string: String): Unit = put(name, NbtString(string, name))
+	fun put(name: String, intArray: IntArray): Unit = put(name, NbtIntArray(intArray, name))
+	fun put(name: String, longArray: LongArray): Unit = put(name, NbtLongArray(longArray, name))
 	
-	fun putTagList(name: String, builder: TagListBuilder.() -> Unit): Unit = put(name, TagListBuilder(name).apply(builder).build())
-	fun putTagCompound(name: String, builder: TagCompoundBuilder.() -> Unit): Unit = put(name, TagCompoundBuilder(null).apply(builder).build())
+	fun putNbtList(name: String, builder: NbtListBuilder.() -> Unit): Unit = put(name, NbtListBuilder(name).apply(builder).build())
+	fun putNbtCompound(name: String, builder: NbtCompoundBuilder.() -> Unit): Unit = put(name, NbtCompoundBuilder(null).apply(builder).build())
 	
-	@PublishedApi internal fun List<*>.toListOfByte() = map { TagByte(it as Byte) }
-	@PublishedApi internal fun List<*>.toListOfShort() = map { TagShort(it as Short) }
-	@PublishedApi internal fun List<*>.toListOfInt() = map { TagInt(it as Int) }
-	@PublishedApi internal fun List<*>.toListOfLong() = map { TagLong(it as Long) }
-	@PublishedApi internal fun List<*>.toListOfFloat() = map { TagFloat(it as Float) }
-	@PublishedApi internal fun List<*>.toListOfDouble() = map { TagDouble(it as Double) }
-	@PublishedApi internal fun List<*>.toListOfByteArray() = map { TagByteArray(it as ByteArray) }
-	@PublishedApi internal fun List<*>.toListOfString() = map { TagString(it as String) }
-	@PublishedApi internal fun List<*>.toListOfIntArray() = map { TagIntArray(it as IntArray) }
-	@PublishedApi internal fun List<*>.toListOfLongArray() = map { TagLongArray(it as LongArray) }
-	
-	@Suppress("UNCHECKED_CAST")
-	@PublishedApi internal fun <T : TagAny> List<*>.toListOf() = map { (it as TagAny).clone(null) as T }
-	
-	inline fun <reified T> put(name: String, value: List<T>) {
-		val tagList = when (val clazz = T::class) {
-			Byte::class         -> TagList(TAG_BYTE, value.toListOfByte(), false)
-			Short::class        -> TagList(TAG_SHORT, value.toListOfShort(), false)
-			Integer::class      -> TagList(TAG_INT, value.toListOfInt(), false)
-			Long::class         -> TagList(TAG_LONG, value.toListOfLong(), false)
-			Float::class        -> TagList(TAG_FLOAT, value.toListOfFloat(), false)
-			Double::class       -> TagList(TAG_DOUBLE, value.toListOfDouble(), false)
-			ByteArray::class    -> TagList(TAG_BYTE_ARRAY, value.toListOfByteArray(), false)
-			String::class       -> TagList(TAG_STRING, value.toListOfString(), false)
-			IntArray::class     -> TagList(TAG_INT_ARRAY, value.toListOfIntArray(), false)
-			LongArray::class    -> TagList(TAG_LONG_ARRAY, value.toListOfLongArray(), false)
-			TagByte::class      -> TagList(TAG_BYTE, value.toListOf<TagByte>(), false)
-			TagShort::class     -> TagList(TAG_SHORT, value.toListOf<TagShort>(), false)
-			TagInt::class       -> TagList(TAG_INT, value.toListOf<TagInt>(), false)
-			TagLong::class      -> TagList(TAG_LONG, value.toListOf<TagLong>(), false)
-			TagFloat::class     -> TagList(TAG_FLOAT, value.toListOf<TagFloat>(), false)
-			TagDouble::class    -> TagList(TAG_DOUBLE, value.toListOf<TagDouble>(), false)
-			TagByteArray::class -> TagList(TAG_BYTE_ARRAY, value.toListOf<TagByteArray>(), false)
-			TagString::class    -> TagList(TAG_STRING, value.toListOf<TagString>(), false)
-			TagList::class      -> TagList(TAG_LIST, value.toListOf<TagList>(), false)
-			TagCompound::class  -> TagList(TAG_COMPOUND, value.toListOf<TagCompound>(), false)
-			TagIntArray::class  -> TagList(TAG_INT_ARRAY, value.toListOf<TagIntArray>(), false)
-			TagLongArray::class -> TagList(TAG_LONG_ARRAY, value.toListOf<TagLongArray>(), false)
-			Any::class          -> throw IllegalArgumentException("TagList elements must be of the same type")
-			else                -> throw IllegalArgumentException("Unsupported type ${clazz.simpleName} for TagList")
-		}
-		
-		put(name, tagList)
-	}
+	inline fun <reified T : Any> put(name: String, value: List<T>) = put(name, parseList(value))
 }
 
-class TagListBuilder @PublishedApi internal constructor(name: String?) :
-	TagBuilder<TagList, MutableTagListList>(name) {
+class NbtListBuilder @PublishedApi internal constructor(name: String?) :
+	NbtBuilder<NbtList, MutableNbtListList>(name) {
 	
-	override val entries = MutableTagListList()
+	override val entries = MutableNbtListList()
 	
 	private var elementsType = entries.firstOrNull()?.type
 	
-	override fun build() = TagList(elementsType ?: TAG_END, entries, false, name)
+	override fun build() = NbtList(elementsType ?: END, entries, false, name)
 	
-	fun add(tag: TagAny) {
+	fun add(tag: NbtAny) {
 		if (elementsType == null) elementsType = tag.type
-		else if (elementsType != tag.type) throw IllegalArgumentException("TagList elements must be of the same type")
+		else if (elementsType != tag.type) throw IllegalArgumentException("NbtList elements must be of the same type")
 		
 		entries.add(tag)
 	}
 	
-	fun add(byte: Byte): Unit = add(TagByte(byte))
-	fun add(short: Short): Unit = add(TagShort(short))
-	fun add(int: Int): Unit = add(TagInt(int))
-	fun add(long: Long): Unit = add(TagLong(long))
-	fun add(float: Float): Unit = add(TagFloat(float))
-	fun add(double: Double): Unit = add(TagDouble(double))
-	fun add(byteArray: ByteArray): Unit = add(TagByteArray(byteArray))
-	fun add(string: String): Unit = add(TagString(string))
-	fun add(intArray: IntArray): Unit = add(TagIntArray(intArray))
-	fun add(longArray: LongArray): Unit = add(TagLongArray(longArray))
+	fun add(byte: Byte): Unit = add(NbtByte(byte))
+	fun add(short: Short): Unit = add(NbtShort(short))
+	fun add(int: Int): Unit = add(NbtInt(int))
+	fun add(long: Long): Unit = add(NbtLong(long))
+	fun add(float: Float): Unit = add(NbtFloat(float))
+	fun add(double: Double): Unit = add(NbtDouble(double))
+	fun add(byteArray: ByteArray): Unit = add(NbtByteArray(byteArray))
+	fun add(string: String): Unit = add(NbtString(string))
+	fun add(intArray: IntArray): Unit = add(NbtIntArray(intArray))
+	fun add(longArray: LongArray): Unit = add(NbtLongArray(longArray))
 	
-	fun addTagList(builder: TagListBuilder.() -> Unit): Unit = add(TagListBuilder(null).apply(builder).build())
-	fun addTagCompound(builder: TagCompoundBuilder.() -> Unit): Unit = add(TagCompoundBuilder(null).apply(builder).build())
+	fun addNbtList(builder: NbtListBuilder.() -> Unit): Unit = add(NbtListBuilder(null).apply(builder).build())
+	fun addNbtCompound(builder: NbtCompoundBuilder.() -> Unit): Unit = add(NbtCompoundBuilder(null).apply(builder).build())
+	
+	inline fun <reified T : Any> add(value: List<T>) = add(parseList(value))
 }

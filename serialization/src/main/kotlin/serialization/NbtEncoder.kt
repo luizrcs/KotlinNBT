@@ -1,7 +1,6 @@
 package br.com.luizrcs.nbt.serialization
 
 import br.com.luizrcs.nbt.core.tag.*
-import br.com.luizrcs.nbt.core.tag.TagType.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.descriptors.StructureKind.*
@@ -9,29 +8,29 @@ import kotlinx.serialization.internal.*
 import kotlinx.serialization.modules.*
 
 @OptIn(InternalSerializationApi::class)
-open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEncoder() {
-	private val compoundMap = MutableTagCompoundMap()
+open class NbtEncoder(private val tagConsumer: (NbtAny) -> Unit) : NamedValueEncoder() {
+	private val compoundMap = MutableNbtCompoundMap()
 	
 	override val serializersModule = EmptySerializersModule()
 	
-	open fun currentTag(): TagAny = TagCompound(compoundMap)
+	open fun currentTag(): NbtAny = NbtCompound(compoundMap)
 	
-	open fun putTag(key: String, tag: TagAny) {
+	open fun putTag(key: String, tag: NbtAny) {
 		compoundMap[key] = tag
 	}
 	
 	// Fully supported types -> standard encoding
-	override fun encodeTaggedByte(tag: String, value: Byte) = putTag(tag, TagByte(value, tag))
-	override fun encodeTaggedShort(tag: String, value: Short) = putTag(tag, TagShort(value, tag))
-	override fun encodeTaggedInt(tag: String, value: Int) = putTag(tag, TagInt(value, tag))
-	override fun encodeTaggedLong(tag: String, value: Long) = putTag(tag, TagLong(value, tag))
-	override fun encodeTaggedFloat(tag: String, value: Float) = putTag(tag, TagFloat(value, tag))
-	override fun encodeTaggedDouble(tag: String, value: Double) = putTag(tag, TagDouble(value, tag))
-	override fun encodeTaggedString(tag: String, value: String) = putTag(tag, TagString(value, tag))
+	override fun encodeTaggedByte(tag: String, value: Byte) = putTag(tag, NbtByte(value, tag))
+	override fun encodeTaggedShort(tag: String, value: Short) = putTag(tag, NbtShort(value, tag))
+	override fun encodeTaggedInt(tag: String, value: Int) = putTag(tag, NbtInt(value, tag))
+	override fun encodeTaggedLong(tag: String, value: Long) = putTag(tag, NbtLong(value, tag))
+	override fun encodeTaggedFloat(tag: String, value: Float) = putTag(tag, NbtFloat(value, tag))
+	override fun encodeTaggedDouble(tag: String, value: Double) = putTag(tag, NbtDouble(value, tag))
+	override fun encodeTaggedString(tag: String, value: String) = putTag(tag, NbtString(value, tag))
 	
 	// Unsupported types -> non-standard encoding
-	override fun encodeTaggedBoolean(tag: String, value: Boolean) = putTag(tag, TagByte((if (value) 1 else 0).toByte()))
-	override fun encodeTaggedChar(tag: String, value: Char) = putTag(tag, TagByte(value.code.toByte()))
+	override fun encodeTaggedBoolean(tag: String, value: Boolean) = putTag(tag, NbtByte((if (value) 1 else 0).toByte()))
+	override fun encodeTaggedChar(tag: String, value: Char) = putTag(tag, NbtByte(value.code.toByte()))
 	
 	@OptIn(ExperimentalSerializationApi::class)
 	override fun beginStructure(descriptor: SerialDescriptor): NbtEncoder {
@@ -56,7 +55,7 @@ open class NbtEncoder(private val tagConsumer: (TagAny) -> Unit) : NamedValueEnc
 	}
 }
 
-class PrimitiveArrayNbtEncoder(private val serialName: String, tagConsumer: (TagAny) -> Unit) : NbtEncoder(tagConsumer) {
+class PrimitiveArrayNbtEncoder(private val serialName: String, tagConsumer: (NbtAny) -> Unit) : NbtEncoder(tagConsumer) {
 	private val list = mutableListOf<Any>()
 	
 	private fun addPrimitive(primitive: Any) {
@@ -80,28 +79,28 @@ class PrimitiveArrayNbtEncoder(private val serialName: String, tagConsumer: (Tag
 	@Suppress("UNCHECKED_CAST")
 	override fun currentTag() = when (serialName) {
 		// Fully supported types -> standard encoding
-		"ByteArray"    -> TagByteArray((list as List<Byte>).toByteArray())
-		"IntArray"     -> TagIntArray((list as List<Int>).toIntArray())
-		"LongArray"    -> TagLongArray((list as List<Long>).toLongArray())
+		"ByteArray"    -> NbtByteArray((list as List<Byte>).toByteArray())
+		"IntArray"     -> NbtIntArray((list as List<Int>).toIntArray())
+		"LongArray"    -> NbtLongArray((list as List<Long>).toLongArray())
 		
 		// Barely supported types -> unoptimized encoding
-		"ShortArray"   -> TagIntArray((list as List<Short>).map { it.toInt() }.toIntArray())
-		"FloatArray"   -> TagList(TAG_FLOAT, (list as List<Float>).map(::TagFloat))
-		"DoubleArray"  -> TagList(TAG_DOUBLE, (list as List<Double>).map(::TagDouble))
+		"ShortArray"   -> NbtIntArray((list as List<Short>).map { it.toInt() }.toIntArray())
+		"FloatArray"   -> NbtList(NbtType.FLOAT, (list as List<Float>).map(::NbtFloat))
+		"DoubleArray"  -> NbtList(NbtType.DOUBLE, (list as List<Double>).map(::NbtDouble))
 		
 		// Unsupported types -> non-standard encoding
-		"BooleanArray" -> TagByteArray((list as List<Boolean>).map { (if (it) 1 else 0).toByte() }.toByteArray())
-		"CharArray"    -> TagByteArray((list as List<Char>).map { it.code.toByte() }.toByteArray())
+		"BooleanArray" -> NbtByteArray((list as List<Boolean>).map { (if (it) 1 else 0).toByte() }.toByteArray())
+		"CharArray"    -> NbtByteArray((list as List<Char>).map { it.code.toByte() }.toByteArray())
 		else           -> throw IllegalArgumentException("NBT encoding for $serialName not implemented")
 	}
 }
 
-class ListNbtEncoder(tagConsumer: (TagAny) -> Unit) : NbtEncoder(tagConsumer) {
-	private val list = mutableListOf<TagAny>()
+class ListNbtEncoder(tagConsumer: (NbtAny) -> Unit) : NbtEncoder(tagConsumer) {
+	private val list = mutableListOf<NbtAny>()
 	
-	override fun currentTag() = TagList(list.first().type, list)
+	override fun currentTag() = NbtList(list.first().type, list)
 	
-	override fun putTag(key: String, tag: TagAny) {
+	override fun putTag(key: String, tag: NbtAny) {
 		list += tag
 	}
 }

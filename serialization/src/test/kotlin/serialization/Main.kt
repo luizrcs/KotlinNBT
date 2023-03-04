@@ -24,7 +24,7 @@ val testA = TestA(
 fun main() {
 	println("Encoding:")
 	
-	val nbt: TagAny
+	val nbt: NbtAny
 	val firstNbtEncodingTime = measureTimeMillis { nbt = Nbt.encodeToNbt(testA) }
 	println(nbt)
 	

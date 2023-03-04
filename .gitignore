@@ -6,7 +6,6 @@
 build/
 captures/
 out/
-core/local.properties
 
 *.dat
 *.mca

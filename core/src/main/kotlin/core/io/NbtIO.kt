@@ -3,28 +3,26 @@ package br.com.luizrcs.nbt.core.io
 import br.com.luizrcs.nbt.core.extension.*
 import br.com.luizrcs.nbt.core.io.NbtIO.Compression.*
 import br.com.luizrcs.nbt.core.tag.*
-import br.com.luizrcs.nbt.core.tag.TagType.*
 import java.io.*
 import java.nio.*
 import java.util.zip.*
 
 object NbtIO {
-	fun fromByteArray(byteArray: ByteArray): TagAny = read(ByteBuffer.wrap(byteArray))
+	fun fromByteArray(byteArray: ByteArray): NbtAny = read(ByteBuffer.wrap(byteArray))
 	
-	fun toByteArray(tag: TagAny): ByteArray = if (tag is TagCompound) {
+	fun toByteArray(tag: NbtAny): ByteArray = if (tag is NbtCompound) {
 		val tagCompoundSize = (tag.name?.toByteArray()?.size ?: 0) + tag.sizeInBytes
 		val byteBuffer = ByteBuffer.allocate(Byte.SIZE_BYTES + Short.SIZE_BYTES + tagCompoundSize)
 		byteBuffer.also { tag.writeRoot(it) }.array() as ByteArray
 	} else byteArrayOf()
 	
-	private fun read(byteBuffer: ByteBuffer): TagAny {
+	private fun read(byteBuffer: ByteBuffer): NbtAny {
 		val id = byteBuffer.byte
 		val name = byteBuffer.string
-		
-		return if (id == TAG_COMPOUND.id) TagCompound(byteBuffer, name) else Tag.read(id, byteBuffer)
+		return NbtBase.read(id, byteBuffer, name)
 	}
 	
-	fun read(inputStream: InputStream, compression: Compression = NONE): TagAny = fromByteArray(
+	fun read(inputStream: InputStream, compression: Compression = NONE): NbtAny = fromByteArray(
 		when (compression) {
 			NONE -> inputStream
 			GZIP -> GZIPInputStream(inputStream)
@@ -32,9 +30,9 @@ object NbtIO {
 		}.buffered().use(InputStream::readBytes)
 	)
 	
-	fun read(file: File, compression: Compression = NONE): TagAny = read(file.inputStream(), compression).tagCompound
+	fun read(file: File, compression: Compression = NONE): NbtAny = read(file.inputStream(), compression)
 	
-	fun write(tagCompound: TagCompound, outputStream: OutputStream, compression: Compression = NONE) {
+	fun write(tagCompound: NbtCompound, outputStream: OutputStream, compression: Compression = NONE) {
 		when (compression) {
 			NONE -> outputStream
 			GZIP -> GZIPOutputStream(outputStream)
@@ -42,7 +40,7 @@ object NbtIO {
 		}.exhaustive.buffered().use { it.write(toByteArray(tagCompound)) }
 	}
 	
-	fun write(tagCompound: TagCompound, file: File, compression: Compression = NONE): Unit =
+	fun write(tagCompound: NbtCompound, file: File, compression: Compression = NONE): Unit =
 		write(tagCompound, file.outputStream(), compression)
 	
 	enum class Compression(private val id: Int) {

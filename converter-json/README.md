@@ -41,16 +41,11 @@ dependencies {
 
 ## Usage
 
-First of all, the converter must be registered with `JsonNbtConverter.register()`. This must be done only once, before
-usage, and there's no need to use the specific instance of the converter you intend to work with later on.
-
-Conversions can be done both ways with the `convertFromTag` and `convertToTag` methods:
+Conversions can be done both ways with the `convertFromNbt` and `convertToNbt` methods:
 
 ```kotlin
-JsonNbtConverter.register()
-
-val json = JsonNbtConverter.convertFromTag(nbt) // Convert NBT to JSON
-val nbt = JsonNbtConverter.convertToTag(json) // Convert JSON to NBT
+val json = JsonNbtConverter.convertFromNbt(nbt) // Convert NBT to JSON
+val nbt = JsonNbtConverter.convertToNbt(json) // Convert JSON to NBT
 ```
 
 ### Customization
@@ -58,7 +53,7 @@ val nbt = JsonNbtConverter.convertToTag(json) // Convert JSON to NBT
 The converter can be customized by using the `JsonNbtConverter { ... }` builder. The following options are available:
 
 - `convertEmptyJsonArrayToList` (default: `false`): If `true`, an empty `JsonArray` will be converted to a
-  `TagList<TagEnd>`, which is always empty. If `false`, an empty `JsonArray` will not be converted to any NBT tag, and
+  `NbtList<NbtEnd>`, which is always empty. If `false`, an empty `JsonArray` will not be converted to any NBT tag, and
   instead `null` will be returned.
 
 ### Experimental API
@@ -76,29 +71,29 @@ The conversion rules are based on the [Minecraft Wiki][Minecraft Wiki] descripti
 
 | KotlinNBT tag type | JSON type | `kotlinx-serialization-json` class                                                      |
 |--------------------|-----------|-----------------------------------------------------------------------------------------|
-| `TagByte`          | `number`  | `JsonPrimitive`                                                                         |
-| `TagShort`         | `number`  | `JsonPrimitive`                                                                         |
-| `TagInt`           | `number`  | `JsonPrimitive`                                                                         |
-| `TagLong`          | `number`  | `JsonPrimitive`                                                                         |
-| `TagFloat`         | `number`  | `JsonPrimitive`                                                                         |
-| `TagDouble`        | `number`  | `JsonPrimitive`                                                                         |
-| `TagByteArray`     | `array`   | `JsonArray`                                                                             |
-| `TagString`        | `string`  | `JsonPrimitive`                                                                         |
-| `TagList`          | `array`   | `JsonArray`                                                                             |
-| `TagCompound`      | `object`  | `JsonObject`                                                                            |
-| `TagIntArray`      | `array`   | `JsonArray`                                                                             |
-| `TagLongArray`     | `array`   | `JsonArray`                                                                             |
-| `TagEnd`           | `null`    | `JsonNull` (if explicitly requested) or ignored (if it's at the end of a `TagCompound`) |
+| `NbtByte`          | `number`  | `JsonPrimitive`                                                                         |
+| `NbtShort`         | `number`  | `JsonPrimitive`                                                                         |
+| `NbtInt`           | `number`  | `JsonPrimitive`                                                                         |
+| `NbtLong`          | `number`  | `JsonPrimitive`                                                                         |
+| `NbtFloat`         | `number`  | `JsonPrimitive`                                                                         |
+| `NbtDouble`        | `number`  | `JsonPrimitive`                                                                         |
+| `NbtByteArray`     | `array`   | `JsonArray`                                                                             |
+| `NbtString`        | `string`  | `JsonPrimitive`                                                                         |
+| `NbtList`          | `array`   | `JsonArray`                                                                             |
+| `NbtCompound`      | `object`  | `JsonObject`                                                                            |
+| `NbtIntArray`      | `array`   | `JsonArray`                                                                             |
+| `NbtLongArray`     | `array`   | `JsonArray`                                                                             |
+| `NbtEnd`           | `null`    | `JsonNull` (if explicitly requested) or ignored (if it's at the end of a `NbtCompound`) |
 
 ### JSON to NBT
 
 | JSON type | `kotlinx-serialization-json` class | KotlinNBT tag type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 |-----------|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `number`  | `JsonPrimitive`                    | If the number is an integer, it will be converted to the first NBT number type that fits it: `TagByte`, `TagShort`, `TagInt`, `TagLong`, in this order. <br> If the number is a floating point number, it will be converted to the first NBT number type that fits it: `TagFloat`, `TagDouble`, in this order.                                                                                                                                                                                                                                                              |
-| `string`  | `JsonPrimitive`                    | `TagString`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `array`   | `JsonArray`                        | If the array is empty, it won't be converted (by default), as no type can be inferred. This behavior can be replaced with the `convertEmptyJsonArrayToList` flag, which will convert an empty `JsonArray` to a non-standard `TagList<TagEnd>`, which is always empty). <br> If the array is not empty, each of its elements will be converted to NBT; if they're not all converted to the same type, the array will be returned as `null`; otherwise, the array will be converted to a `TagByteArray`, `TagIntArray`, or `TagLongArray`, if appropriate, or to a `TagList`. |
-| `object`  | `JsonObject`                       | `TagCompound`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `boolean` | `JsonPrimitive`                    | `TagByte` with value `1` or `0`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `number`  | `JsonPrimitive`                    | If the number is an integer, it will be converted to the first NBT number type that fits it: `NbtByte`, `NbtShort`, `NbtInt`, `NbtLong`, in this order. <br> If the number is a floating point number, it will be converted to the first NBT number type that fits it: `NbtFloat`, `NbtDouble`, in this order.                                                                                                                                                                                                                                                              |
+| `string`  | `JsonPrimitive`                    | `NbtString`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `array`   | `JsonArray`                        | If the array is empty, it won't be converted (by default), as no type can be inferred. This behavior can be replaced with the `convertEmptyJsonArrayToList` flag, which will convert an empty `JsonArray` to a non-standard `NbtList<NbtEnd>`, which is always empty). <br> If the array is not empty, each of its elements will be converted to NBT; if they're not all converted to the same type, the array will be returned as `null`; otherwise, the array will be converted to a `NbtByteArray`, `NbtIntArray`, or `NbtLongArray`, if appropriate, or to a `NbtList`. |
+| `object`  | `JsonObject`                       | `NbtCompound`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `boolean` | `JsonPrimitive`                    | `NbtByte` with value `1` or `0`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `null`    | `JsonNull`                         | `JsonNull` instances are always ignored, but will be converted to `null` if explicitly requested.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## Known issues
@@ -107,8 +102,8 @@ The conversion rules are based on the [Minecraft Wiki][Minecraft Wiki] descripti
   desirable, as it makes a lot of assumptions which are not strict nor will fit everyone's data, as a more general use
   format.
 - The conversion is not reversible, as the JSON format is not strict enough to guarantee that the data can be
-  converted back to NBT without losing information. For example, if a `TagInt` with value `1` is converted to JSON,
-  then back to NBT, it will be converted to a `TagByte` with value `1`, as the JSON format does not distinguish
+  converted back to NBT without losing information. For example, if a `NbtInt` with value `1` is converted to JSON,
+  then back to NBT, it will be converted to a `NbtByte` with value `1`, as the JSON format does not distinguish
   between `byte`, `short`, `int`, and `long` numbers; the same applies to `float` and `double` numbers or primitive
   arrays. In the future, optional type hints will be introduced to allow almost full reversibility.
 

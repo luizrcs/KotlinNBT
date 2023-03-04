@@ -6,8 +6,8 @@
 # KotlinNBT
 
 Type-safe Named Binary Tags (NBT) implementation in Kotlin for the JVM for reading and writing files/streams with a
-simple and concise builder DSL. Supports [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)
-with `nbt-serialization` module.
+simple and concise builder DSL. Supports [kotlinx.serialization][kotlinx-serialization] with
+the [nbt-serialization](/serialization) module.
 
 This project is based on the original NBT specification by Notch ([Wayback Machine][WebArchive]) with the most recent
 additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg](https://wiki.vg/NBT)) for the Java game version.
@@ -16,8 +16,8 @@ additions by Mojang ([Minecraft Wiki][Gamepedia] and [Wiki.vg](https://wiki.vg/N
 
 All projects under the `br.com.luizrcs.nbt` namespace are available on [Maven Central][Maven Central] and
 follow the [Semantic Versioning 2.0.0](https://semver.org/) specification, but keep the same *major* and *minor*
-versions across all modules (except `nbt-cli`). This means that a version bump in one module doesn't necessarily imply
-updates were made to it, but should be treated like so.
+versions across all modules (except [nbt-cli](/cli)). This means that a version bump in one module doesn't necessarily
+imply updates were made to it, but should be treated like so compatibility-wise.
 
 The dependencies can be added to your project using [Gradle](https://gradle.org/):
 
@@ -49,39 +49,41 @@ dependencies {
 
 ## Usage
 
-The object `NbtIO` is used similarly to `javax.imageio.ImageIO` to read/write a NBT `TagCompound`. The available
+### NbtIO
+
+The object `NbtIO` is used similarly to `javax.imageio.ImageIO` to read/write an `NbtCompound`. The available
 compression methods are: `GZIP`, `ZLIB` and `NONE` (no compression).
 
-### Reading from file
+#### Reading from file
 
 ```kotlin
 val file = File("test.nbt")
 val compression = NbtIO.Compression.GZIP
 
-val tagCompound = NbtIO.read(file, compression)
+val nbt = NbtIO.read(file, compression)
 ```
 
-### Writing to file
+#### Writing to file
 
 ```kotlin
 val file = File("test.nbt")
 val compression = NbtIO.Compression.GZIP
 
-NbtIO.write(tagCompound, file, compression)
+NbtIO.write(nbt, file, compression)
 ```
 
 ### Builder DSL
 
-The `buildNbt` function is used to create a `TagCompound` with a simple and concise builder DSL
+The `buildNbt` function is used to create an `NbtCompound` with a simple and concise builder DSL
 (based on the way [kotlinx-serialization-json][kotlinx-serialization-json] does it):
 
 ```kotlin
 val nbt = buildNbt("root") {
-    putTagCompound("testCompound") {
+    putNbtCompound("testCompound") {
         put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
     }
-    putTagList("testList") {
-        addTagCompound {
+    putNbtList("testList") {
+        addNbtCompound {
             put("firstString", "I'm the first String :)")
             put("secondString", "I'm the second String, but order is not guaranteed :/")
             put("justAnInteger", 1)
@@ -105,21 +107,21 @@ root: Compound = {
             secondString: String = "I'm the second String, but order is not guaranteed :/"
         }
     ],
-    timestamp: Long = 1591470914831L
+    timestamp: Long = 1605380400000L
 }
 ```
 
 **Important:** according to the NBT specification, the order of the displayed/read tags is not guaranteed. KotlinNBT
-prints a `TagCompound` using a schema based on the way [NBTExplorer][NBTExplorer] does it.
+prints an `NbtCompound` using a schema based on the way [NBTExplorer][NBTExplorer] does it.
 
 ### Type safety
 
 In the example above, the typed values can be obtained with type-safe accessors:
 
 ```kotlin
-val fibonacci: IntArray = nbt["testCompound"].tagCompound["fibonacci"].intArray
-val message: String = nbt["testList"].tagList[0].tagCompound["firstString"].string
-val timestamp: Long = nbt["timestamp"].long
+val fibonacci: IntArray = nbt.compound["testCompound"].compound["fibonacci"].intArray
+val message: String = nbt.compound["testList"].list[0].compound["firstString"].string
+val timestamp: Long = nbt.compound["timestamp"].long
 
 println(fibonacci.toList())
 println(message)
@@ -131,16 +133,16 @@ prints
 ```
 [1, 1, 2, 3, 5, 8, 13, 21]
 I'm the first String :)
-1591470914831
+1605380400000
 ```
 
-To check the tag types before accessing them (whether they exist or not), properties `isTagX` can be used, where `X` is
+To check the tag types before accessing them (whether they exist or not), properties `isNbtX` can be used, where `X` is
 a tag type:
 
 ```kotlin
-println(nbt["testCompound"].isTagCompound)
-println(nbt["timestamp"].isTagFloat)
-println(nbt["world"].isTagString)
+println(nbt["testCompound"].isNbtCompound)
+println(nbt["timestamp"].isNbtFloat)
+println(nbt["world"].isNbtString)
 ```
 
 prints
@@ -153,7 +155,7 @@ false
 
 ### Cloning tags
 
-The provided `Tag<T>.clone()` functions deep copy the tag (that is, the tag itself and its children are cloned
+The provided `NbtAny.clone()` functions deep copy the tag (that is, the tag itself and its children are cloned
 recursively) while keeping the type safety:
 
 ```kotlin
@@ -162,17 +164,16 @@ nbt.clone("rootClone") // to change the root tag name
 nbt["testList"]?.clone("actualList")
 ```
 
+### Serialization
+
+KotlinNBT supports the [kotlinx-serialization][kotlinx-serialization] library to work with NBT and serializable classes.
+
+> See [nbt-serialization](/serialization) module.
+
 ### Converters
 
 KotlinNBT provides a way to extend its functionality and create converters for NBT to/from other formats, such as JSON
-and SNBT. The `NbtConverter` abstract class is used to create a converter for a specific format, and
-the `NbtConverter.register()` function is used to register it, so it should always be called before using such
-converter:
-
-```kotlin
-JsonNbtConverter.register()
-SnbtNbtConverter.register()
-```
+and SNBT (Stringified NBT).
 
 #### JSON
 
@@ -194,6 +195,8 @@ can [donate](https://donorbox.org/luizrcs)!
 [Gamepedia]: https://minecraft.fandom.com/wiki/NBT_format
 
 [Maven Central]: https://central.sonatype.com/namespace/br.com.luizrcs.nbt
+
+[kotlinx-serialization]: https://github.com/Kotlin/kotlinx.serialization
 
 [kotlinx-serialization-json]: https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md#json-element-builders
 

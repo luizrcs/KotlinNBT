@@ -1,9 +1,10 @@
 package br.com.luizrcs.nbt.core.tag
 
-import br.com.luizrcs.nbt.core.tag.TagType.*
+import br.com.luizrcs.nbt.core.api.*
+import br.com.luizrcs.nbt.core.tag.NbtType.*
 import java.nio.*
 
-class TagInt private constructor(name: String? = null) : Tag<Int>(name, TAG_INT, converters) {
+class NbtInt private constructor(name: String? = null) : NbtBase<Int>(INT, name) {
 	
 	override val sizeInBytes = Int.SIZE_BYTES
 	
@@ -23,7 +24,7 @@ class TagInt private constructor(name: String? = null) : Tag<Int>(name, TAG_INT,
 		byteBuffer.putInt(_value)
 	}
 	
-	override fun clone(name: String?) = TagInt(value, name)
+	override fun <U : Any> convert(converter: NbtConverter<U>): U? = converter.convertNbtInt(this)
 	
-	companion object : TagCompanion<Int>()
+	override fun clone(name: String?) = NbtInt(value, name)
 }

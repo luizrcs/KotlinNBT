@@ -4,14 +4,12 @@ import br.com.luizrcs.nbt.core.api.*
 
 @OptIn(ExperimentalSnbtNbtConverter::class)
 fun main() {
-	SnbtNbtConverter.register()
-	
 	val nbt = buildNbt {
-		putTagCompound("testCompound") {
+		putNbtCompound("testCompound") {
 			put("fibonacci", intArrayOf(1, 1, 2, 3, 5, 8, 13, 21))
 		}
-		putTagList("testList") {
-			addTagCompound {
+		putNbtList("testList") {
+			addNbtCompound {
 				put("firstString", "I'm the first String :)")
 				put("secondString", "I'm the second String, but order is not guaranteed :/")
 				put("justAnInteger", 1)
@@ -20,7 +18,7 @@ fun main() {
 		put("timestamp", System.currentTimeMillis())
 	}
 	
-	val snbt = SnbtNbtConverter.convertFromTag(nbt)
+	val snbt = SnbtNbtConverter.convertFromNbt(nbt)
 	
 	println("SNBT:")
 	println(snbt)
@@ -28,6 +26,6 @@ fun main() {
 	
 	if (snbt != null) {
 		println("NBT:")
-		println(SnbtNbtConverter.convertToTag(snbt))
+		println(SnbtNbtConverter.convertToNbt(snbt))
 	}
 }

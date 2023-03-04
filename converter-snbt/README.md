@@ -37,16 +37,13 @@ dependencies {
 
 ## Usage
 
-First of all, the converter must be registered with `SnbtNbtConverter.register()`. This must be done only once, before
-usage, and there's no need to use the specific instance of the converter you intend to work with later on.
-
-Conversions can be done both ways with the `convertFromTag` and `convertToTag` methods:
+Conversions can be done both ways with the `convertFromNbt` and `convertToNbt` methods:
 
 ```kotlin
 SnbtNbtConverter.register()
 
-val snbt = SnbtNbtConverter.convertFromTag(nbt) // Convert NBT to SNBT
-val nbt = SnbtNbtConverter.convertToTag(snbt) // Convert SNBT to NBT
+val snbt = SnbtNbtConverter.convertFromNbt(nbt) // Convert NBT to SNBT
+val nbt = SnbtNbtConverter.convertToNbt(snbt) // Convert SNBT to NBT
 ```
 
 ### Customization
@@ -69,43 +66,43 @@ The conversion rules are based on the [Minecraft Wiki][Minecraft Wiki] descripti
 
 | KotlinNBT tag type | SNBT representation | SNBT example                                                                                   |
 |--------------------|---------------------|------------------------------------------------------------------------------------------------|
-| `TagEnd`           | ` `                 | ` ` (empty string, if explicitly requested) or ignored (if it's at the end of a `TagCompound`) |
-| `TagByte`          | `${value}b`         | `1b`                                                                                           |
-| `TagShort`         | `${value}s`         | `1s`                                                                                           |
-| `TagInt`           | `${value}`          | `1`                                                                                            |
-| `TagLong`          | `${value}L`         | `1L`                                                                                           |
-| `TagFloat`         | `${value}f`         | `1.0f`                                                                                         |
-| `TagDouble`        | `${value}d`         | `1.0d`                                                                                         |
-| `TagByteArray`     | `[B;${values}]`     | `[B;1b,2b,3b]`                                                                                 |
-| `TagString`        | `"${value}"`        | `"Hello"` or `'Hello'`                                                                         |
-| `TagList`          | `[${values}]`       | `[1,2,3]`                                                                                      |
-| `TagCompound`      | `{${values}}`       | `{a:1,b:2,c:3}` or `{'a':1,'b':2,'c':3}` or `{"a":1,"b":2,"c":3}`                              |
-| `TagIntArray`      | `[I;${values}]`     | `[I;1,2,3]`                                                                                    |
-| `TagLongArray`     | `[L;${values}]`     | `[L;1L,2L,3L]`                                                                                 |
+| `NbtEnd`           | ` `                 | ` ` (empty string, if explicitly requested) or ignored (if it's at the end of a `NbtCompound`) |
+| `NbtByte`          | `${value}b`         | `1b`                                                                                           |
+| `NbtShort`         | `${value}s`         | `1s`                                                                                           |
+| `NbtInt`           | `${value}`          | `1`                                                                                            |
+| `NbtLong`          | `${value}L`         | `1L`                                                                                           |
+| `NbtFloat`         | `${value}f`         | `1.0f`                                                                                         |
+| `NbtDouble`        | `${value}d`         | `1.0d`                                                                                         |
+| `NbtByteArray`     | `[B;${values}]`     | `[B;1b,2b,3b]`                                                                                 |
+| `NbtString`        | `"${value}"`        | `"Hello"` or `'Hello'`                                                                         |
+| `NbtList`          | `[${values}]`       | `[1,2,3]`                                                                                      |
+| `NbtCompound`      | `{${values}}`       | `{a:1,b:2,c:3}` or `{'a':1,'b':2,'c':3}` or `{"a":1,"b":2,"c":3}`                              |
+| `NbtIntArray`      | `[I;${values}]`     | `[I;1,2,3]`                                                                                    |
+| `NbtLongArray`     | `[L;${values}]`     | `[L;1L,2L,3L]`                                                                                 |
 
 ### SNBT to NBT
 
 | SNBT representation                   | SNBT example                      | KotlinNBT tag type |
 |---------------------------------------|-----------------------------------|--------------------|
-| `${value}b`                           | `1b`                              | `TagByte`          |
-| `${value}s`                           | `1s`                              | `TagShort`         |
-| `${value}`                            | `1`                               | `TagInt`           |
-| `${value}L`                           | `1L`                              | `TagLong`          |
-| `${value}f`                           | `1.0f`                            | `TagFloat`         |
-| `${value}d` or `x.y`                  | `1.0d` or `1.0`                   | `TagDouble`        |
-| `[B;${values}]`                       | `[B;1b,2b,3b]`                    | `TagByteArray`     |
-| `"${value}"` or `'$value'` or `value` | `"Hello"` or `'Hello'` or `Hello` | `TagString`        |
-| `[${values}]`                         | `[1,2,3]`                         | `TagList`          |
-| `{${values}}`                         | `{a:1,b:2,c:3}`                   | `TagCompound`      |
-| `[I;${values}]`                       | `[I;1,2,3]`                       | `TagIntArray`      |
-| `[L;${values}]`                       | `[L;1L,2L,3L]`                    | `TagLongArray`     |
+| `${value}b`                           | `1b`                              | `NbtByte`          |
+| `${value}s`                           | `1s`                              | `NbtShort`         |
+| `${value}`                            | `1`                               | `NbtInt`           |
+| `${value}L`                           | `1L`                              | `NbtLong`          |
+| `${value}f`                           | `1.0f`                            | `NbtFloat`         |
+| `${value}d` or `x.y`                  | `1.0d` or `1.0`                   | `NbtDouble`        |
+| `[B;${values}]`                       | `[B;1b,2b,3b]`                    | `NbtByteArray`     |
+| `"${value}"` or `'$value'` or `value` | `"Hello"` or `'Hello'` or `Hello` | `NbtString`        |
+| `[${values}]`                         | `[1,2,3]`                         | `NbtList`          |
+| `{${values}}`                         | `{a:1,b:2,c:3}`                   | `NbtCompound`      |
+| `[I;${values}]`                       | `[I;1,2,3]`                       | `NbtIntArray`      |
+| `[L;${values}]`                       | `[L;1L,2L,3L]`                    | `NbtLongArray`     |
 
 ## Known issues
 
 - The only conversion 'behavior' available is the default Minecraft one. However, this is not always
   desirable, as it makes a lot of assumptions which are not strict nor will fit everyone's data, as a more general use
   format.
-- It's not clear yet if it's a good idea to support spaces on unquoted tag names or `TagString`s. Currently, only spaces
+- It's not clear yet if it's a good idea to support spaces on unquoted tag names or `NbtString`s. Currently, only spaces
   between other non-whitespace characters are parsed; leading and trailing whitespaces are ignored. This behaviour might
   be entirely removed in the future.
 
