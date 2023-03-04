@@ -35,7 +35,7 @@ abstract class NbtConverter<T : Any> protected constructor(val name: String) {
 	 */
 	abstract fun convertToTag(value: T): TagAny?
 	
-	fun registerConverter() {
+	fun register() {
 		TagEnd.addConverter(name, convertTagEnd)
 		TagByte.addConverter(name, convertTagByte)
 		TagShort.addConverter(name, convertTagShort)

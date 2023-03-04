@@ -4,7 +4,7 @@ import br.com.luizrcs.nbt.core.api.*
 
 @OptIn(ExperimentalSnbtNbtConverter::class)
 fun main() {
-	SnbtNbtConverter.registerConverter()
+	SnbtNbtConverter.register()
 	
 	val nbt = buildNbt {
 		putTagCompound("testCompound") {

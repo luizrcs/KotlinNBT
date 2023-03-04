@@ -4,7 +4,7 @@ import br.com.luizrcs.nbt.core.api.*
 
 @OptIn(ExperimentalJsonNbtConverter::class)
 fun main() {
-	JsonNbtConverter.registerConverter()
+	JsonNbtConverter.register()
 	
 	val nbt = buildNbt("root") {
 		put("byte", 1.toByte())

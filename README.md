@@ -162,19 +162,32 @@ nbt.clone("rootClone") // to change the root tag name
 nbt["testList"]?.clone("actualList")
 ```
 
-### SNBT
+### Converters
 
-[WIP] `nbt-converter-snbt` module.
+KotlinNBT provides a way to extend its functionality and create converters for NBT to/from other formats, such as JSON
+and SNBT. The `NbtConverter` abstract class is used to create a converter for a specific format, and
+the `NbtConverter.register()` function is used to register it, so it should always be called before using such
+converter:
 
-### "NBT to JSON" and "JSON to NBT"
+```kotlin
+JsonNbtConverter.register()
+SnbtNbtConverter.register()
+```
 
-[WIP] `nbt-converter-json` module.
+#### JSON
+
+> See [nbt-converter-json](/converter-json) module.
+
+#### SNBT
+
+> See [nbt-converter-snbt](/converter-snbt) module.
 
 ## Donate
 
 KotlinNBT is free and open-source for everyone to enjoy ❤️
 
-If you wish to support the continuous development of this and other projects, you can [donate](https://donorbox.org/luizrcs)!
+If you wish to support the continuous development of this and other projects, you
+can [donate](https://donorbox.org/luizrcs)!
 
 [WebArchive]: https://web.archive.org/web/20100124085747/http://www.minecraft.net/docs/NBT.txt
 
