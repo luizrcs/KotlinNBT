@@ -37,15 +37,22 @@ dependencies {
 
 ## Usage
 
-The default converter can be used with the `SnbtNbtConverter` object, or you can use the `SnbtNbtConverter { ... }`
-builder to customize it.
+First of all, the converter must be registered with `SnbtNbtConverter.register()`. This must be done only once, before
+usage, and there's no need to use the specific instance of the converter you intend to work with later on.
 
 Conversions can be done both ways with the `convertFromTag` and `convertToTag` methods:
 
 ```kotlin
+SnbtNbtConverter.register()
+
 val snbt = SnbtNbtConverter.convertFromTag(nbt) // Convert NBT to SNBT
 val nbt = SnbtNbtConverter.convertToTag(snbt) // Convert SNBT to NBT
 ```
+
+### Customization
+
+The converter can be customized by using the `SnbtNbtConverter { ... }` builder. Currently, there are no options
+available.
 
 ### Experimental API
 

@@ -41,15 +41,25 @@ dependencies {
 
 ## Usage
 
-The default converter can be used with the `JsonNbtConverter` object, or you can use the `JsonNbtConverter { ... }`
-builder to customize it.
+First of all, the converter must be registered with `JsonNbtConverter.register()`. This must be done only once, before
+usage, and there's no need to use the specific instance of the converter you intend to work with later on.
 
 Conversions can be done both ways with the `convertFromTag` and `convertToTag` methods:
 
 ```kotlin
+JsonNbtConverter.register()
+
 val json = JsonNbtConverter.convertFromTag(nbt) // Convert NBT to JSON
 val nbt = JsonNbtConverter.convertToTag(json) // Convert JSON to NBT
 ```
+
+### Customization
+
+The converter can be customized by using the `JsonNbtConverter { ... }` builder. The following options are available:
+
+- `convertEmptyJsonArrayToList` (default: `false`): If `true`, an empty `JsonArray` will be converted to a
+  `TagList<TagEnd>`, which is always empty. If `false`, an empty `JsonArray` will not be converted to any NBT tag, and
+  instead `null` will be returned.
 
 ### Experimental API
 
