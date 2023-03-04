@@ -33,7 +33,7 @@ dependencies {
 }
 ```
 
-###                             
+###                               
 
 ## Usage
 
@@ -49,9 +49,9 @@ val nbt = SnbtNbtConverter.convertToTag(snbt) // Convert SNBT to NBT
 
 ### Experimental API
 
-This module is still experimental, and the API or even the logic behind it may change in the future, breaking both
-source and binary compatibility. For this reason, its uses must be accepted either by annotating that usage with the
-`OptIn` annotation (e.g. `@OptIn(ExperimentalSnbtNbtConverter::class)`) or by using the compiler
+This module is still **highly** experimental, and the API or the logic behind it may **frequently** change in the
+future, breaking both source and binary compatibility. For this reason, its uses must be accepted either by annotating
+that usage with the `OptIn` annotation (e.g. `@OptIn(ExperimentalSnbtNbtConverter::class)`) or by using the compiler
 argument `-opt-in=br.com.luizrcs.nbt.snbt.ExperimentalSnbtNbtConverter`.
 
 ## Conversion rules
@@ -70,9 +70,9 @@ The conversion rules are based on the [Minecraft Wiki][Minecraft Wiki] descripti
 | `TagFloat`         | `${value}f`         | `1.0f`                                                                                         |
 | `TagDouble`        | `${value}d`         | `1.0d`                                                                                         |
 | `TagByteArray`     | `[B;${values}]`     | `[B;1b,2b,3b]`                                                                                 |
-| `TagString`        | `"${value}"`        | `"Hello"`                                                                                      |
+| `TagString`        | `"${value}"`        | `"Hello"` or `'Hello'`                                                                         |
 | `TagList`          | `[${values}]`       | `[1,2,3]`                                                                                      |
-| `TagCompound`      | `{${values}}`       | `{a:1,b:2,c:3}`                                                                                |
+| `TagCompound`      | `{${values}}`       | `{a:1,b:2,c:3}` or `{'a':1,'b':2,'c':3}` or `{"a":1,"b":2,"c":3}`                              |
 | `TagIntArray`      | `[I;${values}]`     | `[I;1,2,3]`                                                                                    |
 | `TagLongArray`     | `[L;${values}]`     | `[L;1L,2L,3L]`                                                                                 |
 
@@ -95,8 +95,11 @@ The conversion rules are based on the [Minecraft Wiki][Minecraft Wiki] descripti
 
 ## Known issues
 
-- Right now, the only conversion 'behavior' available is the default Minecraft one. However, this is not always
+- The only conversion 'behavior' available is the default Minecraft one. However, this is not always
   desirable, as it makes a lot of assumptions which are not strict nor will fit everyone's data, as a more general use
   format.
+- It's not clear yet if it's a good idea to support spaces on unquoted tag names or `TagString`s. Currently, only spaces
+  between other non-whitespace characters are parsed; leading and trailing whitespaces are ignored. This behaviour might
+  be entirely removed in the future.
 
 [Minecraft Wiki]: https://minecraft.fandom.com/wiki/NBT_format#SNBT_format

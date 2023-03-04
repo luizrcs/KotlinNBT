@@ -26,9 +26,10 @@ open class SnbtNbtConverter private constructor(
 	override val convertTagFloat: Tag<Float>.() -> String? = { "${value}f" }
 	override val convertTagDouble: Tag<Double>.() -> String? = { "${value}d" }
 	override val convertTagByteArray: Tag<ByteArray>.() -> String? = { "[B;${value.joinToString(",") { byte -> "${byte}b" }}]" }
-	override val convertTagString: Tag<String>.() -> String? = { quoteString(value) }
-	override val convertTagList: Tag<TagListList>.() -> String? = { "[${value.mapNotNull { tag -> tag.convert("snbt") }.joinToString(",")}]" }
-	override val convertTagCompound: Tag<TagCompoundMap>.() -> String? = { "{${value.entries.mapNotNull { (key, value) -> value.convert<String>("snbt")?.let { "$key:$it" } }.joinToString(",")}}" }
+	override val convertTagString: Tag<String>.() -> String? = { value.quote() }
+	override val convertTagList: Tag<TagListList>.() -> String? = { "[${value.mapNotNull { tag -> convertFromTag(tag) }.joinToString(",")}]" }
+	override val convertTagCompound: Tag<TagCompoundMap>.() -> String? =
+		{ "{${value.entries.mapNotNull { (key, value) -> convertFromTag(value)?.let { "${key.quote(false)}:$it" } }.joinToString(",")}}" }
 	override val convertTagIntArray: Tag<IntArray>.() -> String? = { "[I;${value.joinToString(",")}]" }
 	override val convertTagLongArray: Tag<LongArray>.() -> String? = { "[L;${value.joinToString(",") { long -> "${long}L" }}]" }
 	
@@ -36,26 +37,41 @@ open class SnbtNbtConverter private constructor(
 	
 	@Suppress("JoinDeclarationAndAssignment")
 	override fun convertToTag(value: String): TagAny? {
-		val buffer = StringBuilder()
-		fun flushBuffer() = buffer.toString().also { buffer.clear() }
-		
 		var index = 0
+		
+		val skipWhitespaces = { while (value[index].toString().matches(whitespaceRegex)) index++ }
+		
+		val skipColon = {
+			skipWhitespaces()
+			if (value[index] == ':') index++
+			else throw IllegalArgumentException("Expected ':' at index $index")
+			skipWhitespaces()
+		}
+		
+		val skipSeparator = {
+			skipWhitespaces()
+			if (value[index].toString().matches(separatorRegex)) index++
+			skipWhitespaces()
+		}
 		
 		lateinit var readIdentifier: () -> String
 		lateinit var readTag: () -> TagAny
 		
 		lateinit var readValue: () -> TagAny
-		lateinit var readCompound: () -> TagCompound
 		lateinit var readListOrArray: () -> TagAny
+		lateinit var readCompound: () -> TagCompound
 		
 		readIdentifier = {
+			val buffer = StringBuilder()
+			fun flushBuffer() = buffer.toString().also { buffer.clear() }
+			
 			val condition = when (value[index]) {
 				'"'  -> {
-					index++
+					index++ // Skip first '"'
 					{ value[index] != '"' || value[index - 1] == '\\' }
 				}
 				'\'' -> {
-					index++
+					index++ // Skip first '\''
 					{ value[index] != '\'' || value[index - 1] == '\\' }
 				}
 				else -> {
@@ -64,12 +80,16 @@ open class SnbtNbtConverter private constructor(
 			}
 			
 			while (condition()) buffer.append(value[index++])
-			if (value[index] == '"' || value[index] == '\'') index++
 			
-			flushBuffer()
+			if (value[index].toString().matches(quoteRegex)) {
+				index++ // Skip last '"' or '\''
+				flushBuffer()
+			} else flushBuffer().trim()
 		}
 		
 		readTag = {
+			skipWhitespaces()
+			
 			when (value[index]) {
 				'{'  -> readCompound()
 				'['  -> readListOrArray()
@@ -99,68 +119,66 @@ open class SnbtNbtConverter private constructor(
 			}
 		}
 		
-		readCompound = {
-			index++
-			buildTagCompound {
-				while (value[index] != '}') {
-					val key = readIdentifier()
-					if (value[index++] != ':') throw IllegalArgumentException("Expected ':' at index $index")
-					put(key, readTag())
-					if (value[index] == ',' || value[index] == ';') index++
-				}
-				index++
-			}
-		}
-		
 		readListOrArray = {
-			index++
+			index++ // Skip '['
+			skipWhitespaces()
+			
+			@Suppress("UNCHECKED_CAST")
+			fun <T : Any> readArray(): List<T> {
+				index += 2 // Skip 'B;', 'I;' or 'L;'
+				skipWhitespaces()
+				
+				val list = mutableListOf<Tag<T>>()
+				while (value[index] != ']') {
+					list.add(readValue() as Tag<T>)
+					skipSeparator()
+				}
+				index++ // Skip ']'
+				
+				return list.map { it.value }
+			}
+			
 			when (value.substring(index, index + 2)) {
-				"B;" -> {
-					index += 2
-					val list = mutableListOf<TagByte>()
-					while (value[index] != ']') {
-						list.add(readValue() as TagByte)
-						if (value[index] == ',' || value[index] == ';') index++
-					}
-					index++
-					TagByteArray(list.map { it.value }.toByteArray())
-				}
-				"I;" -> {
-					index += 2
-					val list = mutableListOf<TagInt>()
-					while (value[index] != ']') {
-						list.add(readValue() as TagInt)
-						if (value[index] == ',' || value[index] == ';') index++
-					}
-					index++
-					TagIntArray(list.map { it.value }.toIntArray())
-				}
-				"L;" -> {
-					index += 2
-					val list = mutableListOf<TagLong>()
-					while (value[index] != ']') {
-						list.add(readValue() as TagLong)
-						if (value[index] == ',' || value[index] == ';') index++
-					}
-					index++
-					TagLongArray(list.map { it.value }.toLongArray())
-				}
+				"B;" -> TagByteArray(readArray<Byte>().toByteArray())
+				"I;" -> TagIntArray(readArray<Int>().toIntArray())
+				"L;" -> TagLongArray(readArray<Long>().toLongArray())
 				else -> {
 					buildTagList {
 						while (value[index] != ']') {
 							add(readTag())
-							if (value[index] == ',' || value[index] == ';') index++
+							skipSeparator()
 						}
-						index++
+						index++ // Skip ']'
 					}
 				}
+			}
+		}
+		
+		readCompound = {
+			index++ // Skip '{'
+			skipWhitespaces()
+			
+			buildTagCompound {
+				while (value[index] != '}') {
+					val key = readIdentifier()
+					skipColon()
+					put(key, readTag())
+					skipSeparator()
+				}
+				index++ // Skip '}'
 			}
 		}
 		
 		return readTag()
 	}
 	
-	private fun quoteString(string: String) = if ('\'' in string) "\"${string.replace("\"", "\\\"")}\"" else "'$string'"
+	private fun String.startsOrEndsWithSpace() = startsWith(' ') || endsWith(' ')
+	
+	private fun String.quote(forceQuotes: Boolean = true) = when {
+		!forceQuotes && matches(identifierRegex) && !startsOrEndsWithSpace() -> this
+		contains('\'')                                                       -> "\"${replace("\"", "\\\"")}\""
+		else                                                                 -> "'$this'"
+	}
 	
 	class SnbtNbtConverterBuilder {
 		fun build() = SnbtNbtConverter(this)
@@ -168,7 +186,10 @@ open class SnbtNbtConverter private constructor(
 	
 	@ExperimentalSnbtNbtConverter
 	companion object : SnbtNbtConverter() {
-		private val identifierRegex = "[0-9A-Za-z_\\-+.]+".toRegex()
+		private val identifierRegex = "[0-9A-Za-z_\\-+. ]+".toRegex()
+		private val quoteRegex = "[\"']".toRegex()
+		private val separatorRegex = "[,;]".toRegex()
+		private val whitespaceRegex = "[ \t\n\r]+".toRegex()
 	}
 }
 

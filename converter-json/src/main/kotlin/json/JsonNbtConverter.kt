@@ -29,8 +29,8 @@ open class JsonNbtConverter private constructor(
 	override val convertTagDouble: Tag<Double>.() -> JsonElement? = { JsonPrimitive(value) }
 	override val convertTagByteArray: Tag<ByteArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
 	override val convertTagString: Tag<String>.() -> JsonElement? = { JsonPrimitive(value) }
-	override val convertTagList: Tag<TagListList>.() -> JsonElement? = { JsonArray(value.mapNotNull { tag -> tag.convert("json") }) }
-	override val convertTagCompound: Tag<TagCompoundMap>.() -> JsonElement? = { JsonObject(value.mapNotNull { (key, value) -> value.convert<JsonElement>("json")?.let { key to it } }.toMap()) }
+	override val convertTagList: Tag<TagListList>.() -> JsonElement? = { JsonArray(value.mapNotNull { tag -> convertFromTag(tag) }) }
+	override val convertTagCompound: Tag<TagCompoundMap>.() -> JsonElement? = { JsonObject(value.mapNotNull { (key, value) -> convertFromTag(value)?.let { key to it } }.toMap()) }
 	override val convertTagIntArray: Tag<IntArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
 	override val convertTagLongArray: Tag<LongArray>.() -> JsonElement? = { JsonArray(value.map { JsonPrimitive(it) }) }
 	
